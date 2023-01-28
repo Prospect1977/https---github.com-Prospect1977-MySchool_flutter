@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:my_school/cubits/StudentDailySchedule_cubit.dart';
 import 'package:my_school/cubits/StudentDailySchedule_states.dart';
 import 'package:my_school/models/StudentDailySchedule_model.dart';
-import 'package:my_school/screens/studentLessonDetails_screen.dart';
+import 'package:my_school/screens/studentLessonSessions_screen.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
@@ -66,6 +66,9 @@ class _StudentDailyScheduleScreenState
 
               }
               TodaysDateIndex = cubit.TodaysDateIndex;
+              if (state is UnAuthendicatedState) {
+                navigateAndFinish(context, LoginScreen());
+              }
               return cubit.DailySchedule == null
                   ? Center(child: CircularProgressIndicator())
                   : Container(
@@ -125,7 +128,7 @@ class _StudentDailyScheduleScreenState
                                                     ? Colors.white
                                                     : item.isHoliday
                                                         ? Colors.white70
-                                                        : Colors.black87,
+                                                        : Colors.black54,
                                                 fontSize: 14),
                                           ),
                                           Text(
@@ -136,7 +139,7 @@ class _StudentDailyScheduleScreenState
                                                     ? Colors.white
                                                     : item.isHoliday
                                                         ? Colors.white70
-                                                        : Colors.black87,
+                                                        : Colors.black54,
                                                 fontSize: 12),
                                           )
                                         ]),
@@ -286,7 +289,8 @@ class _StudentDailyScheduleScreenState
                                                             mainSubListItem(
                                                                 context,
                                                                 item.lessons[
-                                                                    index]),
+                                                                    index],
+                                                                widget.Id),
                                                       )
                                               ],
                                             ),
@@ -302,10 +306,17 @@ class _StudentDailyScheduleScreenState
   }
 }
 
-Widget mainSubListItem(context, Lesson l) {
+Widget mainSubListItem(context, Lesson l, studentId) {
   return InkWell(
     onTap: () {
-      navigateTo(context, StudentLessonDetailsScreen(l.lessonId, l.lessonName));
+      navigateTo(
+          context,
+          StudentLessonSessionsScreen(
+            studentId,
+            l.lessonId,
+            l.lessonName,
+            l.yearSubjectId,
+          ));
     },
     child: l.lessonName == null
         ? Container()

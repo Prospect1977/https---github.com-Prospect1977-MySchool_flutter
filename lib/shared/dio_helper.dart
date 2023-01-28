@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:my_school/shared/components/constants.dart';
 
 class DioHelper {
   static Dio dio;
@@ -7,7 +8,7 @@ class DioHelper {
   static init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://10.0.2.2:7033/api/',
+        baseUrl: baseUrl,
         receiveDataWhenStatusError: true,
         headers: {
           'Content-Type': 'application/json',
@@ -43,8 +44,8 @@ class DioHelper {
     dio.options.headers = {
       'lang': lang,
       'Authorization': 'Bearer $token',
-       'Content-Type': 'application/json',
-       'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     };
 
     return dio.post(

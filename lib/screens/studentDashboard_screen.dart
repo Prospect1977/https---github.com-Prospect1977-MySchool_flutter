@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_school/cubits/StudentDashboard_cubit.dart';
 import 'package:my_school/cubits/StudentDashboard_states.dart';
+import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentDailySchedule_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentProfile_screen.dart';
@@ -52,6 +53,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               widget.Gender = cubit.Gender;
               widget.SchoolTypeId = cubit.SchoolTypeId;
               widget.YearOfStudyId = cubit.YearOfStudyId;
+              if (state is UnAuthendicatedState) {
+                navigateAndFinish(context, LoginScreen());
+              }
               return (state is SuccessState)
                   ? Scaffold(
                       appBar: appBarComponent(context, cubit.FullName),
