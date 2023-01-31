@@ -2,11 +2,18 @@ import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_school/cubits/main_cubit.dart';
+import 'package:my_school/screens/changeLanguageScreen.dart';
 
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+void navigateTo(context, widget) => Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => widget,
+      ),
+    );
 void navigateAndFinish(
   context,
   widget,
@@ -22,9 +29,21 @@ void navigateAndFinish(
     );
 var AppBarActions = [
   PopupMenuButton(
-      icon: Icon(Icons.more_vert),
+      icon: Icon(
+        Icons.more_vert,
+        color: Colors.white,
+      ),
       onSelected: (SelectedValue) => {print(SelectedValue)},
       itemBuilder: (ctx) => [
+            PopupMenuItem(
+              child: Text('Change Language'),
+              value: 0,
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+
+                navigateTo(ctx, ChangeLanguageScreen());
+              },
+            ),
             PopupMenuItem(
               child: Text('Log Out'),
               value: 0,
@@ -33,17 +52,15 @@ var AppBarActions = [
                 await prefs.remove("token");
                 await prefs.remove("roles");
                 await prefs.remove("userId");
+
                 navigateAndFinish(ctx, LoginScreen());
               },
-            ),
-            PopupMenuItem(
-              child: Text('Show All'),
-              value: 1,
             ),
           ]),
 ];
 Widget appBarComponent(context, String title, {backButtonPage}) {
   return AppBar(
+      elevation: 3,
       title: Center(
         child: Text(
           title,
@@ -54,7 +71,10 @@ Widget appBarComponent(context, String title, {backButtonPage}) {
       leading: backButtonPage == null
           ? null
           : IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
               onPressed: backButtonPage == null
                   ? () {
                       Navigator.of(context).pop();
@@ -101,11 +121,14 @@ Widget defaultButton({
 Widget defaultTextButton({
   @required Function function,
   @required String text,
+  double fontSize = 14.1,
+  FontWeight fontWeight = FontWeight.normal,
 }) =>
     TextButton(
       onPressed: function,
       child: Text(
         text.toUpperCase(),
+        style: TextStyle(fontSize: fontSize, fontWeight: fontWeight),
       ),
     );
 
@@ -159,13 +182,6 @@ Widget myDivider() => Padding(
         width: double.infinity,
         height: 1.0,
         color: Colors.grey[300],
-      ),
-    );
-
-void navigateTo(context, widget) => Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => widget,
       ),
     );
 

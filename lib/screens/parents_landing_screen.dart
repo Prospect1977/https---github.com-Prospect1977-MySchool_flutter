@@ -53,85 +53,95 @@ class ChildrenList extends StatelessWidget {
       textDirection: cubit.lang.toLowerCase() == "ar"
           ? TextDirection.rtl
           : TextDirection.ltr,
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: cubit.students.length,
-              itemBuilder: (context, index) {
-                // cubit.students[index].fullName;
-                return Card(
-                  elevation: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: () {
-                        navigateTo(
-                            context,
-                            StudentDashboardScreen(
-                              Id: cubit.students[index].Id,
-                              FullName: cubit.students[index].FullName,
-                              Gender: cubit.students[index].Gender,
-                              SchoolTypeId: cubit.students[index].SchoolTypeId,
-                              YearOfStudyId:
-                                  cubit.students[index].YearOfStudyId,
-                            ));
-                      },
-                      child: ListTile(
-                          leading: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(65),
-                                border:
-                                    Border.all(color: Colors.grey, width: 2)),
-                            child: cubit.students[index].Gender == null
-                                ? ClipRRect(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(55)),
-                                    child: Icon(
-                                      Icons.account_circle,
-                                      size: 50,
-                                      color: Colors.black38,
-                                    ),
-                                  )
-                                : (cubit.students[index].Gender == "Female"
-                                    ? ClipRRect(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(55)),
-                                        child: Image.asset(
-                                          "assets/images/girlAvatar.jpg",
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : ClipRRect(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(55)),
-                                        child: Image.asset(
-                                          "assets/images/boyAvatar.jpg",
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )),
-                          ),
-                          title: Text(
-                            cubit.students[index].FullName,
-                            style:
-                                TextStyle(fontSize: 22, color: Colors.purple),
-                          )),
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 8.0,
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: cubit.students.length,
+                itemBuilder: (context, index) {
+                  // cubit.students[index].fullName;
+                  return Card(
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: defaultColor, width: 1),
+                          borderRadius: BorderRadius.circular(5)),
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        onTap: () {
+                          navigateTo(
+                              context,
+                              StudentDashboardScreen(
+                                Id: cubit.students[index].Id,
+                                FullName: cubit.students[index].FullName,
+                                Gender: cubit.students[index].Gender,
+                                SchoolTypeId:
+                                    cubit.students[index].SchoolTypeId,
+                                YearOfStudyId:
+                                    cubit.students[index].YearOfStudyId,
+                              ));
+                        },
+                        child: ListTile(
+                            leading: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(65),
+                                  border:
+                                      Border.all(color: Colors.grey, width: 2)),
+                              child: cubit.students[index].Gender == null
+                                  ? ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(55)),
+                                      child: Icon(
+                                        Icons.account_circle,
+                                        size: 50,
+                                        color: Colors.black38,
+                                      ),
+                                    )
+                                  : (cubit.students[index].Gender == "Female"
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(55)),
+                                          child: Image.asset(
+                                            "assets/images/girlAvatar.jpg",
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                      : ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(55)),
+                                          child: Image.asset(
+                                            "assets/images/boyAvatar.jpg",
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )),
+                            ),
+                            title: Text(
+                              cubit.students[index].FullName,
+                              style:
+                                  TextStyle(fontSize: 22, color: Colors.purple),
+                            )),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-          // ElevatedButton(onPressed: (){}), child: child)
-          defaultButton(
-              function: () {},
-              text: cubit.lang.toLowerCase() == "en"
-                  ? 'Add a Child'
-                  : 'إضافة طالب',
-              isUpperCase: false,
-              borderRadius: 0,
-              fontWeight: FontWeight.bold)
-        ],
+            // ElevatedButton(onPressed: (){}), child: child)
+            defaultButton(
+                function: () {},
+                text: cubit.lang.toLowerCase() == "en"
+                    ? 'Add a Child'
+                    : 'إضافة طالب',
+                isUpperCase: false,
+                borderRadius: 0,
+                fontWeight: FontWeight.bold)
+          ],
+        ),
       ),
     );
   }

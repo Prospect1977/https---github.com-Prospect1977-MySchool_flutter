@@ -27,13 +27,6 @@ class StudentYearOfStudyCubit extends Cubit<StudentYearOfStudyStates> {
           SchoolTypesAndYearsOfStudies.fromJson(value.data).SchoolTypes;
       YearsOfStudies =
           SchoolTypesAndYearsOfStudies.fromJson(value.data).YearsOfStudies;
-      // YearsOfStudies = value.data["yearsOfStudies"]
-      //     .map((j) => {YearOfStudy.fromJson(j)})
-      //     .toList();
-
-      // value.data["yearsOfStudies"].map((j) {
-      //   YearsOfStudies.add(YearOfStudy.fromJson(j));
-      // });
 
       emit(SuccessState());
     }).catchError((error) {

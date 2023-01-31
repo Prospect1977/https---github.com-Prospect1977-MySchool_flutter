@@ -20,6 +20,10 @@ ThemeData darkTheme = ThemeData(
       fontSize: 20.0,
       fontWeight: FontWeight.bold,
     ),
+    actionsIconTheme: IconThemeData(
+      color: Colors.white,
+    ),
+    foregroundColor: Colors.white,
     iconTheme: IconThemeData(
       color: Colors.white,
     ),
@@ -51,15 +55,15 @@ ThemeData lightTheme = ThemeData(
     //   statusBarColor: Colors.white,
     //   statusBarIconBrightness: Brightness.dark,
     // ),
-    backgroundColor: Colors.white,
+    backgroundColor: defaultColor,
     elevation: 0.0,
     titleTextStyle: TextStyle(
-      color: Colors.black,
+      color: Colors.white,
       fontSize: 20.0,
       fontWeight: FontWeight.bold,
     ),
     iconTheme: IconThemeData(
-      color: Colors.black,
+      color: Colors.white,
     ),
   ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -73,7 +77,7 @@ ThemeData lightTheme = ThemeData(
     bodyText1: TextStyle(
       fontSize: 18.0,
       fontWeight: FontWeight.w600,
-      color: Colors.black,
+      color: Colors.white,
     ),
   ),
   fontFamily: 'Jannah',

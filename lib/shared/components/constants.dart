@@ -12,3 +12,4 @@
 var baseUrl = 'http://10.0.2.2:7033/api/';
 
 var webUrl = 'http://10.0.2.2:8084/';
+var lang = "ar";

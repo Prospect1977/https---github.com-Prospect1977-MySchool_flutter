@@ -8,6 +8,10 @@ class StudentLessonSession {
   bool isFree;
   dynamic price;
   int watches;
+  int videos;
+  int quizes;
+  dynamic rate;
+  bool isPurchased;
   StudentLessonSession.fromJson(Map<String, dynamic> js) {
     sessionId = js["sessionId"];
     teacherId = js["teacherId"];
@@ -18,6 +22,10 @@ class StudentLessonSession {
     isFree = js["isFree"];
     price = js["price"];
     watches = js["watches"];
+    quizes = js["quizes"];
+    videos = js["videos"];
+    rate = js["rate"];
+    isPurchased = js["isPurchased"];
   }
 }
 

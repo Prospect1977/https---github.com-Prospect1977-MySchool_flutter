@@ -21,6 +21,7 @@ class StudentLessonSessionsCubit extends Cubit<StudentLessonSessionsStates> {
 
   var lang = CacheHelper.getData(key: "lang");
   var token = CacheHelper.getData(key: "token");
+  var currentLessonIndex = 0;
   void getSessions(Id, LessonId) {
     emit(LoadingState());
     DioHelper.getData(
@@ -44,22 +45,28 @@ class StudentLessonSessionsCubit extends Cubit<StudentLessonSessionsStates> {
     });
   }
 
-  void getLessons(Id, YearSubjectId) {
+  void getLessons(Id, YearSubjectId, LessonId) {
     emit(LoadingState());
     DioHelper.getData(
-            url: 'StudentLessonSessions',
+            url: 'LessonsByYearSubjectId',
             query: {'Id': Id, 'YearSubjectId': YearSubjectId},
             lang: lang,
             token: token)
         .then((value) {
       print(value.data["data"]);
-      if (value.data["data"] == false) {
+      if (value.data["status"] == false) {
         emit(UnAuthendicatedState());
         return;
       }
       StudentLessonsByYearSubjectIdCollection =
           StudentLessonsByYearSubjectId_collection.fromJson(value.data["data"]);
-
+      var i = 0;
+      while (i < StudentLessonsByYearSubjectIdCollection.items.length) {
+        if (StudentLessonsByYearSubjectIdCollection.items[i].id == LessonId) {
+          currentLessonIndex = i;
+        }
+        i++;
+      }
       emit(SuccessState());
     }).catchError((error) {
       print(error.toString());

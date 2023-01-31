@@ -1,23 +1,25 @@
 class Lesson {
   int lessonId;
   String lessonName;
+  String lessonDescription;
   String parentLessonName;
   String dir;
   DateTime dataDate;
   String subjectName;
   int sessionsCount;
   int yearSubjectId;
-  double studentCompleted;
+  dynamic studentCompleted;
   Lesson.fromJson(Map<String, dynamic> js) {
     lessonId = js["lessonId"];
     lessonName = js["lessonName"];
+    lessonDescription = js["lessonDescription"];
     parentLessonName = js["parentLessonName"];
     dir = js["dir"];
     dataDate = DateTime.parse(js["dataDate"]);
     subjectName = js["subjectName"];
     sessionsCount = js["sessionsCount"];
     yearSubjectId = js["yearSubjectId"];
-    studentCompleted = double.parse('${js["studentCompleted"]}.0');
+    studentCompleted = js["studentCompleted"];
   }
 }
 
@@ -32,8 +34,7 @@ class DailyScheduleItem {
     isHoliday = js["isHoliday"];
     holidayName = js["holidayName"];
     holidayImage = js["holidayImage"];
-    print(isHoliday);
-    print(holidayName);
+
     js['lessons'].forEach((l) {
       lessons.add(Lesson.fromJson(l));
     });

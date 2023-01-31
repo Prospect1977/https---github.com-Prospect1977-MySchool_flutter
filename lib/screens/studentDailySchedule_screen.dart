@@ -17,8 +17,9 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class StudentDailyScheduleScreen extends StatefulWidget {
   final int Id;
   final String FullName;
-  const StudentDailyScheduleScreen(this.Id, this.FullName);
 
+  StudentDailyScheduleScreen(this.Id, this.FullName);
+  int SelectedDateIndex = 0;
   @override
   State<StudentDailyScheduleScreen> createState() =>
       _StudentDailyScheduleScreenState();
@@ -29,7 +30,7 @@ class _StudentDailyScheduleScreenState
   @override
   Widget build(BuildContext context) {
     var lang = CacheHelper.getData(key: "lang").toString().toLowerCase();
-    var TodaysDateIndex = 0;
+
     final ItemScrollController _itemScrollController = ItemScrollController();
     final ItemScrollController _itemScrollControllerLeft =
         ItemScrollController();
@@ -65,7 +66,8 @@ class _StudentDailyScheduleScreenState
                 //_scrollToIndex(3, _itemScrollController);
 
               }
-              TodaysDateIndex = cubit.TodaysDateIndex;
+              widget.SelectedDateIndex = cubit.TodaysDateIndex;
+
               if (state is UnAuthendicatedState) {
                 navigateAndFinish(context, LoginScreen());
               }
@@ -85,7 +87,7 @@ class _StudentDailyScheduleScreenState
                                   initialAlignment: 0.5,
                                   itemScrollController:
                                       _itemScrollControllerLeft,
-                                  initialScrollIndex: TodaysDateIndex,
+                                  initialScrollIndex: widget.SelectedDateIndex,
                                   itemCount: cubit.DailySchedule.items.length,
                                   itemBuilder: (context, index) {
                                     var item = cubit.DailySchedule.items[index];
@@ -94,8 +96,8 @@ class _StudentDailyScheduleScreenState
                                         _scrollToIndex(
                                             index, _itemScrollController);
                                         setState(() {
-                                          TodaysDateIndex = index;
-                                          print(TodaysDateIndex);
+                                          cubit.TodaysDateIndex = index;
+                                          widget.SelectedDateIndex = index;
                                         });
                                       },
                                       child: Container(
@@ -114,7 +116,8 @@ class _StudentDailyScheduleScreenState
                                                     color: item.isHoliday
                                                         ? Colors.black26
                                                         : Colors.black26)),
-                                            color: index == TodaysDateIndex
+                                            color: index ==
+                                                    widget.SelectedDateIndex
                                                 ? defaultColor
                                                 : item.isHoliday
                                                     ? Colors.black26
@@ -124,7 +127,8 @@ class _StudentDailyScheduleScreenState
                                             DateFormat("EEE")
                                                 .format(item.dataDate),
                                             style: TextStyle(
-                                                color: index == TodaysDateIndex
+                                                color: index ==
+                                                        widget.SelectedDateIndex
                                                     ? Colors.white
                                                     : item.isHoliday
                                                         ? Colors.white70
@@ -135,7 +139,8 @@ class _StudentDailyScheduleScreenState
                                             DateFormat("d MMM")
                                                 .format(item.dataDate),
                                             style: TextStyle(
-                                                color: index == TodaysDateIndex
+                                                color: index ==
+                                                        widget.SelectedDateIndex
                                                     ? Colors.white
                                                     : item.isHoliday
                                                         ? Colors.white70
@@ -152,7 +157,7 @@ class _StudentDailyScheduleScreenState
                               /*----------------------------------------------------------Right Column*/
                               child: ScrollablePositionedList.builder(
                                   itemScrollController: _itemScrollController,
-                                  initialScrollIndex: TodaysDateIndex,
+                                  initialScrollIndex: widget.SelectedDateIndex,
                                   itemCount: cubit.DailySchedule.items.length,
                                   itemBuilder: ((context, index) {
                                     var item = cubit.DailySchedule.items[index];
@@ -311,12 +316,8 @@ Widget mainSubListItem(context, Lesson l, studentId) {
     onTap: () {
       navigateTo(
           context,
-          StudentLessonSessionsScreen(
-            studentId,
-            l.lessonId,
-            l.lessonName,
-            l.yearSubjectId,
-          ));
+          StudentLessonSessionsScreen(studentId, l.lessonId, l.lessonName,
+              l.lessonDescription, l.yearSubjectId, l.dir));
     },
     child: l.lessonName == null
         ? Container()

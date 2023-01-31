@@ -2,6 +2,7 @@ class StudentLessonsByYearSubjectId {
   int id;
   DateTime dataDate;
   String lessonName;
+  String lessonDescription;
   String dir;
   bool blockedFromAddingSessions;
   int parentLessonId;
@@ -9,6 +10,7 @@ class StudentLessonsByYearSubjectId {
     id = js["id"];
     dataDate = js["dataDate"] == "" ? null : DateTime.parse(js["dataDate"]);
     lessonName = js["lessonName"];
+    lessonDescription = js["lessonDescription"];
     dir = js["dir"];
     blockedFromAddingSessions = js["blockedFromAddingSessions"];
     parentLessonId = js["parentLessonId"];
