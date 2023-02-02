@@ -73,94 +73,120 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return Directionality(
       textDirection:
           lang.toLowerCase() == "ar" ? TextDirection.rtl : TextDirection.ltr,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          button(context, () {
-            navigateTo(
-                context,
-                StudentProfileScreen(
-                  widget.Id,
-                  FullName: widget.FullName,
-                  Gender: widget.Gender,
-                  SchoolTypeId: widget.SchoolTypeId,
-                  YearOfStudyId: widget.YearOfStudyId,
-                ));
-          },
-              Icons.filter_frames,
-              lang.toString().toLowerCase() == "ar"
-                  ? "البيانات الرئيسية${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (غير مكتملة)" : ""}"
-                  : "Main Profile Data${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (Not Completed)" : ""}",
-              Colors.white,
-              false),
-          button(
-              context,
-              (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                  ? null
-                  : () {
-                      navigateTo(
-                          context, StudentSelectedSubjectsScreen(widget.Id));
-                    },
-              Icons.check_box_outlined,
-              lang.toString().toLowerCase() == "ar"
-                  ? "إختر المواد الدراسية"
-                  : "Select Learning Subjects",
-              (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                  ? Colors.black26
-                  : Colors.white,
-              (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                  ? true
-                  : false),
-          button(
-              context,
-              (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                  ? null
-                  : () {
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 400,
+              child: GridView(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 200,
+                    childAspectRatio: 1,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5),
+                children: [
+                  button(
+                    context,
+                    () {
                       navigateTo(
                           context,
-                          StudentDailyScheduleScreen(
-                              widget.Id, widget.FullName));
+                          StudentProfileScreen(
+                            widget.Id,
+                            FullName: widget.FullName,
+                            Gender: widget.Gender,
+                            SchoolTypeId: widget.SchoolTypeId,
+                            YearOfStudyId: widget.YearOfStudyId,
+                          ));
                     },
-              Icons.video_collection_sharp,
-              lang.toString().toLowerCase() == "ar" ? "مذاكرتي" : "My Study",
-              (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                  ? Colors.black26
-                  : Colors.white,
-              (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                  ? true
-                  : false),
-        ],
+                    'MainData.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "البيانات الرئيسية${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (غير مكتملة)" : ""}"
+                        : "Main Profile Data${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (Not Completed)" : ""}",
+                  ),
+                  button(
+                    context,
+                    (widget.SchoolTypeId == null ||
+                            widget.YearOfStudyId == null)
+                        ? null
+                        : () {
+                            navigateTo(context,
+                                StudentSelectedSubjectsScreen(widget.Id));
+                          },
+                    'SelectSubjects.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "إختر المواد الدراسية"
+                        : "Select Learning Subjects",
+                  ),
+                  button(
+                    context,
+                    (widget.SchoolTypeId == null ||
+                            widget.YearOfStudyId == null)
+                        ? null
+                        : () {
+                            navigateTo(
+                                context,
+                                StudentDailyScheduleScreen(
+                                    widget.Id, widget.FullName));
+                          },
+                    'Calendar.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "الجدول اليومي"
+                        : "Daily Schedule",
+                  ),
+                  button(
+                    context,
+                    (widget.SchoolTypeId == null ||
+                            widget.YearOfStudyId == null)
+                        ? null
+                        : () {
+                            // navigateTo(
+                            //     context,
+                            //     StudentDailyScheduleScreen(
+                            //         widget.Id, widget.FullName));
+                          },
+                    'StudyBySubject.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "مذاكرة حسب المادة"
+                        : "Study by Subject",
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-Widget button(context, onClick, icon, title, color, bool isDisabled) {
+Widget button(context, onClick, imageName, title) {
   return InkWell(
     onTap: onClick,
     child: Card(
-      elevation: 0,
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      elevation: 3,
+      // margin: EdgeInsets.only(horizontal: 10, vertical: 10),
+      color: Color.fromARGB(255, 240, 240, 240),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         decoration: BoxDecoration(
-          border: Border.all(
-              color: isDisabled ? Colors.white60 : defaultColor, width: 2),
+          border: Border.all(color: defaultColor.withOpacity(.4)),
           borderRadius: BorderRadius.circular(5),
-          color: isDisabled ? Colors.black54 : color,
         ),
-        child: Row(children: [
-          Icon(
-            icon,
-            color: isDisabled ? Colors.white60 : defaultColor,
-          ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(
+              child: Container(
+            width: 75,
+            height: 75,
+            child: Image.asset(
+              'assets/images/$imageName',
+            ),
+          )),
+          Container(
             child: Text(
               title,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: isDisabled ? Colors.white60 : defaultColor),
+              style: TextStyle(fontSize: 15, color: defaultColor),
               textAlign: TextAlign.center,
             ),
           )
@@ -169,3 +195,12 @@ Widget button(context, onClick, icon, title, color, bool isDisabled) {
     ),
   );
 }
+// Widget Gridtile (String lang,Widget icon,String Title,Function onTap){
+//   return GridTile(child: Container(color:Colors.orange.withOpacity(0.7),child:Column(children: [
+//           Container(height: 150,child: Center(child:Icon(Icons.filter_frames)),),lang.toString().toLowerCase() == "ar"
+//                   ? "البيانات الرئيسية${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (غير مكتملة)" : ""}"
+//                   : "Main Profile Data${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (Not Completed)" : ""}",
+//               Colors.white,
+//               false)
+//           ],)));
+// }

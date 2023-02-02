@@ -67,6 +67,7 @@ class StudentLessonSessionsCubit extends Cubit<StudentLessonSessionsStates> {
         }
         i++;
       }
+
       emit(SuccessState());
     }).catchError((error) {
       print(error.toString());

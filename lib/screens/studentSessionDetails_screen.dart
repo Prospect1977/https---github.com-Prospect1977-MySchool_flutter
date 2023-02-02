@@ -10,7 +10,9 @@ import 'package:my_school/cubits/StudentSessionHeaderDetail_states.dart';
 import 'package:my_school/models/StudentSessionHeaderDetail.dart';
 
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/quiz_screen.dart';
 import 'package:my_school/screens/studentLessonSessions_screen.dart';
+import 'package:my_school/screens/video_screen.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
 
@@ -21,9 +23,6 @@ class StudentSessionDetailsScreen extends StatefulWidget {
   final String LessonName;
   final String LessonDescription;
   final String dir;
-  final dynamic Price;
-  final bool IsFree;
-  bool IsPurchased;
   final int StudentId;
   final String TeacherName;
   StudentSessionDetailsScreen(
@@ -33,9 +32,6 @@ class StudentSessionDetailsScreen extends StatefulWidget {
       @required this.LessonName,
       @required this.LessonDescription,
       @required this.dir,
-      @required this.Price,
-      @required this.IsFree,
-      @required this.IsPurchased,
       @required this.StudentId,
       @required this.TeacherName,
       Key key})
@@ -95,10 +91,11 @@ class _StudentSessionDetailsScreenState
                               margin: EdgeInsets.symmetric(
                                   horizontal: 5, vertical: 7),
                               decoration: BoxDecoration(
-                                  color: Colors.purple.shade50,
+                                  color: Colors.purple.withOpacity(0.05),
                                   borderRadius: BorderRadius.circular(5),
                                   border: Border.all(
-                                      color: defaultColor, width: 1)),
+                                      color: defaultColor.withOpacity(0.4),
+                                      width: 1)),
                               child: Column(
                                 children: [
                                   Text(
@@ -118,104 +115,172 @@ class _StudentSessionDetailsScreenState
                               ),
                             ),
                             Container(
-                              height: MediaQuery.of(context).size.height - 230,
+                              height: MediaQuery.of(context).size.height - 250,
                               child: ListView.builder(
                                 itemCount: cubit
                                     .StudentSessionHeaderDetailsCollection
-                                    .items
+                                    .sessionDetails
                                     .length,
                                 itemBuilder: (context, index) {
                                   var item = cubit
                                       .StudentSessionHeaderDetailsCollection
-                                      .items[index];
-                                  return Card(
-                                    //----------------------------------------------Card
-                                    elevation: (widget.IsFree ||
-                                            widget.IsPurchased ||
-                                            item.type == "Promo")
-                                        ? 5
-                                        : 1,
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 5),
-                                      decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: defaultColor),
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      child: Row(children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              getTitle(item, widget.IsFree,
-                                                  widget.IsPurchased, 16.1)
-                                            ],
+                                      .sessionDetails[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      if (item.type == "Video" ||
+                                          item.type == "Promo") {
+                                        navigateTo(
+                                            context,
+                                            VideoScreen(
+                                              StudentId: widget.StudentId,
+                                              VideoId: item.videoId,
+                                              VideoUrl: item.videoUrl,
+                                              Title: item.title,
+                                            ));
+                                      }
+                                      if (item.type == "Quiz") {
+                                        navigateTo(
+                                            context,
+                                            QuizScreen(
+                                                StudentId: widget.StudentId,
+                                                QuizId: item.quizId));
+                                      }
+                                    },
+                                    child: Card(
+                                      //----------------------------------------------Card
+                                      elevation:
+                                          (cubit.StudentSessionHeaderDetailsCollection
+                                                      .sessionHeader.isFree ||
+                                                  cubit
+                                                      .StudentSessionHeaderDetailsCollection
+                                                      .sessionHeader
+                                                      .isPurchased ||
+                                                  item.type == "Promo")
+                                              ? 3
+                                              : 1,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 5),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: (cubit
+                                                            .StudentSessionHeaderDetailsCollection
+                                                            .sessionHeader
+                                                            .isFree ||
+                                                        cubit
+                                                            .StudentSessionHeaderDetailsCollection
+                                                            .sessionHeader
+                                                            .isPurchased ||
+                                                        item.type == "Promo")
+                                                    ? defaultColor
+                                                        .withOpacity(0.5)
+                                                    : Colors.black26),
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                        child: Row(children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                getTitle(
+                                                    item,
+                                                    cubit
+                                                        .StudentSessionHeaderDetailsCollection
+                                                        .sessionHeader
+                                                        .isFree,
+                                                    cubit
+                                                        .StudentSessionHeaderDetailsCollection
+                                                        .sessionHeader
+                                                        .isPurchased,
+                                                    16.1)
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        getImage(
-                                          item,
-                                          widget.IsFree,
-                                          widget.IsPurchased,
-                                          align,
-                                          60.0,
-                                          60.0,
-                                        ),
-                                      ]),
+                                          getImage(
+                                            item,
+                                            cubit
+                                                .StudentSessionHeaderDetailsCollection
+                                                .sessionHeader
+                                                .isFree,
+                                            cubit
+                                                .StudentSessionHeaderDetailsCollection
+                                                .sessionHeader
+                                                .isPurchased,
+                                            align,
+                                            60.0,
+                                            60.0,
+                                          ),
+                                        ]),
+                                      ),
                                     ),
                                   );
                                 },
                               ),
                             ),
-                            (widget.IsFree == true || widget.IsPurchased)
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                        Center(
-                                          child: RatingBar.builder(
-                                            initialRating: 0,
-                                            minRating: 1,
-                                            direction: Axis.horizontal,
-                                            allowHalfRating: false,
-                                            itemCount: 5,
-                                            itemSize: 30,
-                                            itemPadding: EdgeInsets.symmetric(
-                                                horizontal: 4.0),
-                                            itemBuilder: (context, _) => Icon(
-                                              Icons.star,
-                                              color: Colors.amber,
+                            (cubit.StudentSessionHeaderDetailsCollection
+                                        .sessionHeader.isFree ||
+                                    cubit.StudentSessionHeaderDetailsCollection
+                                        .sessionHeader.isPurchased)
+                                ? Container(
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Center(
+                                            child: RatingBar.builder(
+                                              initialRating: cubit
+                                                          .StudentSessionHeaderDetailsCollection
+                                                          .sessionHeader
+                                                          .studentRate ==
+                                                      null
+                                                  ? 0.0
+                                                  : double.parse(cubit
+                                                      .StudentSessionHeaderDetailsCollection
+                                                      .sessionHeader
+                                                      .studentRate
+                                                      .toStringAsFixed(2)),
+                                              minRating: 1,
+                                              direction: Axis.horizontal,
+                                              allowHalfRating: false,
+                                              itemCount: 5,
+                                              itemSize: 30,
+                                              itemPadding: EdgeInsets.symmetric(
+                                                  horizontal: 4.0),
+                                              itemBuilder: (context, _) => Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                              ),
+                                              onRatingUpdate: (rating) {
+                                                setState(() {
+                                                  widget.isRated = true;
+                                                  widget.rate = rating;
+                                                });
+                                                // if (state is RatingSavedState) {
+                                                //   widget.isRated = false;
+                                                // }
+                                              },
                                             ),
-                                            onRatingUpdate: (rating) {
-                                              setState(() {
-                                                widget.isRated = true;
-                                                widget.rate = rating;
-                                              });
-                                              // if (state is RatingSavedState) {
-                                              //   widget.isRated = false;
-                                              // }
-                                            },
                                           ),
-                                        ),
-                                        widget.isRated
-                                            ? ElevatedButton(
-                                                onPressed: () {
-                                                  StudentSessionHeaderDetailCubit
-                                                          .get(context)
-                                                      .postRate(
-                                                          widget.StudentId,
-                                                          widget
-                                                              .SessionHeaderId,
-                                                          widget.rate);
-                                                  setState(() {
-                                                    widget.isRated = false;
-                                                  });
-                                                },
-                                                child: Text("Ok"),
-                                              )
-                                            : Container()
-                                      ])
+                                          widget.isRated
+                                              ? ElevatedButton(
+                                                  onPressed: () {
+                                                    StudentSessionHeaderDetailCubit
+                                                            .get(context)
+                                                        .postRate(
+                                                            widget.StudentId,
+                                                            widget
+                                                                .SessionHeaderId,
+                                                            widget.rate);
+                                                    setState(() {
+                                                      widget.isRated = false;
+                                                    });
+                                                  },
+                                                  child: Text("Ok"),
+                                                )
+                                              : Container()
+                                        ]),
+                                  )
                                 : defaultButton(
                                     function: () {
                                       StudentSessionHeaderDetailCubit.get(
@@ -225,12 +290,15 @@ class _StudentSessionDetailsScreenState
                                         widget.SessionHeaderId,
                                       );
                                       setState(() {
-                                        widget.IsPurchased = true;
+                                        cubit
+                                            .StudentSessionHeaderDetailsCollection
+                                            .sessionHeader
+                                            .isPurchased = true;
                                       });
                                     },
                                     text: cubit.lang == "en"
-                                        ? "Purchase (${widget.Price} EGP)"
-                                        : "شراء ${widget.Price} ج.م"),
+                                        ? "Purchase (${cubit.StudentSessionHeaderDetailsCollection.sessionHeader.price} EGP)"
+                                        : "شراء ${cubit.StudentSessionHeaderDetailsCollection.sessionHeader.price} ج.م"),
                           ]),
                     ));
           },
@@ -240,8 +308,8 @@ class _StudentSessionDetailsScreenState
   }
 }
 
-Widget getImage(StudentSessionHeaderDetail sd, bool isFree, bool isPurchased,
-    String align, double width, double height) {
+Widget getImage(SessionDetails sd, bool isFree, bool isPurchased, String align,
+    double width, double height) {
   switch (sd.type) {
     case "Promo":
       return Image.asset(
@@ -268,11 +336,12 @@ Widget getImage(StudentSessionHeaderDetail sd, bool isFree, bool isPurchased,
   }
 }
 
-Widget getTitle(StudentSessionHeaderDetail sd, bool isFree, bool isPurchased,
-    double fontSize) {
+Widget getTitle(
+    SessionDetails sd, bool isFree, bool isPurchased, double fontSize) {
   switch (sd.type) {
     case "Promo":
-      return Text(sd.title, style: TextStyle(fontSize: fontSize));
+      return Text(sd.title,
+          style: TextStyle(fontSize: fontSize, color: defaultColor));
       break;
     default:
       if (isFree == true || isPurchased == true) {

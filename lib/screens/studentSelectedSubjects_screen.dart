@@ -111,10 +111,10 @@ class _SubjectsListState extends State<SubjectsList> {
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(5),
-                                              color: _selectedItems
-                                                      .contains(item.SubjectId)
-                                                  ? defaultColor
-                                                  : Colors.white),
+                                              border: Border.all(
+                                                  color: defaultColor
+                                                      .withOpacity(0.3)),
+                                              color: Colors.white),
                                           padding: EdgeInsets.all(10),
                                           child: Row(
                                             children: [
@@ -123,20 +123,26 @@ class _SubjectsListState extends State<SubjectsList> {
                                                       width: 20,
                                                     )
                                                   : Container(),
-                                              Text(
-                                                item.SubjectName,
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    color:
-                                                        _selectedItems.contains(
-                                                                item.SubjectId)
-                                                            ? Colors.white
-                                                            : Colors.black87,
-                                                    fontWeight: item.ParentId ==
-                                                            null
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal),
+                                              Expanded(
+                                                child: Text(
+                                                  item.SubjectName,
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: defaultColor,
+                                                      fontWeight:
+                                                          item.ParentId == null
+                                                              ? FontWeight.bold
+                                                              : FontWeight
+                                                                  .normal),
+                                                ),
                                               ),
+                                              _selectedItems
+                                                      .contains(item.SubjectId)
+                                                  ? Icon(
+                                                      Icons.check_circle,
+                                                      color: Colors.green,
+                                                    )
+                                                  : Container()
                                             ],
                                           )),
                                     )),

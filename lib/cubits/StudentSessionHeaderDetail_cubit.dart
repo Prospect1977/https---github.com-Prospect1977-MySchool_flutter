@@ -12,7 +12,7 @@ class StudentSessionHeaderDetailCubit
   StudentSessionHeaderDetailCubit() : super(InitialState());
   static StudentSessionHeaderDetailCubit get(context) =>
       BlocProvider.of(context);
-  StudentSessionHeaderDetailCollection StudentSessionHeaderDetailsCollection;
+  AllData StudentSessionHeaderDetailsCollection;
 
   var lang = CacheHelper.getData(key: "lang");
   var token = CacheHelper.getData(key: "token");
@@ -31,7 +31,7 @@ class StudentSessionHeaderDetailCubit
         return;
       }
       StudentSessionHeaderDetailsCollection =
-          StudentSessionHeaderDetailCollection.fromJson(value.data["data"]);
+          AllData.fromJson(value.data["data"]);
 
       emit(SuccessState());
     }).catchError((error) {

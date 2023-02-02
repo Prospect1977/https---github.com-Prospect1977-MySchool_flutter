@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:my_school/providers/StudentLessonSessions_provider.dart';
 
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/on_boarding_screen.dart';
@@ -15,6 +16,7 @@ import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/themes.dart';
 import 'package:my_school/screens/landing_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   // بيتأكد ان كل حاجه هنا في الميثود خلصت و بعدين يتفح الابلكيشن
@@ -82,27 +84,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (BuildContext context) => AppCubit()
-            ..changeAppMode(
-              fromShared: isDark,
-            ),
-        )
-      ],
-      child: BlocConsumer<AppCubit, AppStates>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: ThemeMode.light,
-            home: startWidget,
-          );
-        },
-      ),
-    );
+    return MultiProvider(
+        providers: [
+          // ChangeNotifierProvider.value()
+          ChangeNotifierProvider.value(value: StudentLessonSessionsProvider()),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: ThemeMode.light,
+          home: startWidget,
+        ));
   }
 }

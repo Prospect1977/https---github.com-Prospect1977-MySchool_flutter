@@ -118,7 +118,7 @@ class _StudentDailyScheduleScreenState
                                                         : Colors.black26)),
                                             color: index ==
                                                     widget.SelectedDateIndex
-                                                ? defaultColor
+                                                ? Colors.amber.shade700
                                                 : item.isHoliday
                                                     ? Colors.black26
                                                     : Colors.white),
@@ -188,7 +188,8 @@ class _StudentDailyScheduleScreenState
                                                   width: double.infinity,
                                                   padding: EdgeInsets.all(5),
                                                   decoration: BoxDecoration(
-                                                      color: defaultColor,
+                                                      color: defaultColor
+                                                          .withOpacity(0.85),
                                                       border: Border.all(
                                                           color: defaultColor),
                                                       borderRadius:

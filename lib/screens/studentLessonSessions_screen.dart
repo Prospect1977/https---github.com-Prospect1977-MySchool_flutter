@@ -105,9 +105,6 @@ class _StudentLessonSessionsScreenState
                                                 LessonName: widget.lessonName,
                                                 LessonDescription:
                                                     widget.lessonDescription,
-                                                IsFree: item.isFree,
-                                                IsPurchased: item.isPurchased,
-                                                Price: item.price,
                                                 dir: widget.dir,
                                                 StudentId: widget.studentId,
                                                 TeacherName: item.teacherName,
@@ -270,6 +267,10 @@ class _StudentLessonSessionsScreenState
                                                         ))
                                                   ]),
                                               decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.black87
+                                                        .withOpacity(0.3),
+                                                  ),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           5))),
@@ -336,7 +337,7 @@ class _StudentLessonSessionsScreenState
                                           decoration: BoxDecoration(
                                               color: index ==
                                                       cubit.currentLessonIndex
-                                                  ? defaultColor
+                                                  ? defaultColor.withOpacity(.7)
                                                   : Colors.white,
                                               border: Border(
                                                   left: BorderSide(
