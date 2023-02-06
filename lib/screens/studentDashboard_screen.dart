@@ -177,8 +177,8 @@ Widget button(context, onClick, imageName, title) {
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(
               child: Container(
-            width: 75,
-            height: 75,
+            width: MediaQuery.of(context).size.width / 5.5,
+            height: MediaQuery.of(context).size.width / 5.5,
             child: Image.asset(
               'assets/images/$imageName',
             ),

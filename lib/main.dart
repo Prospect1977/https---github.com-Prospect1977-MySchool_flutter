@@ -9,6 +9,7 @@ import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/on_boarding_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/screens/video_screen.dart';
 import 'package:my_school/shared/bloc_observer.dart';
 import 'package:my_school/cubits/main_cubit.dart';
 import 'package:my_school/cubits/main_states.dart';
@@ -54,8 +55,15 @@ void main() async {
       }
 
       // widget = LandingScreen(); //the page after signing in
-    } else
+    } else {
       widget = LoginScreen();
+      // widget = VideoScreen(
+      //   StudentId: 1013,
+      //   Title: 'dsff0',
+      //   VideoId: 1,
+      //   VideoUrl: "dsfsf",
+      // );
+    }
   } else {
     widget = OnBoardingScreen();
   }
