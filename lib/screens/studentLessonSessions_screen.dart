@@ -7,10 +7,14 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:my_school/cubits/StudentLessonSessions_cubit.dart';
 import 'package:my_school/cubits/StudentLessonSessions_states.dart';
+import 'package:my_school/models/StudentLessonSessions_model.dart';
+import 'package:my_school/models/StudentLessonsByYearSubjectId_model.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
+import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
+import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -35,28 +39,93 @@ class StudentLessonSessionsScreen extends StatefulWidget {
 
 class _StudentLessonSessionsScreenState
     extends State<StudentLessonSessionsScreen> {
+  StudentLessonsByYearSubjectId_collection
+      StudentLessonsByYearSubjectIdCollection;
+  StudentLessonSessions StudentLessonSessionCollection;
+  var lang = CacheHelper.getData(key: "lang");
+  var token = CacheHelper.getData(key: "token");
+  int currentLessonIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+    getSessions(widget.studentId, widget.lessonId);
+    getLessons(widget.studentId, widget.YearSubjectId, widget.lessonId);
+  }
+
+  void getSessions(Id, LessonId) {
+    DioHelper.getData(
+            url: 'StudentLessonSessions',
+            query: {'Id': Id, 'LessonId': LessonId},
+            lang: lang,
+            token: token)
+        .then((value) {
+      print(value.data["data"]);
+      if (value.data["data"] == false) {
+        navigateAndFinish(context, LoginScreen());
+        return;
+      }
+      setState(() {
+        StudentLessonSessionCollection =
+            StudentLessonSessions.fromJson(value.data["data"]);
+      });
+    }).catchError((error) {
+      print(error.toString());
+      showToast(
+          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
+          state: ToastStates.ERROR);
+    });
+  }
+
+  void getLessons(Id, YearSubjectId, LessonId) {
+    DioHelper.getData(
+            url: 'LessonsByYearSubjectId',
+            query: {'Id': Id, 'YearSubjectId': YearSubjectId},
+            lang: lang,
+            token: token)
+        .then((value) {
+      print(value.data["data"]);
+      if (value.data["status"] == false) {
+        navigateAndFinish(context, LoginScreen());
+        return;
+      }
+      setState(() {
+        StudentLessonsByYearSubjectIdCollection =
+            StudentLessonsByYearSubjectId_collection.fromJson(
+                value.data["data"]);
+      });
+
+      var i = 0;
+      while (i < StudentLessonsByYearSubjectIdCollection.items.length) {
+        if (StudentLessonsByYearSubjectIdCollection.items[i].id == LessonId) {
+          setState(() {
+            currentLessonIndex = i;
+          });
+        }
+        i++;
+      }
+    }).catchError((error) {
+      print(error.toString());
+      showToast(
+          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
+          state: ToastStates.ERROR);
+    });
+  }
+
   final ItemScrollController _itemScrollController = ItemScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarComponent(context, widget.lessonName),
-      body: BlocProvider(
-        create: (context) => StudentLessonSessionsCubit()
-          ..getLessons(widget.studentId, widget.YearSubjectId, widget.lessonId)
-          ..getSessions(widget.studentId, widget.lessonId),
-        child: BlocConsumer<StudentLessonSessionsCubit,
-            StudentLessonSessionsStates>(
-          listener: (context, state) {
-            if (state is UnAuthendicatedState) {
-              navigateAndFinish(context, LoginScreen());
-            }
-          },
-          builder: (context, state) {
-            var cubit = StudentLessonSessionsCubit.get(context);
-
-            return cubit.StudentLessonSessionCollection == null
-                ? Center(child: CircularProgressIndicator())
-                : widget.showLessons == false
+        appBar: appBarComponent(context, widget.lessonName),
+        body: StudentLessonSessionCollection == null ||
+                StudentLessonsByYearSubjectIdCollection == null
+            ? Center(child: CircularProgressIndicator())
+            : RefreshIndicator(
+                onRefresh: () async {
+                  getSessions(widget.studentId, widget.lessonId);
+                  getLessons(
+                      widget.studentId, widget.YearSubjectId, widget.lessonId);
+                },
+                child: widget.showLessons == false
                     ?
                     //---------------------------------------------------------------- Teachers
                     Row(
@@ -84,13 +153,10 @@ class _StudentLessonSessionsScreenState
                               children: [
                                 Expanded(
                                   child: ListView.builder(
-                                    itemCount: cubit
-                                        .StudentLessonSessionCollection
-                                        .items
-                                        .length,
+                                    itemCount: StudentLessonSessionCollection
+                                        .items.length,
                                     itemBuilder: (context, index) {
-                                      var item = cubit
-                                          .StudentLessonSessionCollection
+                                      var item = StudentLessonSessionCollection
                                           .items[index];
                                       //-----------------------------------------------------------card
                                       return InkWell(
@@ -99,9 +165,6 @@ class _StudentLessonSessionsScreenState
                                               context,
                                               StudentSessionDetailsScreen(
                                                 SessionHeaderId: item.sessionId,
-                                                LessonId: widget.lessonId,
-                                                YearSubjectId:
-                                                    widget.YearSubjectId,
                                                 LessonName: widget.lessonName,
                                                 LessonDescription:
                                                     widget.lessonDescription,
@@ -309,16 +372,14 @@ class _StudentLessonSessionsScreenState
                             Expanded(
                                 child: ScrollablePositionedList.builder(
                                     itemScrollController: _itemScrollController,
-                                    initialScrollIndex:
-                                        cubit.currentLessonIndex,
-                                    itemCount: cubit
-                                        .StudentLessonsByYearSubjectIdCollection
-                                        .items
-                                        .length,
+                                    initialScrollIndex: currentLessonIndex,
+                                    itemCount:
+                                        StudentLessonsByYearSubjectIdCollection
+                                            .items.length,
                                     itemBuilder: (context, index) {
-                                      var item = cubit
-                                          .StudentLessonsByYearSubjectIdCollection
-                                          .items[index];
+                                      var item =
+                                          StudentLessonsByYearSubjectIdCollection
+                                              .items[index];
                                       return InkWell(
                                         onTap: () {
                                           navigateTo(
@@ -335,8 +396,7 @@ class _StudentLessonSessionsScreenState
                                           //-----------------------------------------item Container
                                           padding: EdgeInsets.all(5),
                                           decoration: BoxDecoration(
-                                              color: index ==
-                                                      cubit.currentLessonIndex
+                                              color: index == currentLessonIndex
                                                   ? defaultColor.withOpacity(.7)
                                                   : Colors.white,
                                               border: Border(
@@ -377,8 +437,7 @@ class _StudentLessonSessionsScreenState
                                                                 : FontWeight
                                                                     .normal,
                                                             color: index ==
-                                                                    cubit
-                                                                        .currentLessonIndex
+                                                                    currentLessonIndex
                                                                 ? Colors.white
                                                                 : Colors
                                                                     .black54),
@@ -402,8 +461,7 @@ class _StudentLessonSessionsScreenState
                                                                         .end,
                                                                 style: TextStyle(
                                                                     color: index ==
-                                                                            cubit
-                                                                                .currentLessonIndex
+                                                                            currentLessonIndex
                                                                         ? Colors
                                                                             .white54
                                                                         : Colors
@@ -425,10 +483,7 @@ class _StudentLessonSessionsScreenState
                         SizedBox(
                           width: 5,
                         )
-                      ]);
-          },
-        ),
-      ),
-    );
+                      ]),
+              ));
   }
 }

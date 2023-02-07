@@ -1,4 +1,5 @@
 import 'package:my_school/models/SchoolTypeYearOfStudy.dart';
+import 'package:my_school/models/StudentSessionHeaderDetail.dart';
 
 abstract class StudentSessionHeaderDetailStates {}
 
@@ -7,9 +8,8 @@ class InitialState extends StudentSessionHeaderDetailStates {}
 class LoadingState extends StudentSessionHeaderDetailStates {}
 
 class SuccessState extends StudentSessionHeaderDetailStates {
-  // final List<SchoolType> SchoolTypes;
-  // final List<YearOfStudy> YearsOfStudies;
-  // SuccessState(this.SchoolTypes, this.YearsOfStudies);
+  final AllData allData;
+  SuccessState(this.allData);
 }
 
 class ErrorState extends StudentSessionHeaderDetailStates {

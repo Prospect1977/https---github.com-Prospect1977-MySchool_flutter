@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:my_school/screens/studentSessionDetails_screen.dart';
 //import 'package:my_school/cubits/StudentVideo_cubit.dart';
 //import 'package:my_school/providers/StudentVideo_provider.dart';
 import 'package:my_school/shared/cache_helper.dart';
@@ -21,11 +22,23 @@ class VideoScreen extends StatefulWidget {
   int VideoId;
   String VideoUrl;
   String Title;
+  int SessionHeaderId;
+  String LessonName;
+  String LessonDescription;
+  String dir;
+  String TeacherName;
+  String VideoName;
   VideoScreen(
       {@required this.StudentId,
       @required this.VideoId,
       @required this.VideoUrl,
       @required this.Title,
+      @required this.SessionHeaderId,
+      @required this.LessonName,
+      @required this.LessonDescription,
+      @required this.dir,
+      @required this.TeacherName,
+      @required this.VideoName,
       Key key})
       : super(key: key);
 
@@ -102,12 +115,13 @@ class _VideoScreenState extends State<VideoScreen> {
         .join(':');
   }
 
-  void anything() {
+  void SaveProgress() {
     if (_controller != null && _controller.value.isInitialized) {
       var currentSecond = _controller.value.position.inSeconds;
-      if (currentSecond % 5 == 0 &&
-          currentSecond > 0 &&
-          currentSecond != lastSavedAt) {
+      if ((currentSecond % 5 == 0 &&
+              currentSecond > 0 &&
+              currentSecond != lastSavedAt) ||
+          currentSecond == _controller.value.duration) {
         lastSavedAt = currentSecond;
 
         print(
@@ -127,15 +141,13 @@ class _VideoScreenState extends State<VideoScreen> {
             data: {}).then((value) {}).catchError((error) {
           print(error.toString());
         });
-        // ..saveProgress(context, widget.StudentId, widget.VideoId,
-        //     _controller.value.position.inSeconds);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    anything();
+    SaveProgress();
     if (MediaQuery.of(context).orientation == Orientation.landscape) {
       Wakelock.enable();
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
@@ -146,7 +158,17 @@ class _VideoScreenState extends State<VideoScreen> {
     }
     return Scaffold(
       appBar: MediaQuery.of(context).orientation == Orientation.portrait
-          ? appBarComponent(context, widget.Title)
+          ? appBarComponent(
+              context,
+              widget.Title,
+              /*backButtonPage: StudentSessionDetailsScreen(
+                  SessionHeaderId: widget.SessionHeaderId,
+                  LessonName: widget.LessonName,
+                  LessonDescription: widget.LessonDescription,
+                  dir: widget.dir,
+                  StudentId: widget.StudentId,
+                  TeacherName: widget.TeacherName)*/
+            )
           : null,
       body: Column(children: [
         _controller != null && _controller.value.isInitialized

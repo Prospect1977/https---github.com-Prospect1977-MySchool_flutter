@@ -22,56 +22,56 @@ class StudentLessonSessionsCubit extends Cubit<StudentLessonSessionsStates> {
   var lang = CacheHelper.getData(key: "lang");
   var token = CacheHelper.getData(key: "token");
   var currentLessonIndex = 0;
-  void getSessions(Id, LessonId) {
-    emit(LoadingState());
-    DioHelper.getData(
-            url: 'StudentLessonSessions',
-            query: {'Id': Id, 'LessonId': LessonId},
-            lang: lang,
-            token: token)
-        .then((value) {
-      print(value.data["data"]);
-      if (value.data["data"] == false) {
-        emit(UnAuthendicatedState());
-        return;
-      }
-      StudentLessonSessionCollection =
-          StudentLessonSessions.fromJson(value.data["data"]);
+  // void getSessions(Id, LessonId) {
+  //   emit(LoadingState());
+  //   DioHelper.getData(
+  //           url: 'StudentLessonSessions',
+  //           query: {'Id': Id, 'LessonId': LessonId},
+  //           lang: lang,
+  //           token: token)
+  //       .then((value) {
+  //     print(value.data["data"]);
+  //     if (value.data["data"] == false) {
+  //       emit(UnAuthendicatedState());
+  //       return;
+  //     }
+  //     StudentLessonSessionCollection =
+  //         StudentLessonSessions.fromJson(value.data["data"]);
 
-      emit(SuccessState());
-    }).catchError((error) {
-      print(error.toString());
-      emit(ErrorState(error.toString()));
-    });
-  }
+  //     emit(SuccessState());
+  //   }).catchError((error) {
+  //     print(error.toString());
+  //     emit(ErrorState(error.toString()));
+  //   });
+  // }
 
-  void getLessons(Id, YearSubjectId, LessonId) {
-    emit(LoadingState());
-    DioHelper.getData(
-            url: 'LessonsByYearSubjectId',
-            query: {'Id': Id, 'YearSubjectId': YearSubjectId},
-            lang: lang,
-            token: token)
-        .then((value) {
-      print(value.data["data"]);
-      if (value.data["status"] == false) {
-        emit(UnAuthendicatedState());
-        return;
-      }
-      StudentLessonsByYearSubjectIdCollection =
-          StudentLessonsByYearSubjectId_collection.fromJson(value.data["data"]);
-      var i = 0;
-      while (i < StudentLessonsByYearSubjectIdCollection.items.length) {
-        if (StudentLessonsByYearSubjectIdCollection.items[i].id == LessonId) {
-          currentLessonIndex = i;
-        }
-        i++;
-      }
+  // void getLessons(Id, YearSubjectId, LessonId) {
+  //   emit(LoadingState());
+  //   DioHelper.getData(
+  //           url: 'LessonsByYearSubjectId',
+  //           query: {'Id': Id, 'YearSubjectId': YearSubjectId},
+  //           lang: lang,
+  //           token: token)
+  //       .then((value) {
+  //     print(value.data["data"]);
+  //     if (value.data["status"] == false) {
+  //       emit(UnAuthendicatedState());
+  //       return;
+  //     }
+  //     StudentLessonsByYearSubjectIdCollection =
+  //         StudentLessonsByYearSubjectId_collection.fromJson(value.data["data"]);
+  //     var i = 0;
+  //     while (i < StudentLessonsByYearSubjectIdCollection.items.length) {
+  //       if (StudentLessonsByYearSubjectIdCollection.items[i].id == LessonId) {
+  //         currentLessonIndex = i;
+  //       }
+  //       i++;
+  //     }
 
-      emit(SuccessState());
-    }).catchError((error) {
-      print(error.toString());
-      emit(ErrorState(error.toString()));
-    });
-  }
+  //     emit(SuccessState());
+  //   }).catchError((error) {
+  //     print(error.toString());
+  //     emit(ErrorState(error.toString()));
+  //   });
+  // }
 }

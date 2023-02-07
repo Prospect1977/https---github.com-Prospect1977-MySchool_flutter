@@ -17,28 +17,28 @@ class StudentSessionHeaderDetailCubit
   var lang = CacheHelper.getData(key: "lang");
   var token = CacheHelper.getData(key: "token");
 
-  void getSessionDetails(StudentId, SessionHeaderId) {
-    emit(LoadingState());
-    DioHelper.getData(
-            url: 'StudentSessionHeaderDetails',
-            query: {'Id': StudentId, 'SessionHeaderId': SessionHeaderId},
-            lang: lang,
-            token: token)
-        .then((value) {
-      print(value.data["data"]);
-      if (value.data["status"] == false) {
-        emit(UnAuthendicatedState());
-        return;
-      }
-      StudentSessionHeaderDetailsCollection =
-          AllData.fromJson(value.data["data"]);
+  // void getSessionDetails(StudentId, SessionHeaderId) {
+  //   emit(LoadingState());
+  //   DioHelper.getData(
+  //           url: 'StudentSessionHeaderDetails',
+  //           query: {'Id': StudentId, 'SessionHeaderId': SessionHeaderId},
+  //           lang: lang,
+  //           token: token)
+  //       .then((value) {
+  //     print(value.data["data"]);
+  //     if (value.data["status"] == false) {
+  //       emit(UnAuthendicatedState());
+  //       return;
+  //     }
+  //     StudentSessionHeaderDetailsCollection =
+  //         AllData.fromJson(value.data["data"]);
 
-      emit(SuccessState());
-    }).catchError((error) {
-      print(error.toString());
-      emit(ErrorState(error.toString()));
-    });
-  }
+  //     emit(SuccessState(StudentSessionHeaderDetailsCollection));
+  //   }).catchError((error) {
+  //     print(error.toString());
+  //     emit(ErrorState(error.toString()));
+  //   });
+  // }
 
   void postRate(StudentId, SessionHeaderId, Rate) {
     emit(SavingRateState());
@@ -82,6 +82,24 @@ class StudentSessionHeaderDetailCubit
     }).catchError((error) {
       print(error.toString());
       //emit(ErrorState(error.toString()));
+    });
+  }
+
+  void UpdateLessonProgress(StudentId, SessionHeaderId) {
+    DioHelper.postData(
+            url: 'StudentSessionHeaderDetails',
+            query: {
+              'StudentId': StudentId,
+              'SessionHeaderId': SessionHeaderId,
+              "DataDate": DateTime.now()
+            },
+            lang: lang,
+            data: {},
+            token: token)
+        .then((value) {
+      print(value.data["data"]);
+    }).catchError((error) {
+      print(error.toString());
     });
   }
 }
