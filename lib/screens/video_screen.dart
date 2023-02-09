@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:my_school/models/StudentVideoNote_model.dart';
+import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
 //import 'package:my_school/cubits/StudentVideo_cubit.dart';
 //import 'package:my_school/providers/StudentVideo_provider.dart';
@@ -55,9 +57,14 @@ class _VideoScreenState extends State<VideoScreen> {
   var lang = CacheHelper.getData(key: "lang");
   var token = CacheHelper.getData(key: "token");
   int lastSavedAt;
+  String commentMode = "create"; //create or update
+  int editCommentId = 0;
+
   @override
+  StudentVideoNotes VideoNotes;
   void initState() {
     super.initState();
+    GetVideoNotes();
     stoppedAt = 0;
     showControls = false;
     // _controller = VideoPlayerController.network(
@@ -77,8 +84,8 @@ class _VideoScreenState extends State<VideoScreen> {
           "VideoId": widget.VideoId
         }, url: "StudentUpdateVideoProgress", lang: lang, token: token)
             .then((value) {
-          print(
-              'Stopped At============================================================================$value');
+          // print(
+          //     'Stopped At============================================================================$value');
           _controller.seekTo(Duration(seconds: value.data));
         });
 
@@ -89,6 +96,43 @@ class _VideoScreenState extends State<VideoScreen> {
         });
       })
       ..play();
+  }
+
+  void GetVideoNotes() {
+    DioHelper.getData(
+      url: 'StudentVideoNote',
+      query: {
+        "StudentId": widget.StudentId,
+        "VideoId": widget.VideoId,
+      },
+      lang: lang,
+      token: token,
+    ).then((value) {
+      print(value.data);
+      setState(() {
+        VideoNotes = StudentVideoNotes.fromJson(value.data["data"]);
+      });
+    }).catchError((error) {
+      // print(error.toString());
+    });
+  }
+
+  void DeleteVideoNote(int NoteId) {
+    DioHelper.deleteData(
+      url: 'StudentVideoNote',
+      query: {
+        "StudentId": widget.StudentId,
+        "NoteId": NoteId,
+      },
+      lang: lang,
+      token: token,
+    ).then((value) {
+      print(value.data);
+
+      GetVideoNotes();
+    }).catchError((error) {
+      // print(error.toString());
+    });
   }
 
   @override
@@ -115,6 +159,14 @@ class _VideoScreenState extends State<VideoScreen> {
         .join(':');
   }
 
+  String ConvertSecondsToTime(int Seconds) {
+    final duration = Duration(milliseconds: Seconds * 1000);
+
+    return [duration.inMinutes, duration.inSeconds]
+        .map((seg) => seg.remainder(60).toString().padLeft(2, '0'))
+        .join(':');
+  }
+
   void SaveProgress() {
     if (_controller != null && _controller.value.isInitialized) {
       var currentSecond = _controller.value.position.inSeconds;
@@ -124,8 +176,8 @@ class _VideoScreenState extends State<VideoScreen> {
           currentSecond == _controller.value.duration) {
         lastSavedAt = currentSecond;
 
-        print(
-            "Saved at -------------------------------------------${currentSecond}");
+        // print(
+        //     "Saved at -------------------------------------------${currentSecond}");
         DioHelper.postData(
             url: 'StudentUpdateVideoProgress',
             query: {
@@ -139,7 +191,7 @@ class _VideoScreenState extends State<VideoScreen> {
             lang: lang,
             token: token,
             data: {}).then((value) {}).catchError((error) {
-          print(error.toString());
+          // print(error.toString());
         });
       }
     }
@@ -156,6 +208,129 @@ class _VideoScreenState extends State<VideoScreen> {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
           overlays: SystemUiOverlay.values);
     }
+    var commentController = TextEditingController();
+    void _saveNote() async {
+      if (commentController.text == "") {
+        return;
+      }
+      if (commentMode == "create") {
+        DioHelper.postData(
+            url: "StudentVideoNote",
+            lang: lang,
+            token: token,
+            data: {},
+            query: {
+              "StudentId": widget.StudentId,
+              "VideoId": widget.VideoId,
+              "DataDate": DateTime.now(),
+              "NoteTime": _controller.value.position.inSeconds,
+              "Note": commentController.text
+            }).then((value) {
+          if (value.data["status"] == false) {
+            showToast(
+                text: widget.dir == "ltr"
+                    ? "Unkown error has occured!"
+                    : "حدث خطأ ما!",
+                state: ToastStates.ERROR);
+            navigateAndFinish(context, LoginScreen());
+          } else {
+            Navigator.of(context).pop();
+            showToast(text: value.data["message"], state: ToastStates.SUCCESS);
+            GetVideoNotes();
+          }
+        });
+      } else if (commentMode == "update") {
+        DioHelper.updateData(
+            url: "StudentVideoNote",
+            lang: lang,
+            token: token,
+            data: {},
+            query: {
+              "StudentNoteId": editCommentId,
+              "Note": commentController.text
+            }).then((value) {
+          if (value.data["status"] == false) {
+            showToast(
+                text: widget.dir == "ltr"
+                    ? "Unkown error has occured!"
+                    : "حدث خطأ ما!",
+                state: ToastStates.ERROR);
+            navigateAndFinish(context, LoginScreen());
+          } else {
+            Navigator.of(context).pop();
+            showToast(text: value.data["message"], state: ToastStates.SUCCESS);
+            GetVideoNotes();
+          }
+        });
+      }
+    }
+
+    void _startAddComment({String ExistingComment}) {
+      _controller.pause();
+      if (ExistingComment != null) {
+        commentController.text = ExistingComment;
+      }
+      showModalBottomSheet(
+          context: context,
+          builder: (_) {
+            return SingleChildScrollView(
+              child: AnimatedPadding(
+                padding: MediaQuery.of(context).viewInsets,
+                duration: Duration(milliseconds: 200),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Directionality(
+                    textDirection: widget.dir == "ltr"
+                        ? TextDirection.ltr
+                        : TextDirection.rtl,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextField(
+                            maxLines: 4,
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all(10),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                  borderRadius:
+                                      BorderRadius.all(new Radius.circular(5)),
+                                ),
+                                hintText: widget.dir == "ltr"
+                                    ? "Add your comment"
+                                    : ""),
+                            controller: commentController,
+                            onSubmitted: (_) => _saveNote(),
+                          ),
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: _saveNote,
+                                child:
+                                    Text(widget.dir == "ltr" ? "Save" : "حفظ"),
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white),
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                      widget.dir == "ltr" ? "Cancel" : "إلغاء",
+                                      style: TextStyle(color: Colors.black54)))
+                            ],
+                          )
+                        ]),
+                  ),
+                ),
+              ),
+            );
+          });
+    }
+
     return Scaffold(
       appBar: MediaQuery.of(context).orientation == Orientation.portrait
           ? appBarComponent(
@@ -170,9 +345,9 @@ class _VideoScreenState extends State<VideoScreen> {
                   TeacherName: widget.TeacherName)*/
             )
           : null,
-      body: Column(children: [
-        _controller != null && _controller.value.isInitialized
-            ? Container(
+      body: _controller != null && _controller.value.isInitialized
+          ? Column(children: [
+              Container(
                 width: MediaQuery.of(context).size.width -
                     (MediaQuery.of(context).orientation == Orientation.portrait
                         ? 0
@@ -361,14 +536,30 @@ class _VideoScreenState extends State<VideoScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
                                           children: [
-                                            Container(
-                                              margin: EdgeInsets.only(left: 15),
-                                              width: 20,
-                                              height: 20,
-                                              child: Icon(
-                                                Icons.note_alt_outlined,
-                                                color: Colors.white,
-                                                size: 28,
+                                            InkWell(
+                                              onTap: MediaQuery.of(context)
+                                                          .orientation ==
+                                                      Orientation.landscape
+                                                  ? null
+                                                  : () {
+                                                      setState(() {
+                                                        commentMode = "create";
+                                                        editCommentId = 0;
+                                                      });
+                                                      _startAddComment;
+                                                    },
+                                              child: Container(
+                                                color: Colors.black
+                                                    .withOpacity(0.05),
+                                                margin:
+                                                    EdgeInsets.only(left: 15),
+                                                width: 20,
+                                                height: 20,
+                                                child: Icon(
+                                                  Icons.note_alt_outlined,
+                                                  color: Colors.white,
+                                                  size: 28,
+                                                ),
                                               ),
                                             ),
                                             Expanded(
@@ -446,9 +637,268 @@ class _VideoScreenState extends State<VideoScreen> {
                           )
                   ]),
                 ),
-              )
-            : Center(child: CircularProgressIndicator()),
-      ]),
+              ),
+              MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Directionality(
+                      textDirection: widget.dir == "ltr"
+                          ? TextDirection.ltr
+                          : TextDirection.rtl,
+                      child: Container(
+                        //---------------------------------------------------video title and ask
+                        padding: EdgeInsets.all(5),
+                        alignment: widget.dir == "ltr"
+                            ? Alignment.centerLeft
+                            : Alignment.centerRight,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.VideoName,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black45),
+                              ),
+                            ),
+                            Container(
+                              height: 30,
+                              child: ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      backgroundColor:
+                                          Colors.black.withOpacity(0.25),
+                                      foregroundColor: Theme.of(context)
+                                          .primaryTextTheme
+                                          .button
+                                          .color,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 3),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(7),
+                                          side: BorderSide(
+                                              color: Colors.black12))),
+                                  child: Text(
+                                    widget.dir == "ltr"
+                                        ? "Ask a question"
+                                        : "إسأل المُعلم",
+                                    style: TextStyle(fontSize: 16),
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  : Container(),
+              MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Directionality(
+                      textDirection: widget.dir == "ltr"
+                          ? TextDirection.ltr
+                          : TextDirection.rtl,
+                      child: Expanded(
+                          child: VideoNotes != null
+                              ? ListView.separated(
+                                  separatorBuilder: (context, index) =>
+                                      Divider(thickness: 1),
+                                  itemCount: VideoNotes.items.length,
+                                  itemBuilder: (context, index) {
+                                    var item = VideoNotes.items[index];
+                                    return Directionality(
+                                      textDirection: widget.dir == "ltr"
+                                          ? TextDirection.ltr
+                                          : TextDirection.rtl,
+                                      child: InkWell(
+                                        onTap: () {
+                                          _controller.seekTo(
+                                              Duration(seconds: item.time));
+                                        },
+                                        child: Padding(
+                                          //--------------------------------Note
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Column(
+                                                //--------------------------Note left column
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width: 45,
+                                                    height: 25,
+                                                    margin: EdgeInsets.only(
+                                                        bottom: 3),
+                                                    decoration: BoxDecoration(
+                                                        color: defaultColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(40)),
+                                                    child: Center(
+                                                      //---------------------------Video Note time
+                                                      child: Text(
+                                                          ConvertSecondsToTime(
+                                                              item.time),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 13)),
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .sticky_note_2_outlined,
+                                                        color: Colors.black26,
+                                                        size: 18,
+                                                      ),
+                                                      Text(
+                                                        item.note,
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black54),
+                                                      )
+                                                    ],
+                                                  )
+                                                ],
+                                              )),
+                                              PopupMenuButton(
+                                                  icon: Icon(Icons.more_horiz,
+                                                      color: Colors
+                                                          .black54), // add this line
+                                                  itemBuilder: (_) =>
+                                                      <PopupMenuItem<String>>[
+                                                        new PopupMenuItem<
+                                                                String>(
+                                                            child: Container(
+                                                                width: 100,
+                                                                // height: 30,
+                                                                child: Text(
+                                                                  widget.dir ==
+                                                                          "ltr"
+                                                                      ? "Edit"
+                                                                      : "تعديل",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .black54),
+                                                                )),
+                                                            value: 'edit'),
+                                                        new PopupMenuItem<
+                                                                String>(
+                                                            child: Container(
+                                                                width: 100,
+                                                                // height: 30,
+                                                                child: Text(
+                                                                  widget.dir ==
+                                                                          "ltr"
+                                                                      ? "Delete"
+                                                                      : "حذف",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .black54),
+                                                                )),
+                                                            value: 'delete'),
+                                                      ],
+                                                  onSelected: (index) async {
+                                                    switch (index) {
+                                                      case 'delete': //--------------------------------------remove note
+                                                        showDialog(
+                                                            context: context,
+                                                            builder: (ctx) =>
+                                                                Directionality(
+                                                                  textDirection: widget
+                                                                              .dir ==
+                                                                          "ltr"
+                                                                      ? TextDirection
+                                                                          .ltr
+                                                                      : TextDirection
+                                                                          .rtl,
+                                                                  child:
+                                                                      AlertDialog(
+                                                                    titleTextStyle: TextStyle(
+                                                                        color:
+                                                                            defaultColor,
+                                                                        fontSize:
+                                                                            16,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                    title: Text(widget.dir ==
+                                                                            "ltr"
+                                                                        ? 'Are you sure?'
+                                                                        : "هل انت متأكد؟"),
+                                                                    content:
+                                                                        Text(
+                                                                      widget.dir ==
+                                                                              "ltr"
+                                                                          ? 'Do you want to remove this note?'
+                                                                          : "هل تريد حذف هذا السجل؟",
+                                                                    ),
+                                                                    actions: <
+                                                                        Widget>[
+                                                                      TextButton(
+                                                                        child: Text(widget.dir ==
+                                                                                "ltr"
+                                                                            ? "No"
+                                                                            : "لا"),
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.of(ctx)
+                                                                              .pop();
+                                                                        },
+                                                                      ),
+                                                                      TextButton(
+                                                                        child: Text(widget.dir ==
+                                                                                "ltr"
+                                                                            ? 'Yes'
+                                                                            : "نعم"),
+                                                                        onPressed:
+                                                                            () {
+                                                                          DeleteVideoNote(
+                                                                              item.id);
+                                                                          Navigator.of(ctx)
+                                                                              .pop();
+                                                                        },
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ));
+
+                                                        break;
+                                                      case 'edit':
+                                                        _startAddComment(
+                                                            ExistingComment:
+                                                                item.note);
+                                                        setState(() {
+                                                          commentMode =
+                                                              "update";
+                                                          editCommentId =
+                                                              item.id;
+                                                        });
+                                                      //-------------------------------------Edit Note
+                                                    }
+                                                  })
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Center(
+                                  child: CircularProgressIndicator(),
+                                )),
+                    )
+                  : Container()
+            ])
+          : Center(child: CircularProgressIndicator()),
     );
   }
 }

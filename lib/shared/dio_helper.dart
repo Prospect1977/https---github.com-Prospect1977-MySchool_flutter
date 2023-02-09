@@ -55,6 +55,48 @@ class DioHelper {
     );
   }
 
+  static Future<Response> updateData({
+    @required String url,
+    Map<String, dynamic> query,
+    Map<String, dynamic> data,
+    String lang = 'ar',
+    String token,
+  }) async {
+    dio.options.headers = {
+      'lang': lang,
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    return dio.put(
+      url,
+      queryParameters: query,
+      data: data,
+    );
+  }
+
+  static Future<Response> deleteData({
+    @required String url,
+    Map<String, dynamic> query,
+    Map<String, dynamic> data,
+    String lang = 'ar',
+    String token,
+  }) async {
+    dio.options.headers = {
+      'lang': lang,
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    return dio.delete(
+      url,
+      queryParameters: query,
+      data: data,
+    );
+  }
+
   static Future<Response> postDataForLogin({
     @required String url,
     @required Map<String, dynamic> data,
