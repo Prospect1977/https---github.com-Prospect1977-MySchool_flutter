@@ -6,6 +6,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/models/StudentVideoNote_model.dart';
+import 'package:my_school/providers/StudentVideo_provider.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
 //import 'package:my_school/cubits/StudentVideo_cubit.dart';
@@ -59,7 +60,7 @@ class _VideoScreenState extends State<VideoScreen> {
   int lastSavedAt;
   String commentMode = "create"; //create or update
   int editCommentId = 0;
-
+  int secondsCounter = 0;
   @override
   StudentVideoNotes VideoNotes;
   void initState() {
@@ -137,7 +138,10 @@ class _VideoScreenState extends State<VideoScreen> {
 
   @override
   void dispose() {
+    print(
+        "--------------------------------Disposed at ${_controller.value.position.inSeconds}--------------------------------------------------");
     super.dispose();
+    SaveProgress(secondsCounter);
     _controller.dispose();
   }
 
@@ -167,39 +171,46 @@ class _VideoScreenState extends State<VideoScreen> {
         .join(':');
   }
 
-  void SaveProgress() {
-    if (_controller != null && _controller.value.isInitialized) {
-      var currentSecond = _controller.value.position.inSeconds;
-      if ((currentSecond % 5 == 0 &&
-              currentSecond > 0 &&
-              currentSecond != lastSavedAt) ||
-          currentSecond == _controller.value.duration) {
-        lastSavedAt = currentSecond;
-
-        // print(
-        //     "Saved at -------------------------------------------${currentSecond}");
-        DioHelper.postData(
-            url: 'StudentUpdateVideoProgress',
-            query: {
-              "StudentId": widget.StudentId,
-              "VideoId": widget.VideoId,
-              "CurrentSecond": currentSecond,
-              "VideoDuration": _controller.value.duration.inSeconds,
-              "SaveInterval": 5,
-              "DataDate": DateTime.now(),
-            },
-            lang: lang,
-            token: token,
-            data: {}).then((value) {}).catchError((error) {
-          // print(error.toString());
-        });
-      }
-    }
+  void SaveProgress(int interval /*i.e. save every 5 seconds*/) {
+    // print(
+    //     "Saved at -------------------------------------------${currentSecond}");
+    DioHelper.postData(
+        url: 'StudentUpdateVideoProgress',
+        query: {
+          "StudentId": widget.StudentId,
+          "VideoId": widget.VideoId,
+          "CurrentSecond": _controller.value.position.inSeconds,
+          "VideoDuration": _controller.value.duration.inSeconds,
+          "SaveInterval": secondsCounter,
+          "DataDate": DateTime.now(),
+        },
+        lang: lang,
+        token: token,
+        data: {}).then((value) {
+      setState(() {
+        secondsCounter = 0;
+      });
+    }).catchError((error) {
+      // print(error.toString());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    SaveProgress();
+    if (_controller != null && _controller.value.isInitialized) {
+      var currentSecond = _controller.value.position.inSeconds;
+      if (currentSecond != lastSavedAt) {
+        secondsCounter += 1;
+        lastSavedAt = currentSecond;
+      }
+      // if ((currentSecond % 5 == 0 &&
+      //         currentSecond > 0 &&
+      //         currentSecond != lastSavedAt) ||
+      //     currentSecond == _controller.value.duration) {
+      //   lastSavedAt = currentSecond;
+      //   SaveProgress(5);
+      // }
+    }
     if (MediaQuery.of(context).orientation == Orientation.landscape) {
       Wakelock.enable();
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
@@ -419,6 +430,8 @@ class _VideoScreenState extends State<VideoScreen> {
                                                   if (_controller
                                                       .value.isPlaying) {
                                                     _controller.pause();
+                                                    SaveProgress(
+                                                        secondsCounter);
                                                   } else {
                                                     _controller.play();
                                                     showControls = false;
@@ -542,11 +555,11 @@ class _VideoScreenState extends State<VideoScreen> {
                                                       Orientation.landscape
                                                   ? null
                                                   : () {
-                                                      setState(() {
-                                                        commentMode = "create";
-                                                        editCommentId = 0;
-                                                      });
-                                                      _startAddComment;
+                                                      commentMode = "create";
+                                                      editCommentId = 0;
+
+                                                      _startAddComment(
+                                                          ExistingComment: "");
                                                     },
                                               child: Container(
                                                 color: Colors.black

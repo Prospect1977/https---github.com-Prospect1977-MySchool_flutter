@@ -46,6 +46,8 @@ class StudentSessionDetailsScreen extends StatefulWidget {
 class _StudentSessionDetailsScreenState
     extends State<StudentSessionDetailsScreen> {
   AllData allData;
+
+  String roles = CacheHelper.getData(key: "roles");
   @override
   void initState() {
     super.initState();
@@ -134,10 +136,12 @@ class _StudentSessionDetailsScreenState
                               itemBuilder: (context, index) {
                                 var item = allData.sessionDetails[index];
                                 return Item(
-                                    item: item,
-                                    cubit: allData,
-                                    widget: widget,
-                                    align: align);
+                                  item: item,
+                                  cubit: allData,
+                                  widget: widget,
+                                  align: align,
+                                  roles: roles,
+                                );
                               },
                             ),
                           ),
@@ -219,20 +223,21 @@ class _StudentSessionDetailsScreenState
 }
 
 class Item extends StatelessWidget {
-  Item({
-    Key key,
-    @required this.item,
-    @required this.widget,
-    @required this.align,
-    @required this.cubit,
-  }) : super(key: key);
+  Item(
+      {Key key,
+      @required this.item,
+      @required this.widget,
+      @required this.align,
+      @required this.cubit,
+      @required this.roles})
+      : super(key: key);
 
   final SessionDetails item;
 
   final StudentSessionDetailsScreen widget;
   final String align;
   final AllData cubit;
-
+  final roles;
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -254,8 +259,15 @@ class Item extends StatelessWidget {
               ));
         }
         if (item.type == "Quiz") {
-          navigateTo(context,
-              QuizScreen(StudentId: widget.StudentId, QuizId: item.quizId));
+          navigateTo(
+              context,
+              QuizScreen(
+                StudentId: widget.StudentId,
+                QuizId: item.quizId,
+                LessonName: widget.LessonName,
+                dir: widget.dir,
+                readOnly: roles != "Student" ? true : false,
+              ));
         }
       },
       child: Card(
@@ -313,12 +325,12 @@ class Item extends StatelessWidget {
                           FractionallySizedBox(
                             widthFactor: (item.type == "Video"
                                         ? item.videoProgress
-                                        : item.quizProgress) >
+                                        : item.quizDegree) >
                                     100
                                 ? 100
                                 : (item.type == "Video"
                                         ? item.videoProgress
-                                        : item.quizProgress) /
+                                        : item.quizDegree) /
                                     100,
                             heightFactor: 1,
                             child: Container(
@@ -342,7 +354,7 @@ Widget getImage(SessionDetails sd, bool isFree, bool isPurchased, String align,
   switch (sd.type) {
     case "Promo":
       return Image.asset(
-        'assets/images/${sd.type}_$align.png',
+        'assets/images/${sd.type}_left.png',
         width: width,
         height: height,
       );

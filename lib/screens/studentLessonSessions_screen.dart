@@ -354,7 +354,7 @@ class _StudentLessonSessionsScreenState
                                                                 children: [
                                                                   Icon(
                                                                     Icons
-                                                                        .play_arrow,
+                                                                        .video_collection_outlined,
                                                                     size: 15,
                                                                     color: Colors
                                                                         .green,
@@ -385,7 +385,7 @@ class _StudentLessonSessionsScreenState
                                                           : Container(),
                                                       item.quizesProgress > 0
                                                           ? SizedBox(
-                                                              height: 2,
+                                                              height: 4,
                                                             )
                                                           : Container(),
                                                       item.quizesProgress > 0
@@ -398,7 +398,7 @@ class _StudentLessonSessionsScreenState
                                                                 children: [
                                                                   Icon(
                                                                     Icons
-                                                                        .question_mark,
+                                                                        .quiz_outlined,
                                                                     size: 15,
                                                                     color: Colors
                                                                         .green,
