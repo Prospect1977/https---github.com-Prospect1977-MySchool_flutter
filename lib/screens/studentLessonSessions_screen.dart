@@ -234,11 +234,11 @@ class _StudentLessonSessionsScreenState
                                                                           ? item.isPurchased
                                                                               ? Image.asset(
                                                                                   "assets/images/UnLock.png",
-                                                                                  width: 25,
+                                                                                  width: 18,
                                                                                 )
                                                                               : Image.asset(
                                                                                   "assets/images/Lock.png",
-                                                                                  width: 25,
+                                                                                  width: 20,
                                                                                 )
                                                                           : Container()
                                                                     ]),
@@ -497,11 +497,11 @@ class _StudentLessonSessionsScreenState
                                               //-----------------------------------------item Container
                                               padding: EdgeInsets.all(5),
                                               decoration: BoxDecoration(
-                                                  color: index ==
-                                                          currentLessonIndex
-                                                      ? defaultColor
-                                                          .withOpacity(.7)
-                                                      : Colors.white,
+                                                  color:
+                                                      index == currentLessonIndex
+                                                          ? defaultColor
+                                                              .withOpacity(.7)
+                                                          : Colors.white,
                                                   border: Border(
                                                       left: BorderSide(
                                                           color:
@@ -511,7 +511,17 @@ class _StudentLessonSessionsScreenState
                                                               Colors.black54),
                                                       top: BorderSide(
                                                           color:
-                                                              Colors.black54))),
+                                                              Colors.black54),
+                                                      bottom: index ==
+                                                              StudentLessonsByYearSubjectIdCollection
+                                                                      .items
+                                                                      .length -
+                                                                  1
+                                                          ? BorderSide(
+                                                              color: Colors
+                                                                  .black54)
+                                                          : BorderSide(
+                                                              color: Colors.black.withOpacity(0.05)))),
                                               child: Directionality(
                                                 textDirection: item.dir == "ltr"
                                                     ? TextDirection.ltr
@@ -575,6 +585,34 @@ class _StudentLessonSessionsScreenState
                                                                   ),
                                                                 )
                                                               : Container(),
+                                                          item.lessonProgress >
+                                                                  0
+                                                              ? Directionality(
+                                                                  textDirection:
+                                                                      TextDirection
+                                                                          .ltr,
+                                                                  child:
+                                                                      Container(
+                                                                    height: 3,
+                                                                    child: Stack(
+                                                                        children: [
+                                                                          FractionallySizedBox(
+                                                                            widthFactor: item.lessonProgress >= 100
+                                                                                ? 1
+                                                                                : item.lessonProgress / 100,
+                                                                            heightFactor:
+                                                                                1,
+                                                                            child:
+                                                                                Container(color: Colors.green),
+                                                                          ),
+                                                                          Container(
+                                                                            color:
+                                                                                Colors.black26,
+                                                                          )
+                                                                        ]),
+                                                                  ),
+                                                                )
+                                                              : Container()
                                                         ],
                                                       ),
                                                     ),

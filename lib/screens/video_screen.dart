@@ -72,7 +72,10 @@ class _VideoScreenState extends State<VideoScreen> {
     //     '${webUrl}Sessions/Videos/${widget.VideoUrl}')
     // _controller = VideoPlayerController.network(
     //     'https://assets.mixkit.co/videos/preview/mixkit-group-of-friends-partying-happily-4640-large.mp4')
-    _controller = VideoPlayerController.asset('assets/images/Video.mp4')
+    var VideoUrl = widget.dir == "ltr"
+        ? 'assets/images/Video.mp4'
+        : 'assets/images/Video_ar.mp4';
+    _controller = VideoPlayerController.asset(VideoUrl)
       ..addListener(() {
         if (_controller != null && _controller.value.isInitialized) {
           setState(() {});

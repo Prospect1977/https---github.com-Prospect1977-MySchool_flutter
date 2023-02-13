@@ -6,6 +6,7 @@ class StudentLessonsByYearSubjectId {
   String dir;
   bool blockedFromAddingSessions;
   int parentLessonId;
+  dynamic lessonProgress;
   StudentLessonsByYearSubjectId.fromJson(Map<String, dynamic> js) {
     id = js["id"];
     dataDate = js["dataDate"] == "" ? null : DateTime.parse(js["dataDate"]);
@@ -14,6 +15,7 @@ class StudentLessonsByYearSubjectId {
     dir = js["dir"];
     blockedFromAddingSessions = js["blockedFromAddingSessions"];
     parentLessonId = js["parentLessonId"];
+    lessonProgress = js["lessonProgress"];
   }
 }
 

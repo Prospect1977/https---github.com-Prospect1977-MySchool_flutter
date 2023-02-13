@@ -46,7 +46,8 @@ class StudentSessionDetailsScreen extends StatefulWidget {
 class _StudentSessionDetailsScreenState
     extends State<StudentSessionDetailsScreen> {
   AllData allData;
-
+  String lang = CacheHelper.getData(key: "lang");
+  String token = CacheHelper.getData(key: "token");
   String roles = CacheHelper.getData(key: "roles");
   @override
   void initState() {
@@ -74,6 +75,64 @@ class _StudentSessionDetailsScreenState
       showToast(
           text: widget.dir == "ltr" ? "Unkown error occured!" : "حدث خطأ ما!",
           state: ToastStates.ERROR);
+      print(error.toString());
+    });
+  }
+
+  void postRate(StudentId, SessionHeaderId, Rate) {
+    DioHelper.postData(
+            url: 'StudentSessionRate',
+            data: {},
+            query: {
+              'StudentId': StudentId,
+              'SessionHeaderId': SessionHeaderId,
+              "Rate": Rate
+            },
+            lang: lang,
+            token: token)
+        .then((value) {
+      print(value.data["data"]);
+      if (value.data["status"] == false) {}
+    }).catchError((error) {
+      print(error.toString());
+      //emit(ErrorState(error.toString()));
+    });
+  }
+
+  void postPurchase(StudentId, SessionHeaderId) {
+    DioHelper.postData(
+            url: 'StudentPurchaseSession',
+            data: {},
+            query: {
+              'StudentId': StudentId,
+              'SessionHeaderId': SessionHeaderId,
+              'DataDate': DateTime.now(),
+            },
+            lang: lang,
+            token: token)
+        .then((value) {
+      print(value.data["data"]);
+      if (value.data["status"] == false) {}
+    }).catchError((error) {
+      print(error.toString());
+      //emit(ErrorState(error.toString()));
+    });
+  }
+
+  void UpdateLessonProgress(StudentId, SessionHeaderId) {
+    DioHelper.postData(
+            url: 'StudentSessionHeaderDetails',
+            query: {
+              'StudentId': StudentId,
+              'SessionHeaderId': SessionHeaderId,
+              "DataDate": DateTime.now()
+            },
+            lang: lang,
+            data: {},
+            token: token)
+        .then((value) {
+      print(value.data["data"]);
+    }).catchError((error) {
       print(error.toString());
     });
   }
@@ -153,46 +212,47 @@ class _StudentSessionDetailsScreenState
                                           CrossAxisAlignment.center,
                                       children: [
                                         Center(
-                                          child: RatingBar.builder(
-                                            initialRating: allData.sessionHeader
-                                                        .studentRate ==
-                                                    null
-                                                ? 0.0
-                                                : double.parse(allData
-                                                    .sessionHeader.studentRate
-                                                    .toStringAsFixed(2)),
-                                            minRating: 1,
-                                            direction: Axis.horizontal,
-                                            allowHalfRating: false,
-                                            itemCount: 5,
-                                            itemSize: 30,
-                                            itemPadding: EdgeInsets.symmetric(
-                                                horizontal: 4.0),
-                                            itemBuilder: (context, _) => Icon(
-                                              Icons.star,
-                                              color: Colors.amber,
+                                          child: Directionality(
+                                            textDirection: TextDirection.ltr,
+                                            child: RatingBar.builder(
+                                              initialRating: allData
+                                                          .sessionHeader
+                                                          .studentRate ==
+                                                      null
+                                                  ? 0.0
+                                                  : double.parse(allData
+                                                      .sessionHeader.studentRate
+                                                      .toStringAsFixed(2)),
+                                              minRating: 1,
+                                              direction: Axis.horizontal,
+                                              allowHalfRating: false,
+                                              itemCount: 5,
+                                              itemSize: 30,
+                                              itemPadding: EdgeInsets.symmetric(
+                                                  horizontal: 4.0),
+                                              itemBuilder: (context, _) => Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                              ),
+                                              onRatingUpdate: (rating) {
+                                                setState(() {
+                                                  widget.isRated = true;
+                                                  widget.rate = rating;
+                                                });
+                                                // if (state is RatingSavedState) {
+                                                //   widget.isRated = false;
+                                                // }
+                                              },
                                             ),
-                                            onRatingUpdate: (rating) {
-                                              setState(() {
-                                                widget.isRated = true;
-                                                widget.rate = rating;
-                                              });
-                                              // if (state is RatingSavedState) {
-                                              //   widget.isRated = false;
-                                              // }
-                                            },
                                           ),
                                         ),
                                         widget.isRated
                                             ? ElevatedButton(
                                                 onPressed: () {
-                                                  StudentSessionHeaderDetailCubit
-                                                          .get(context)
-                                                      .postRate(
-                                                          widget.StudentId,
-                                                          widget
-                                                              .SessionHeaderId,
-                                                          widget.rate);
+                                                  postRate(
+                                                      widget.StudentId,
+                                                      widget.SessionHeaderId,
+                                                      widget.rate);
                                                   setState(() {
                                                     widget.isRated = false;
                                                   });
@@ -204,8 +264,7 @@ class _StudentSessionDetailsScreenState
                                 )
                               : defaultButton(
                                   function: () {
-                                    StudentSessionHeaderDetailCubit.get(context)
-                                        .postPurchase(
+                                    postPurchase(
                                       widget.StudentId,
                                       widget.SessionHeaderId,
                                     );
@@ -266,7 +325,7 @@ class Item extends StatelessWidget {
                 QuizId: item.quizId,
                 LessonName: widget.LessonName,
                 dir: widget.dir,
-                readOnly: roles != "Student" ? true : false,
+                readOnly: /*roles != "Student" ? true :*/ false,
               ));
         }
       },
@@ -324,12 +383,20 @@ class Item extends StatelessWidget {
                           ),
                           FractionallySizedBox(
                             widthFactor: (item.type == "Video"
-                                        ? item.videoProgress
+                                        ? (roles == "Student"
+                                            ? item.videoStoppedAt
+                                            : item.videoProgress > 100
+                                                ? 100
+                                                : item.videoProgress)
                                         : item.quizDegree) >
                                     100
                                 ? 100
                                 : (item.type == "Video"
-                                        ? item.videoProgress
+                                        ? (roles == "Student"
+                                            ? item.videoStoppedAt
+                                            : item.videoProgress > 100
+                                                ? 100
+                                                : item.videoProgress)
                                         : item.quizDegree) /
                                     100,
                             heightFactor: 1,

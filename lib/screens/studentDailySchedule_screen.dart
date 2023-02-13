@@ -417,6 +417,39 @@ Widget mainSubListItem(context, Lesson l, studentId) {
                                       ),
                                     ],
                                   ),
+                            l.studentCompleted != 0
+                                ? Row(
+                                    children: [
+                                      Container(
+                                        width: 25,
+                                        child: Text(
+                                          '${l.studentCompleted.toStringAsFixed(0)}%',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Color.fromARGB(
+                                                  255, 0, 88, 3)),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                            height: 3,
+                                            child: Stack(
+                                              children: [
+                                                FractionallySizedBox(
+                                                  child: Container(
+                                                      color: Colors.green),
+                                                  widthFactor:
+                                                      l.studentCompleted / 100,
+                                                  heightFactor: 1,
+                                                ),
+                                                Container(
+                                                    color: Colors.black12),
+                                              ],
+                                            )),
+                                      ),
+                                    ],
+                                  )
+                                : Container()
                           ],
                         ), //End if the lesson has a parent
                 ),
