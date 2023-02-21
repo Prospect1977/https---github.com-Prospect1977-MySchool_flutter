@@ -8,6 +8,7 @@ import 'package:my_school/cubits/login_states.dart';
 import 'package:my_school/modules/register/register_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/screens/teacher_dashboard_screen.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/cache_helper.dart';
 
@@ -41,6 +42,9 @@ class LoginScreen extends StatelessWidget {
               }
               if (state.userModel.roles.contains("Student")) {
                 page = StudentDashboardScreen();
+              }
+              if (state.userModel.roles.contains("Teacher")) {
+                page = TeacherDashboardScreen();
               }
               navigateAndFinish(
                 context,

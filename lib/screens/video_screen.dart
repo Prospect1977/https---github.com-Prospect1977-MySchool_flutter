@@ -238,7 +238,7 @@ class _VideoScreenState extends State<VideoScreen> {
               "VideoId": widget.VideoId,
               "DataDate": DateTime.now(),
               "NoteTime": _controller.value.position.inSeconds,
-              "Note": commentController.text
+              "Note": commentController.text,
             }).then((value) {
           if (value.data["status"] == false) {
             showToast(

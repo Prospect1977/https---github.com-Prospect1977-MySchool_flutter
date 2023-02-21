@@ -7,6 +7,7 @@ import 'package:my_school/screens/studentDailySchedule_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentProfile_screen.dart';
 import 'package:my_school/screens/studentSelectedSubjects_screen.dart';
+import 'package:my_school/screens/student_followup_list_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
@@ -30,7 +31,8 @@ class StudentDashboardScreen extends StatefulWidget {
 
 class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   String lang = CacheHelper.getData(key: "lang");
-
+  bool isStudentHasParent = CacheHelper.getData(key: "studentHasParent");
+  String roles = CacheHelper.getData(key: "roles");
   @override
   Widget build(BuildContext context) {
     if (widget.Id > 0) {
@@ -79,7 +81,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              height: 400,
+              height: MediaQuery.of(context).size.height - 150,
               child: GridView(
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 200,
@@ -89,35 +91,44 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 children: [
                   button(
                     context,
-                    () {
-                      navigateTo(
-                          context,
-                          StudentProfileScreen(
-                            widget.Id,
-                            FullName: widget.FullName,
-                            Gender: widget.Gender,
-                            SchoolTypeId: widget.SchoolTypeId,
-                            YearOfStudyId: widget.YearOfStudyId,
-                          ));
-                    },
-                    'MainData.png',
+                    isStudentHasParent && roles == "Student"
+                        ? null
+                        : () {
+                            navigateTo(
+                                context,
+                                StudentProfileScreen(
+                                  widget.Id,
+                                  FullName: widget.FullName,
+                                  Gender: widget.Gender,
+                                  SchoolTypeId: widget.SchoolTypeId,
+                                  YearOfStudyId: widget.YearOfStudyId,
+                                ));
+                          },
+                    isStudentHasParent && roles == "Student"
+                        ? 'MainData_disabled.png'
+                        : 'MainData.png',
                     lang.toString().toLowerCase() == "ar"
                         ? "البيانات الرئيسية${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (غير مكتملة)" : ""}"
                         : "Main Profile Data${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (Not Completed)" : ""}",
+                    isStudentHasParent && roles == "Student" ? true : false,
                   ),
                   button(
                     context,
                     (widget.SchoolTypeId == null ||
-                            widget.YearOfStudyId == null)
+                                widget.YearOfStudyId == null) ||
+                            (isStudentHasParent && roles == "Student")
                         ? null
                         : () {
                             navigateTo(context,
                                 StudentSelectedSubjectsScreen(widget.Id));
                           },
-                    'SelectSubjects.png',
+                    isStudentHasParent && roles == "Student"
+                        ? 'SelectSubjects_disabled.png'
+                        : 'SelectSubjects.png',
                     lang.toString().toLowerCase() == "ar"
                         ? "إختر المواد الدراسية"
                         : "Select Learning Subjects",
+                    isStudentHasParent && roles == "Student" ? true : false,
                   ),
                   button(
                     context,
@@ -134,6 +145,37 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     lang.toString().toLowerCase() == "ar"
                         ? "الجدول اليومي"
                         : "Daily Schedule",
+                    false,
+                  ),
+                  button(
+                    context,
+                    (widget.SchoolTypeId == null ||
+                            widget.YearOfStudyId == null)
+                        ? null
+                        : () {},
+                    'StudyBySubject.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "مذاكرة حسب المادة"
+                        : "Study by Subject",
+                    false,
+                  ),
+                  button(
+                    context,
+                    (widget.SchoolTypeId == null ||
+                            widget.YearOfStudyId == null)
+                        ? null
+                        : () {
+                            navigateTo(
+                                context,
+                                StudentFollowupListScreen(
+                                    StudentId: widget.Id,
+                                    StudentName: widget.FullName));
+                          },
+                    'Chart.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "المتابعة"
+                        : "Follow Up",
+                    false,
                   ),
                   button(
                     context,
@@ -143,13 +185,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         : () {
                             // navigateTo(
                             //     context,
-                            //     StudentDailyScheduleScreen(
-                            //         widget.Id, widget.FullName));
+                            //     StudentFollowupListScreen(
+                            //         StudentId: widget.Id,
+                            //         StudentName: widget.FullName));
                           },
-                    'StudyBySubject.png',
+                    'Chat.png',
                     lang.toString().toLowerCase() == "ar"
-                        ? "مذاكرة حسب المادة"
-                        : "Study by Subject",
+                        ? "تواصل مع المُعلم"
+                        : "Contact the Teacher",
+                    false,
                   ),
                 ],
               ),
@@ -161,17 +205,19 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 }
 
-Widget button(context, onClick, imageName, title) {
+Widget button(context, onClick, imageName, title, isDisabled) {
   return InkWell(
     onTap: onClick,
     child: Card(
-      elevation: 3,
+      elevation: isDisabled ? 1 : 3,
       // margin: EdgeInsets.only(horizontal: 10, vertical: 10),
       color: Color.fromARGB(255, 240, 240, 240),
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         decoration: BoxDecoration(
-          border: Border.all(color: defaultColor.withOpacity(.4)),
+          border: Border.all(
+              color:
+                  isDisabled ? Colors.black26 : defaultColor.withOpacity(.4)),
           borderRadius: BorderRadius.circular(5),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -186,7 +232,9 @@ Widget button(context, onClick, imageName, title) {
           Container(
             child: Text(
               title,
-              style: TextStyle(fontSize: 15, color: defaultColor),
+              style: TextStyle(
+                  fontSize: 15,
+                  color: isDisabled ? Colors.black38 : defaultColor),
               textAlign: TextAlign.center,
             ),
           )

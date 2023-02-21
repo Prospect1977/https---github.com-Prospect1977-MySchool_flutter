@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_school/models/login_model.dart';
 import 'package:my_school/cubits/login_states.dart';
 import 'package:my_school/models/user/user_model.dart';
+import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/end_points.dart';
 import 'package:my_school/shared/dio_helper.dart';
@@ -40,6 +41,12 @@ class LoginCubit extends Cubit<LoginStates> {
     ).then((value) {
       print(value.data);
       userData = UserData.fromJson(value.data);
+      CacheHelper.putBoolean(
+          key: "studentHasParent", value: userData.studentHasParent);
+      CacheHelper.saveData(key: "teacherId", value: userData.teacherId);
+      CacheHelper.saveData(key: "fullName", value: userData.fullName);
+      print(
+          "_____________________________________________IsStudentHasParent=${CacheHelper.getData(key: "studentHasParent")}");
       // CacheHelper.saveData(key: "token", value: loginModel.data.token); handled on the login screen
       // CacheHelper.saveData(key: "roles", value: loginModel.data.roles);
       emit(LoginSuccessState(userData));

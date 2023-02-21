@@ -16,6 +16,8 @@ class UserData {
   String roles;
 
   String token;
+  bool studentHasParent;
+  int teacherId;
 
   // named constructor
   UserData.fromJson(Map<String, dynamic> json) {
@@ -24,5 +26,7 @@ class UserData {
     roles = json['roles'];
 
     token = json['token'];
+    studentHasParent = json['studentHasParent'];
+    teacherId = json['teacherId'];
   }
 }

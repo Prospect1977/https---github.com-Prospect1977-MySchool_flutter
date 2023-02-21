@@ -9,6 +9,8 @@ import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/on_boarding_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/screens/teacher_dashboard_screen.dart';
+import 'package:my_school/screens/test_screen.dart';
 import 'package:my_school/screens/video_screen.dart';
 import 'package:my_school/shared/bloc_observer.dart';
 import 'package:my_school/cubits/main_cubit.dart';
@@ -51,6 +53,9 @@ void main() async {
           break;
         case "Student":
           widget = StudentDashboardScreen();
+          break;
+        case "Teacher":
+          widget = TeacherDashboardScreen();
         //widget = LoginScreen();
       }
 
@@ -67,7 +72,7 @@ void main() async {
   } else {
     widget = OnBoardingScreen();
   }
-
+  // widget = TestScreen();
   runApp(MyApp(
     isDark: isDark,
     startWidget: widget,

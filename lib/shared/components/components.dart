@@ -61,6 +61,7 @@ var AppBarActions = [
 Widget appBarComponent(context, String title, {backButtonPage}) {
   return AppBar(
       elevation: 3,
+      backgroundColor: interfaceColor,
       title: Center(
         child: Text(
           title,

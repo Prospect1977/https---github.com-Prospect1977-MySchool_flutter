@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/screens/teacher_dashboard_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
@@ -40,6 +41,9 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
                           break;
                         case "Student":
                           navigateAndFinish(context, StudentDashboardScreen());
+                          break;
+                        case "Teacher":
+                          navigateAndFinish(context, TeacherDashboardScreen());
                           break;
                       }
 

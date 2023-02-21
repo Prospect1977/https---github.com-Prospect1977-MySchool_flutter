@@ -318,6 +318,20 @@ class Item extends StatelessWidget {
               ));
         }
         if (item.type == "Quiz") {
+          bool readOnly;
+          bool allowRetry;
+          if (roles == "Student") {
+            if (item.quizProgress > 0) {
+              readOnly = true;
+              allowRetry = true;
+            } else {
+              readOnly = false;
+              allowRetry = false;
+            }
+          } else {
+            readOnly = true;
+            allowRetry = false;
+          }
           navigateTo(
               context,
               QuizScreen(
@@ -325,7 +339,6 @@ class Item extends StatelessWidget {
                 QuizId: item.quizId,
                 LessonName: widget.LessonName,
                 dir: widget.dir,
-                readOnly: /*roles != "Student" ? true :*/ false,
               ));
         }
       },

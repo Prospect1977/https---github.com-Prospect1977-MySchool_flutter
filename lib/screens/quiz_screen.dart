@@ -19,13 +19,12 @@ class QuizScreen extends StatefulWidget {
   int QuizId;
   String dir;
   String LessonName;
-  bool readOnly;
+
   QuizScreen(
       {@required this.StudentId,
       @required this.QuizId,
       @required this.dir,
       @required this.LessonName,
-      @required this.readOnly,
       Key key})
       : super(key: key);
 
@@ -46,14 +45,12 @@ class _QuizScreenState extends State<QuizScreen> {
   double quizResult = 0;
   String quizResultAsFraction;
   String quizResultAsPercentage;
+  bool readOnly;
   @override
   void initState() {
     super.initState();
-    if (widget.readOnly == false) {
-      getQuiz();
-    } else {
-      getQuizReport();
-    }
+
+    getQuiz();
   }
 
   void updateStudentAnswers() {
@@ -139,17 +136,29 @@ class _QuizScreenState extends State<QuizScreen> {
             token: token)
         .then(
       (value) {
-        print(value.data);
+        //   print(value.data);
         if (value.data["status"] == false) {
           navigateAndFinish(context, LoginScreen());
         }
         setState(() {
-          MyQuiz = QuizModel.fromJson(value.data["data"]);
-          MyQuiz.Questions.map((e) {
-            var ctlr = TextEditingController();
-            textControllers.add(ctlr);
-            selectedAnswerIds.add(0);
-          }).toList();
+          print(
+              '-----------------------------------${value.data["data"]["finishedQuizData"]["dataDate"]}');
+          dynamic dataDate = value.data["data"]["finishedQuizData"]["dataDate"];
+          if (dataDate != null) {
+            readOnly = true;
+            showReport = true;
+            getQuizReport();
+          } else {
+            readOnly = false;
+            showReport = false;
+            MyQuiz =
+                QuizModel.fromJson(value.data["data"]["questionsAndAnswers"]);
+            MyQuiz.Questions.map((e) {
+              var ctlr = TextEditingController();
+              textControllers.add(ctlr);
+              selectedAnswerIds.add(0);
+            }).toList();
+          }
         });
       },
     );
@@ -212,7 +221,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       child: CircularProgressIndicator(),
                     ),
                   )
-                : showReport == false && widget.readOnly == false
+                : showReport == false && readOnly == false
                     ? Directionality(
                         textDirection: widget.dir == "ltr"
                             ? TextDirection.ltr
@@ -415,28 +424,28 @@ class _QuizScreenState extends State<QuizScreen> {
                                                       color: Colors.white)),
                                             ),
                                             Expanded(child: Container()),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Container(
-                                                    padding: EdgeInsets.all(5),
-                                                    decoration: BoxDecoration(
-                                                        color: defaultColor,
-                                                        border: Border.all(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.1)),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5)),
-                                                    child: Text(
-                                                      widget.dir == "ltr"
-                                                          ? "Back to lesson"
-                                                          : "العودة إلى الدرس",
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ))),
+                                            // GestureDetector(
+                                            //     onTap: () {
+                                            //       Navigator.of(context).pop();
+                                            //     },
+                                            //     child: Container(
+                                            //         padding: EdgeInsets.all(5),
+                                            //         decoration: BoxDecoration(
+                                            //             color: defaultColor,
+                                            //             border: Border.all(
+                                            //                 color: Colors.black
+                                            //                     .withOpacity(
+                                            //                         0.1)),
+                                            //             borderRadius:
+                                            //                 BorderRadius
+                                            //                     .circular(5)),
+                                            //         child: Text(
+                                            //           widget.dir == "ltr"
+                                            //               ? "Back to lesson"
+                                            //               : "العودة إلى الدرس",
+                                            //           style: TextStyle(
+                                            //               color: Colors.white),
+                                            //         ))),
                                           ],
                                         ),
                                       ),
@@ -585,7 +594,7 @@ class _QuizScreenState extends State<QuizScreen> {
                           ),
                         ),
                       ),
-            showReport == false && widget.readOnly == false
+            showReport == false && readOnly == false
                 ? MyQuiz == null
                     ? Container()
                     : Container(
