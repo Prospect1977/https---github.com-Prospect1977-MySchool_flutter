@@ -708,6 +708,10 @@ class _VideoScreenState extends State<VideoScreen> {
                       ),
                     )
                   : Container(),
+              VideoNotes != null &&
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Divider()
+                  : Container(),
               MediaQuery.of(context).orientation == Orientation.portrait
                   ? Directionality(
                       textDirection: widget.dir == "ltr"

@@ -5,8 +5,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_school/screens/landing_screen.dart';
 import 'package:my_school/cubits/login_cubit.dart';
 import 'package:my_school/cubits/login_states.dart';
-import 'package:my_school/modules/register/register_screen.dart';
+
 import 'package:my_school/screens/parents_landing_screen.dart';
+import 'package:my_school/screens/register_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
 import 'package:my_school/screens/teacher_dashboard_screen.dart';
 import 'package:my_school/shared/components/components.dart';
@@ -78,14 +79,8 @@ class LoginScreen extends StatelessWidget {
                                 color: Colors.black,
                               ),
                         ),
-                        Text(
-                          'Login now to browse our hot offers',
-                          style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                color: Colors.grey,
-                              ),
-                        ),
                         SizedBox(
-                          height: 30.0,
+                          height: 15.0,
                         ),
                         defaultFormField(
                           controller: emailController,

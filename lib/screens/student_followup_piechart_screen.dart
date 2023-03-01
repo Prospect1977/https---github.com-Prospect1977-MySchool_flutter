@@ -184,70 +184,78 @@ class _StudentFollowupPiechartScreenState
               : SafeArea(
                   child: Column(
                     children: [
-                      SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(children: [
-                            DateFilterButton(
-                              caption: lang == "en" ? 'Yesterday' : "الأمس",
-                              active: _filterBy == 'lastDay',
-                              onClick: _onFilterButtonClick,
-                              fromDate: today.subtract(Duration(days: 1)),
-                              toDate: today.subtract(Duration(days: 1)),
-                              filterBy: 'lastDay',
-                            ),
-                            DateFilterButton(
-                              caption: lang == "en" ? 'Today' : "اليوم",
-                              active: _filterBy == 'thisDay',
-                              fromDate: today,
-                              toDate: today,
-                              onClick: _onFilterButtonClick,
-                              filterBy: 'thisDay',
-                            ),
-                            DateFilterButton(
-                              caption:
-                                  lang == "en" ? 'This Week' : "هذا الأسبوع",
-                              active: _filterBy == 'thisWeek',
-                              onClick: _onFilterButtonClick,
-                              fromDate: date_thisWeekFirstDay,
-                              toDate: today,
-                              filterBy: 'thisWeek',
-                            ),
-                            DateFilterButton(
-                              caption:
-                                  lang == "en" ? 'Last Week' : "الأسبوع الماضي",
-                              active: _filterBy == 'lastWeek',
-                              onClick: _onFilterButtonClick,
-                              fromDate: date_lastWeekFirstDay,
-                              toDate: date_lastWeekLastDay,
-                              filterBy: 'lastWeek',
-                            ),
-                            DateFilterButton(
-                              caption:
-                                  lang == "en" ? 'This Month' : "هذا الشهر",
-                              active: _filterBy == 'thisMonth',
-                              onClick: _onFilterButtonClick,
-                              fromDate: date_firstDateOfThisMonth,
-                              toDate: today,
-                              filterBy: 'thisMonth',
-                            ),
-                            DateFilterButton(
-                              caption:
-                                  lang == "en" ? 'Last Month' : "الشهر الماضي",
-                              active: _filterBy == 'lastMonth',
-                              onClick: _onFilterButtonClick,
-                              fromDate: date_firstDateOfLastMonth,
-                              toDate: date_lastDateOfLastMonth,
-                              filterBy: 'lastMonth',
-                            ),
-                            DateFilterButton(
-                              caption: lang == "en" ? 'This Year' : "هذا العام",
-                              active: _filterBy == 'thisYear',
-                              onClick: _onFilterButtonClick,
-                              fromDate: DateTime(today.year, 1, 1),
-                              toDate: today,
-                              filterBy: 'thisYear',
-                            ),
-                          ])),
+                      Directionality(
+                        textDirection: lang == "en"
+                            ? TextDirection.ltr
+                            : TextDirection.rtl,
+                        child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(children: [
+                              DateFilterButton(
+                                caption: lang == "en" ? 'Yesterday' : "الأمس",
+                                active: _filterBy == 'lastDay',
+                                onClick: _onFilterButtonClick,
+                                fromDate: today.subtract(Duration(days: 1)),
+                                toDate: today.subtract(Duration(days: 1)),
+                                filterBy: 'lastDay',
+                              ),
+                              DateFilterButton(
+                                caption: lang == "en" ? 'Today' : "اليوم",
+                                active: _filterBy == 'thisDay',
+                                fromDate: today,
+                                toDate: today,
+                                onClick: _onFilterButtonClick,
+                                filterBy: 'thisDay',
+                              ),
+                              DateFilterButton(
+                                caption:
+                                    lang == "en" ? 'This Week' : "هذا الأسبوع",
+                                active: _filterBy == 'thisWeek',
+                                onClick: _onFilterButtonClick,
+                                fromDate: date_thisWeekFirstDay,
+                                toDate: today,
+                                filterBy: 'thisWeek',
+                              ),
+                              DateFilterButton(
+                                caption: lang == "en"
+                                    ? 'Last Week'
+                                    : "الأسبوع الماضي",
+                                active: _filterBy == 'lastWeek',
+                                onClick: _onFilterButtonClick,
+                                fromDate: date_lastWeekFirstDay,
+                                toDate: date_lastWeekLastDay,
+                                filterBy: 'lastWeek',
+                              ),
+                              DateFilterButton(
+                                caption:
+                                    lang == "en" ? 'This Month' : "هذا الشهر",
+                                active: _filterBy == 'thisMonth',
+                                onClick: _onFilterButtonClick,
+                                fromDate: date_firstDateOfThisMonth,
+                                toDate: today,
+                                filterBy: 'thisMonth',
+                              ),
+                              DateFilterButton(
+                                caption: lang == "en"
+                                    ? 'Last Month'
+                                    : "الشهر الماضي",
+                                active: _filterBy == 'lastMonth',
+                                onClick: _onFilterButtonClick,
+                                fromDate: date_firstDateOfLastMonth,
+                                toDate: date_lastDateOfLastMonth,
+                                filterBy: 'lastMonth',
+                              ),
+                              DateFilterButton(
+                                caption:
+                                    lang == "en" ? 'This Year' : "هذا العام",
+                                active: _filterBy == 'thisYear',
+                                onClick: _onFilterButtonClick,
+                                fromDate: DateTime(today.year, 1, 1),
+                                toDate: today,
+                                filterBy: 'thisYear',
+                              ),
+                            ])),
+                      ),
                       Divider(
                         height: 3,
                         color: defaultColor.withOpacity(0.2),

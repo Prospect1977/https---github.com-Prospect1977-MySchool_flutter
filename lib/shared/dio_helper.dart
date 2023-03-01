@@ -1,18 +1,25 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:my_school/shared/components/constants.dart';
+import 'package:my_school/shared/components/constants.dart' as con;
 
 class DioHelper {
   static Dio dio;
+  static Dio dio0; //root address (without /api)
 
   static init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: baseUrl,
+        baseUrl: con.baseUrl,
         receiveDataWhenStatusError: true,
         headers: {
           'Content-Type': 'application/json',
         },
+      ),
+    );
+    dio0 = Dio(
+      BaseOptions(
+        baseUrl: con.baseUrl0,
+        receiveDataWhenStatusError: true,
       ),
     );
   }
@@ -46,6 +53,27 @@ class DioHelper {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+    };
+
+    return dio.post(
+      url,
+      queryParameters: query,
+      data: data,
+    );
+  }
+
+  static Future<Response> postImage({
+    @required String url,
+    Map<String, dynamic> query,
+    dynamic data,
+    String lang = 'ar',
+    String token,
+  }) async {
+    dio.options.headers = {
+      'lang': lang,
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data',
+      'Accept': '*/*',
     };
 
     return dio.post(
@@ -105,7 +133,7 @@ class DioHelper {
   }) async {
     dio.options.headers = {
       'lang': lang,
-      'Authorization': '111',
+      'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };

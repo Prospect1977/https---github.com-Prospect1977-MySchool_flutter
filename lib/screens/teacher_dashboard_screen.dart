@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/screens/teacher_viewsPerLesson_screen.dart';
 import 'package:my_school/screens/teacher_views_screen.dart';
+import 'package:my_school/screens/test_fileUpload.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
@@ -41,7 +42,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height - 150,
+                  height: MediaQuery.of(context).size.height - 300,
                   child: GridView(
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -53,12 +54,43 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                       button(
                         context,
                         () {
+                          navigateTo(context, TestFileUpload());
+                        },
+                        'MainData.png',
+                        lang.toString().toLowerCase() == "ar"
+                            ? "البيانات الرئيسية"
+                            : "Main Profile Data",
+                        false,
+                      ),
+                      button(
+                        context,
+                        () {},
+                        'sessions.png',
+                        lang.toString().toLowerCase() == "ar"
+                            ? "إدارة المحتوى"
+                            : "Content Management",
+                        false,
+                      ),
+                      button(
+                        context,
+                        () {
                           navigateTo(context, TeacherViewsPerLessonScreen());
                         },
                         'Chart.png',
                         lang.toString().toLowerCase() == "ar"
                             ? "المشاهدات والتفاعلات"
                             : "Views & Interactivity",
+                        false,
+                      ),
+                      button(
+                        context,
+                        () {
+                          navigateTo(context, TeacherViewsPerLessonScreen());
+                        },
+                        'money.png',
+                        lang.toString().toLowerCase() == "ar"
+                            ? "تحليل الدخل"
+                            : "Income Analysis",
                         false,
                       ),
                     ],

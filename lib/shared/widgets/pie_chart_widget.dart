@@ -47,8 +47,8 @@ class PieChartWidget extends StatelessWidget {
               ),
             ),
             colorList: [
-              Colors.red,
               Colors.green,
+              Colors.red,
               Colors.blue,
               Colors.purple,
               Colors.orange,

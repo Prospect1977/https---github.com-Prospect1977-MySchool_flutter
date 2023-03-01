@@ -15,6 +15,7 @@ import 'package:my_school/screens/studentLessonSessions_screen.dart';
 import 'package:my_school/screens/video_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 
@@ -397,7 +398,9 @@ class Item extends StatelessWidget {
                           FractionallySizedBox(
                             widthFactor: (item.type == "Video"
                                         ? (roles == "Student"
-                                            ? item.videoStoppedAt
+                                            ? item.videoStoppedAt > 100
+                                                ? 100
+                                                : item.videoStoppedAt
                                             : item.videoProgress > 100
                                                 ? 100
                                                 : item.videoProgress)
@@ -433,8 +436,16 @@ Widget getImage(SessionDetails sd, bool isFree, bool isPurchased, String align,
     double width, double height) {
   switch (sd.type) {
     case "Promo":
-      return Image.asset(
-        'assets/images/${sd.type}_left.png',
+      return Image.network(
+        //'assets/images/${sd.type}_left.png',
+        '${webUrl}Sessions/VideoCovers/${sd.videoCover}',
+        width: width,
+        height: height,
+      );
+      break;
+    case "Video":
+      return Image.network(
+        '${webUrl}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );

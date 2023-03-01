@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_school/cubits/parentStudent_cubit.dart';
 import 'package:my_school/cubits/parentStudent_states.dart';
+import 'package:my_school/screens/add_student_screen.dart';
 
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
@@ -133,13 +134,16 @@ class ChildrenList extends StatelessWidget {
             ),
             // ElevatedButton(onPressed: (){}), child: child)
             defaultButton(
-                function: () {},
+                function: () {
+                  navigateTo(context, AddStudentScreen());
+                },
                 text: cubit.lang.toLowerCase() == "en"
-                    ? 'Add a Child'
+                    ? 'Add a Student'
                     : 'إضافة طالب',
                 isUpperCase: false,
                 borderRadius: 0,
-                fontWeight: FontWeight.bold)
+                fontWeight: FontWeight.bold,
+                background: Colors.green.shade700)
           ],
         ),
       ),

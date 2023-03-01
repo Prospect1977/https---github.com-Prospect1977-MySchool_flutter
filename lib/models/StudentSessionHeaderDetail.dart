@@ -36,6 +36,7 @@ class SessionDetails {
   int quizId;
   String title;
   String videoUrl;
+  String videoCover;
   dynamic documentUrl;
   dynamic videoProgress;
   dynamic quizProgress;
@@ -51,6 +52,7 @@ class SessionDetails {
     quizId = json['quizId'];
     title = json['title'];
     videoUrl = json['videoUrl'];
+    videoCover = json['videoCover'];
     documentUrl = json['documentUrl'];
     videoProgress = json['videoProgress'];
     quizProgress = json['quizProgress'];

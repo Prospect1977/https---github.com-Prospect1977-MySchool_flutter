@@ -106,19 +106,19 @@ class _StudentDailyScheduleScreenState
                                             border: Border(
                                                 left: BorderSide(
                                                     color: item.isHoliday
-                                                        ? Colors.black26
-                                                        : Colors.black26),
+                                                        ? Colors.black38
+                                                        : Colors.black54),
                                                 top: BorderSide(
                                                     color: item.isHoliday
-                                                        ? Colors.black26
-                                                        : Colors.black26),
+                                                        ? Colors.black38
+                                                        : Colors.black54),
                                                 right: BorderSide(
                                                     color: item.isHoliday
-                                                        ? Colors.black26
-                                                        : Colors.black26)),
+                                                        ? Colors.black38
+                                                        : Colors.black54)),
                                             color: index ==
                                                     widget.SelectedDateIndex
-                                                ? Colors.amber.shade700
+                                                ? Colors.green.shade400
                                                 : item.isHoliday
                                                     ? Colors.black26
                                                     : Colors.white),
@@ -127,13 +127,14 @@ class _StudentDailyScheduleScreenState
                                             DateFormat("EEE")
                                                 .format(item.dataDate),
                                             style: TextStyle(
-                                                color: index ==
-                                                        widget.SelectedDateIndex
-                                                    ? Colors.white
-                                                    : item.isHoliday
-                                                        ? Colors.white70
-                                                        : Colors.black54,
-                                                fontSize: 14),
+                                              color: index ==
+                                                      widget.SelectedDateIndex
+                                                  ? Colors.white
+                                                  : item.isHoliday
+                                                      ? Colors.white70
+                                                      : Colors.black87,
+                                              fontSize: 14,
+                                            ),
                                           ),
                                           Text(
                                             DateFormat("d MMM")
@@ -144,7 +145,7 @@ class _StudentDailyScheduleScreenState
                                                     ? Colors.white
                                                     : item.isHoliday
                                                         ? Colors.white70
-                                                        : Colors.black54,
+                                                        : Colors.black87,
                                                 fontSize: 12),
                                           )
                                         ]),
@@ -179,7 +180,11 @@ class _StudentDailyScheduleScreenState
                                             decoration: BoxDecoration(
                                               // borderRadius: BorderRadius.circular(7),
                                               border: Border.all(
-                                                  color: defaultColor),
+                                                  color: index ==
+                                                          widget
+                                                              .SelectedDateIndex
+                                                      ? Colors.deepPurple
+                                                      : defaultColor),
                                             ),
                                             child: Column(
                                               children: [
@@ -188,10 +193,19 @@ class _StudentDailyScheduleScreenState
                                                   width: double.infinity,
                                                   padding: EdgeInsets.all(5),
                                                   decoration: BoxDecoration(
-                                                      color: defaultColor
-                                                          .withOpacity(0.85),
+                                                      color: index ==
+                                                              widget
+                                                                  .SelectedDateIndex
+                                                          ? Colors.deepPurple
+                                                          : Colors.deepPurple,
                                                       border: Border.all(
-                                                          color: defaultColor),
+                                                          color: index ==
+                                                                  widget
+                                                                      .SelectedDateIndex
+                                                              ? Colors
+                                                                  .deepPurple
+                                                              : Colors
+                                                                  .deepPurple),
                                                       borderRadius:
                                                           BorderRadius.only(
                                                               /*topLeft: Radius.circular(7),
@@ -322,8 +336,13 @@ Widget mainSubListItem(context, Lesson l, studentId) {
     },
     child: l.lessonName == null
         ? Container()
-        : Card(
-            elevation: 2,
+        : Container(
+            margin: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 2.5),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(
+                  color: Colors.red.shade900.withOpacity(0.5),
+                )),
             child: Column(
               children: [
                 Container(
@@ -331,17 +350,19 @@ Widget mainSubListItem(context, Lesson l, studentId) {
                   alignment: Alignment.center,
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                      color: secondaryColor,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          topRight: Radius.circular(5))),
+                    color: interfaceColor.withOpacity(0.06),
+                    border: Border(
+                        bottom: BorderSide(
+                            color: Colors.red.shade900.withOpacity(0.4))),
+                  ),
                   child: Text(
                     l.subjectName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.white,
-                    ),
+                        color: Colors.brown.shade500,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 Container(
@@ -350,7 +371,7 @@ Widget mainSubListItem(context, Lesson l, studentId) {
                       ? Alignment.centerLeft
                       : Alignment.centerRight,
                   decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 245, 245, 245),
+                      color: Colors.black.withOpacity(0.015),
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(5),
                           bottomRight: Radius.circular(5))),
@@ -359,7 +380,9 @@ Widget mainSubListItem(context, Lesson l, studentId) {
                           l.lessonName,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.brown.shade500),
                         )
                       : Column(
                           //if the lesson has a parent
@@ -371,7 +394,9 @@ Widget mainSubListItem(context, Lesson l, studentId) {
                               l.parentLessonName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.brown.shade500),
                             ),
                             l.dir == "rtl"
                                 ? Row(
@@ -380,17 +405,18 @@ Widget mainSubListItem(context, Lesson l, studentId) {
                                         child: Padding(
                                           padding:
                                               const EdgeInsets.only(right: 3),
-                                          child: Text(
-                                            l.lessonName,
-                                            textAlign: TextAlign.right,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                          child: Text(l.lessonName,
+                                              textAlign: TextAlign.right,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  color: Colors.brown.shade500,
+                                                  fontStyle: FontStyle.italic)),
                                         ),
                                       ),
                                       Icon(
                                         Icons.keyboard_return,
-                                        color: Colors.black45,
+                                        color: Colors.brown.shade500,
                                       ),
                                     ],
                                   )
@@ -400,7 +426,7 @@ Widget mainSubListItem(context, Lesson l, studentId) {
                                         scaleX: -1,
                                         child: Icon(
                                           Icons.keyboard_return,
-                                          color: Colors.black45,
+                                          color: Colors.brown.shade500,
                                         ),
                                       ),
                                       Expanded(
@@ -412,6 +438,9 @@ Widget mainSubListItem(context, Lesson l, studentId) {
                                             textAlign: TextAlign.left,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                color: Colors.brown.shade500,
+                                                fontStyle: FontStyle.italic),
                                           ),
                                         ),
                                       ),

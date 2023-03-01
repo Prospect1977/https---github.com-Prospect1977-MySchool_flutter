@@ -467,6 +467,17 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                                       widget.YearOfStudyId);
                                               setState(() {
                                                 dirty = false;
+                                                navigateAndFinish(
+                                                    context,
+                                                    StudentDashboardScreen(
+                                                      Id: widget.Id,
+                                                      FullName: widget.FullName,
+                                                      Gender: widget.Gender,
+                                                      SchoolTypeId:
+                                                          widget.SchoolTypeId,
+                                                      YearOfStudyId:
+                                                          widget.YearOfStudyId,
+                                                    ));
                                               });
                                             },
                                       text: widget.lang == "en"
