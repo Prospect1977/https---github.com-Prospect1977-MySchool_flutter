@@ -3,6 +3,7 @@ class StudentLessonSession {
   int teacherId;
   String teacherName;
   String teacherPhoto;
+  String urlSource;
   dynamic videosProgress;
   dynamic quizesProgress;
   bool isFree;
@@ -17,6 +18,7 @@ class StudentLessonSession {
     teacherId = js["teacherId"];
     teacherName = js["teacherName"];
     teacherPhoto = js["teacherPhoto"];
+    urlSource = js["urlSource"];
     videosProgress = js["videosProgress"];
     quizesProgress = js["quizesProgress"];
     isFree = js["isFree"];

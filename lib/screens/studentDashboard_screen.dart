@@ -11,6 +11,7 @@ import 'package:my_school/screens/student_followup_list_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
+import 'package:my_school/shared/widgets/dashboard_button.dart';
 
 class StudentDashboardScreen extends StatefulWidget {
   int Id;
@@ -89,7 +90,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     crossAxisSpacing: 5,
                     mainAxisSpacing: 5),
                 children: [
-                  button(
+                  dashboardButton(
                     context,
                     isStudentHasParent && roles == "Student"
                         ? null
@@ -112,7 +113,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         : "Main Profile Data${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (Not Completed)" : ""}",
                     isStudentHasParent && roles == "Student" ? true : false,
                   ),
-                  button(
+                  dashboardButton(
                     context,
                     (widget.SchoolTypeId == null ||
                                 widget.YearOfStudyId == null) ||
@@ -130,7 +131,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         : "Select Learning Subjects",
                     isStudentHasParent && roles == "Student" ? true : false,
                   ),
-                  button(
+                  dashboardButton(
                     context,
                     (widget.SchoolTypeId == null ||
                             widget.YearOfStudyId == null)
@@ -147,7 +148,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         : "Daily Schedule",
                     false,
                   ),
-                  button(
+                  dashboardButton(
                     context,
                     (widget.SchoolTypeId == null ||
                             widget.YearOfStudyId == null)
@@ -159,7 +160,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         : "Study by Subject",
                     false,
                   ),
-                  button(
+                  dashboardButton(
                     context,
                     (widget.SchoolTypeId == null ||
                             widget.YearOfStudyId == null)
@@ -177,7 +178,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         : "Follow Up",
                     false,
                   ),
-                  button(
+                  dashboardButton(
                     context,
                     (widget.SchoolTypeId == null ||
                             widget.YearOfStudyId == null)
@@ -205,44 +206,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 }
 
-Widget button(context, onClick, imageName, title, isDisabled) {
-  return InkWell(
-    onTap: onClick,
-    child: Card(
-      elevation: isDisabled ? 1 : 3,
-      // margin: EdgeInsets.only(horizontal: 10, vertical: 10),
-      color: Color.fromARGB(255, 240, 240, 240),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-        decoration: BoxDecoration(
-          border: Border.all(
-              color:
-                  isDisabled ? Colors.black26 : defaultColor.withOpacity(.4)),
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Expanded(
-              child: Container(
-            width: MediaQuery.of(context).size.width / 5.5,
-            height: MediaQuery.of(context).size.width / 5.5,
-            child: Image.asset(
-              'assets/images/$imageName',
-            ),
-          )),
-          Container(
-            child: Text(
-              title,
-              style: TextStyle(
-                  fontSize: 15,
-                  color: isDisabled ? Colors.black38 : defaultColor),
-              textAlign: TextAlign.center,
-            ),
-          )
-        ]),
-      ),
-    ),
-  );
-}
+
 // Widget Gridtile (String lang,Widget icon,String Title,Function onTap){
 //   return GridTile(child: Container(color:Colors.orange.withOpacity(0.7),child:Column(children: [
 //           Container(height: 150,child: Center(child:Icon(Icons.filter_frames)),),lang.toString().toLowerCase() == "ar"

@@ -11,6 +11,7 @@ import 'package:my_school/models/StudentLessonSessions_model.dart';
 import 'package:my_school/models/StudentLessonsByYearSubjectId_model.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
+import 'package:my_school/screens/teacher_profile_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
@@ -180,7 +181,7 @@ class _StudentLessonSessionsScreenState
                                                   ));
                                             },
                                             child: Card(
-                                              elevation: 5,
+                                              elevation: 1,
                                               child: Container(
                                                   padding: EdgeInsets.all(5),
                                                   child: Column(
@@ -191,57 +192,69 @@ class _StudentLessonSessionsScreenState
                                                               CrossAxisAlignment
                                                                   .start,
                                                           children: [
-                                                            CircleAvatar(
-                                                              radius: 32,
-                                                              backgroundColor: item
-                                                                      .isFree
-                                                                  ? Colors
-                                                                      .black45
-                                                                  : item
-                                                                          .isPurchased
-                                                                      ? Colors
-                                                                          .green
-                                                                      : Colors.amber[
-                                                                          700],
+                                                            InkWell(
+                                                              onTap: () {
+                                                                navigateTo(
+                                                                    context,
+                                                                    TeacherProfileScreen(
+                                                                        teacherId:
+                                                                            item
+                                                                                .teacherId,
+                                                                        readOnly:
+                                                                            true));
+                                                              },
                                                               child:
                                                                   CircleAvatar(
-                                                                //-----------------------------------------Avatar
-                                                                radius: 30,
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                                child: Stack(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .bottomRight,
-                                                                    children: [
-                                                                      ClipRRect(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(30),
-                                                                        child: item.teacherPhoto ==
-                                                                                null
-                                                                            ? Image.asset(
-                                                                                'assets/images/Teacher.jpg',
-                                                                                fit: BoxFit.cover,
-                                                                              )
-                                                                            : Image.network(
-                                                                                '${webUrl}images/Profiles/${item.teacherPhoto}',
-                                                                                fit: BoxFit.cover,
-                                                                              ),
-                                                                      ),
-                                                                      item.isFree ==
-                                                                              false
-                                                                          ? item.isPurchased
+                                                                radius: 32,
+                                                                backgroundColor: item
+                                                                        .isFree
+                                                                    ? Colors
+                                                                        .black45
+                                                                    : item
+                                                                            .isPurchased
+                                                                        ? Colors
+                                                                            .green
+                                                                        : Colors
+                                                                            .amber[700],
+                                                                child:
+                                                                    CircleAvatar(
+                                                                  //-----------------------------------------Avatar
+                                                                  radius: 30,
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .white,
+                                                                  child: Stack(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .bottomRight,
+                                                                      children: [
+                                                                        ClipRRect(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(30),
+                                                                          child: item.teacherPhoto == null
                                                                               ? Image.asset(
-                                                                                  "assets/images/UnLock.png",
-                                                                                  width: 18,
+                                                                                  'assets/images/Teacher.jpg',
+                                                                                  fit: BoxFit.cover,
                                                                                 )
-                                                                              : Image.asset(
-                                                                                  "assets/images/Lock.png",
-                                                                                  width: 20,
-                                                                                )
-                                                                          : Container()
-                                                                    ]),
+                                                                              : Image.network(
+                                                                                  item.urlSource == "web" ? '${webUrl}images/Profiles/${item.teacherPhoto}' : '${baseUrl}Assets/ProfileImages/${item.teacherPhoto}',
+                                                                                  fit: BoxFit.cover,
+                                                                                ),
+                                                                        ),
+                                                                        item.isFree ==
+                                                                                false
+                                                                            ? item.isPurchased
+                                                                                ? Image.asset(
+                                                                                    "assets/images/UnLock.png",
+                                                                                    width: 18,
+                                                                                  )
+                                                                                : Image.asset(
+                                                                                    "assets/images/Lock.png",
+                                                                                    width: 20,
+                                                                                  )
+                                                                            : Container()
+                                                                      ]),
+                                                                ),
                                                               ),
                                                             ),
                                                             SizedBox(
@@ -259,6 +272,23 @@ class _StudentLessonSessionsScreenState
                                                                     style: TextStyle(
                                                                         fontSize:
                                                                             18),
+                                                                  ),
+                                                                  item.watches >
+                                                                          0
+                                                                      ? Row(
+                                                                          children: [
+                                                                            Icon(Icons.remove_red_eye_rounded,
+                                                                                color: Colors.black45,
+                                                                                size: 20),
+                                                                            SizedBox(
+                                                                              width: 7,
+                                                                            ),
+                                                                            Text('${item.watches.toString()} views')
+                                                                          ],
+                                                                        )
+                                                                      : Container(),
+                                                                  SizedBox(
+                                                                    height: 3,
                                                                   ),
                                                                   RatingBarIndicator(
                                                                     rating: double.parse(item
@@ -292,7 +322,13 @@ class _StudentLessonSessionsScreenState
                                                                 //----------------------------------------Statistics
                                                                 width: 50,
                                                                 child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
                                                                   children: [
+                                                                    SizedBox(
+                                                                      height: 8,
+                                                                    ),
                                                                     Row(
                                                                       children: [
                                                                         Icon(
@@ -308,6 +344,9 @@ class _StudentLessonSessionsScreenState
                                                                             .videos
                                                                             .toString())
                                                                       ],
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: 5,
                                                                     ),
                                                                     Row(
                                                                       children: [
@@ -325,22 +364,6 @@ class _StudentLessonSessionsScreenState
                                                                             .toString())
                                                                       ],
                                                                     ),
-                                                                    Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .remove_red_eye_rounded,
-                                                                            color:
-                                                                                Colors.black45),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              3,
-                                                                        ),
-                                                                        Text(item
-                                                                            .watches
-                                                                            .toString())
-                                                                      ],
-                                                                    )
                                                                   ],
                                                                 ))
                                                           ]),
@@ -407,7 +430,7 @@ class _StudentLessonSessionsScreenState
                                                                     child: Stack(
                                                                         children: [
                                                                           FractionallySizedBox(
-                                                                            widthFactor: item.videosProgress > 100
+                                                                            widthFactor: item.quizesProgress > 100
                                                                                 ? 1
                                                                                 : item.quizesProgress / 100,
                                                                             heightFactor:
@@ -483,45 +506,68 @@ class _StudentLessonSessionsScreenState
                                                   .items[index];
                                           return InkWell(
                                             onTap: () {
-                                              navigateTo(
-                                                  context,
-                                                  StudentLessonSessionsScreen(
-                                                      widget.studentId,
-                                                      item.id,
-                                                      item.lessonName,
-                                                      item.lessonDescription,
-                                                      widget.YearSubjectId,
-                                                      widget.dir));
+                                              if (!item
+                                                  .blockedFromAddingSessions) {
+                                                navigateTo(
+                                                    context,
+                                                    StudentLessonSessionsScreen(
+                                                        widget.studentId,
+                                                        item.id,
+                                                        item.lessonName,
+                                                        item.lessonDescription,
+                                                        widget.YearSubjectId,
+                                                        widget.dir));
+                                              } else {
+                                                showToast(
+                                                    text: item.dir == "ltr"
+                                                        ? "Main chapters have now content!"
+                                                        : "الأبواب الرئيسية ليس لها محتوى",
+                                                    state: ToastStates.ERROR);
+                                              }
                                             },
                                             child: Container(
                                               //-----------------------------------------item Container
                                               padding: EdgeInsets.all(5),
                                               decoration: BoxDecoration(
-                                                  color:
-                                                      index == currentLessonIndex
-                                                          ? defaultColor
-                                                              .withOpacity(.7)
-                                                          : Colors.white,
+                                                  color: Colors.white,
                                                   border: Border(
                                                       left: BorderSide(
-                                                          color:
-                                                              Colors.black54),
+                                                          color: index == currentLessonIndex
+                                                              ? Colors
+                                                                  .deepPurple
+                                                              : Colors.black26,
+                                                          width: index ==
+                                                                  currentLessonIndex
+                                                              ? 2
+                                                              : 1),
                                                       right: BorderSide(
-                                                          color:
-                                                              Colors.black54),
+                                                          width: index ==
+                                                                  currentLessonIndex
+                                                              ? 2
+                                                              : 1,
+                                                          color: index ==
+                                                                  currentLessonIndex
+                                                              ? Colors
+                                                                  .deepPurple
+                                                              : Colors.black26),
                                                       top: BorderSide(
-                                                          color:
-                                                              Colors.black54),
+                                                          width: index ==
+                                                                  currentLessonIndex
+                                                              ? 2
+                                                              : 1,
+                                                          color: index ==
+                                                                  currentLessonIndex
+                                                              ? Colors
+                                                                  .deepPurple
+                                                              : Colors.black26),
                                                       bottom: index ==
-                                                              StudentLessonsByYearSubjectIdCollection
-                                                                      .items
-                                                                      .length -
-                                                                  1
+                                                              currentLessonIndex
                                                           ? BorderSide(
-                                                              color: Colors
-                                                                  .black54)
-                                                          : BorderSide(
-                                                              color: Colors.black.withOpacity(0.05)))),
+                                                              color: Colors.deepPurple,
+                                                              width: 2)
+                                                          : index == StudentLessonsByYearSubjectIdCollection.items.length - 1
+                                                              ? BorderSide(color: Colors.black38)
+                                                              : BorderSide(color: Colors.black.withOpacity(0.05)))),
                                               child: Directionality(
                                                 textDirection: item.dir == "ltr"
                                                     ? TextDirection.ltr
@@ -545,20 +591,25 @@ class _StudentLessonSessionsScreenState
                                                           Text(
                                                             item.lessonName,
                                                             style: TextStyle(
-                                                                fontSize: 17,
-                                                                fontWeight: item
-                                                                            .parentLessonId ==
-                                                                        null
-                                                                    ? FontWeight
-                                                                        .bold
-                                                                    : FontWeight
-                                                                        .normal,
-                                                                color: index ==
-                                                                        currentLessonIndex
-                                                                    ? Colors
-                                                                        .white
-                                                                    : Colors
-                                                                        .black54),
+                                                              fontSize: 17,
+                                                              fontWeight: item
+                                                                          .parentLessonId ==
+                                                                      null
+                                                                  ? FontWeight
+                                                                      .bold
+                                                                  : index ==
+                                                                          currentLessonIndex
+                                                                      ? FontWeight
+                                                                          .bold
+                                                                      : FontWeight
+                                                                          .normal,
+                                                              color: index ==
+                                                                      currentLessonIndex
+                                                                  ? Colors
+                                                                      .deepPurple
+                                                                  : Colors
+                                                                      .black54,
+                                                            ),
                                                           ),
                                                           item.dataDate != null
                                                               ? Container(

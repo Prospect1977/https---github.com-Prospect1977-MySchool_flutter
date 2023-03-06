@@ -5,6 +5,7 @@ import 'package:my_school/models/login_model.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
 import 'package:my_school/screens/teacher_dashboard_screen.dart';
+import 'package:my_school/screens/teacher_profile_screen.dart';
 
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/cache_helper.dart';
@@ -56,7 +57,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
       if (userData.roles == "Teacher") {
         CacheHelper.saveData(key: "teacherId", value: userData.teacherId);
-        navigateAndFinish(context, TeacherDashboardScreen());
+        navigateAndFinish(
+            context,
+            TeacherProfileScreen(
+              teacherId: userData.teacherId,
+              readOnly: false,
+            ));
       }
     }).catchError((error) {
       print(error.toString());

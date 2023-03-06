@@ -102,7 +102,7 @@ class _SubjectsListState extends State<SubjectsList> {
                               },
                               child: Container(
                                 child: Card(
-                                    elevation: 3,
+                                    elevation: 0,
                                     child: Directionality(
                                       textDirection: item.dir == "ltr"
                                           ? TextDirection.ltr
@@ -163,7 +163,8 @@ class _SubjectsListState extends State<SubjectsList> {
                           : null,
                       borderRadius: 0,
                       text: lang == "en" ? "Save Changes" : "حفظ التعديلات",
-                      background: _isChanged ? Colors.black87 : Colors.black54),
+                      background:
+                          _isChanged ? Colors.green.shade700 : Colors.black54),
                 ],
               )
             : Center(child: CircularProgressIndicator());

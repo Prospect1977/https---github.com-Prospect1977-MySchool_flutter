@@ -3,7 +3,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:my_school/cubits/StudentDailySchedule_cubit.dart';
 import 'package:my_school/cubits/StudentDailySchedule_states.dart';
 import 'package:my_school/models/StudentDailySchedule_model.dart';
@@ -118,13 +118,13 @@ class _StudentDailyScheduleScreenState
                                                         : Colors.black54)),
                                             color: index ==
                                                     widget.SelectedDateIndex
-                                                ? Colors.green.shade400
+                                                ? Colors.deepPurple
                                                 : item.isHoliday
                                                     ? Colors.black26
                                                     : Colors.white),
                                         child: Column(children: [
                                           Text(
-                                            DateFormat("EEE")
+                                            intl.DateFormat("EEE")
                                                 .format(item.dataDate),
                                             style: TextStyle(
                                               color: index ==
@@ -137,7 +137,7 @@ class _StudentDailyScheduleScreenState
                                             ),
                                           ),
                                           Text(
-                                            DateFormat("d MMM")
+                                            intl.DateFormat("d MMM")
                                                 .format(item.dataDate),
                                             style: TextStyle(
                                                 color: index ==
@@ -222,7 +222,8 @@ class _StudentDailyScheduleScreenState
                                                         width: 5,
                                                       ),
                                                       Text(
-                                                        DateFormat("EEEE d MMM")
+                                                        intl.DateFormat(
+                                                                "EEEE d MMM")
                                                             .format(
                                                                 item.dataDate),
                                                         textAlign:
@@ -234,9 +235,9 @@ class _StudentDailyScheduleScreenState
                                                     ],
                                                   ),
                                                 ),
-                                                // SizedBox(
-                                                //   height: 5,
-                                                // ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
                                                 item.isHoliday
                                                     ? Container(
                                                         decoration: BoxDecoration(
@@ -328,163 +329,101 @@ class _StudentDailyScheduleScreenState
 
 Widget mainSubListItem(context, Lesson l, studentId) {
   return InkWell(
-    onTap: () {
-      navigateTo(
-          context,
-          StudentLessonSessionsScreen(studentId, l.lessonId, l.lessonName,
-              l.lessonDescription, l.yearSubjectId, l.dir));
-    },
-    child: l.lessonName == null
-        ? Container()
-        : Container(
-            margin: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 2.5),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(
-                  color: Colors.red.shade900.withOpacity(0.5),
-                )),
-            child: Column(
-              children: [
-                Container(
-                  //Subject name
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: interfaceColor.withOpacity(0.06),
-                    border: Border(
-                        bottom: BorderSide(
-                            color: Colors.red.shade900.withOpacity(0.4))),
-                  ),
-                  child: Text(
-                    l.subjectName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        color: Colors.brown.shade500,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(8),
-                  alignment: l.dir == "ltr"
-                      ? Alignment.centerLeft
-                      : Alignment.centerRight,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.015),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(5),
-                          bottomRight: Radius.circular(5))),
-                  child: l.parentLessonName == null
-                      ? Text(
-                          l.lessonName,
-                          maxLines: 2,
+      onTap: () {
+        navigateTo(
+            context,
+            StudentLessonSessionsScreen(studentId, l.lessonId, l.lessonName,
+                l.lessonDescription, l.yearSubjectId, l.dir));
+      },
+      child: l.lessonName == null
+          ? Container()
+          : Directionality(
+              textDirection:
+                  l.dir == "ltr" ? TextDirection.ltr : TextDirection.rtl,
+              child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 3),
+                        child: Text(
+                          l.subjectName,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.brown.shade500),
-                        )
-                      : Column(
-                          //if the lesson has a parent
-                          crossAxisAlignment: l.dir == "ltr"
-                              ? CrossAxisAlignment.start
-                              : CrossAxisAlignment.end,
-                          children: [
-                            Text(
+                              fontSize: 18,
+                              color: Colors.black.withOpacity(.8)),
+                        ),
+                      ),
+                      l.parentLessonName != null
+                          ? Text(
                               l.parentLessonName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.brown.shade500),
-                            ),
-                            l.dir == "rtl"
-                                ? Row(
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 3),
-                                          child: Text(l.lessonName,
-                                              textAlign: TextAlign.right,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  color: Colors.brown.shade500,
-                                                  fontStyle: FontStyle.italic)),
-                                        ),
-                                      ),
-                                      Icon(
-                                        Icons.keyboard_return,
-                                        color: Colors.brown.shade500,
-                                      ),
-                                    ],
-                                  )
-                                : Row(
-                                    children: [
-                                      Transform.scale(
-                                        scaleX: -1,
-                                        child: Icon(
-                                          Icons.keyboard_return,
-                                          color: Colors.brown.shade500,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 3),
-                                          child: Text(
-                                            l.lessonName,
-                                            textAlign: TextAlign.left,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                color: Colors.brown.shade500,
-                                                fontStyle: FontStyle.italic),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  color: Colors.black.withOpacity(0.7)),
+                            )
+                          : Container(),
+                      SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        l.lessonName,
+                        style: TextStyle(
+                            color: Colors.black.withOpacity(0.6), fontSize: 15),
+                      ),
+                      l.studentCompleted != 0
+                          ? SizedBox(
+                              height: 8,
+                            )
+                          : Container(),
+                      l.studentCompleted != 0
+                          ? Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 25,
+                                    child: Text(
+                                      l.studentCompleted > 100
+                                          ? "100"
+                                          : '${l.studentCompleted.toStringAsFixed(0)}%',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: Color.fromARGB(255, 0, 88, 3)),
+                                    ),
                                   ),
-                            l.studentCompleted != 0
-                                ? Row(
-                                    children: [
-                                      Container(
-                                        width: 25,
-                                        child: Text(
-                                          '${l.studentCompleted.toStringAsFixed(0)}%',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color.fromARGB(
-                                                  255, 0, 88, 3)),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                            height: 3,
-                                            child: Stack(
-                                              children: [
-                                                FractionallySizedBox(
-                                                  child: Container(
-                                                      color: Colors.green),
-                                                  widthFactor:
-                                                      l.studentCompleted / 100,
-                                                  heightFactor: 1,
-                                                ),
-                                                Container(
-                                                    color: Colors.black12),
-                                              ],
-                                            )),
-                                      ),
-                                    ],
-                                  )
-                                : Container()
-                          ],
-                        ), //End if the lesson has a parent
-                ),
-              ],
-            )),
-  );
+                                  Expanded(
+                                    child: Container(
+                                        height: 3,
+                                        child: Stack(
+                                          children: [
+                                            FractionallySizedBox(
+                                              child: Container(
+                                                  color: Colors.green),
+                                              widthFactor:
+                                                  l.studentCompleted / 100,
+                                              heightFactor: 1,
+                                            ),
+                                            Container(color: Colors.black12),
+                                          ],
+                                        )),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Container(),
+                      Divider(
+                        thickness: 2,
+                        color: Colors.deepPurple.withOpacity(0.15),
+                      )
+                    ],
+                  )),
+            ));
 }
 
 void _scrollToIndex(int index, _itemScrollController) {

@@ -276,7 +276,7 @@ class BuildItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: lang == "en" ? 185 : 192,
+      height: lang == "en" ? 187 : 194,
       margin: EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
         border: Border.all(color: defaultColor.withOpacity(0.4)),
@@ -284,7 +284,7 @@ class BuildItem extends StatelessWidget {
       ),
       child: Column(children: [
         Container(
-          height: 30,
+          height: 32,
           width: double.infinity,
           padding: EdgeInsets.all(4),
           child: Center(
@@ -292,6 +292,7 @@ class BuildItem extends StatelessWidget {
               item.subjectName,
               style: TextStyle(
                   color: interfaceColor.withOpacity(0.8),
+                  fontSize: 16,
                   fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -299,13 +300,13 @@ class BuildItem extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
                 bottom: BorderSide(color: defaultColor.withOpacity(0.2))),
-            color: Colors.black.withOpacity(0.07),
+            color: Colors.black.withOpacity(0.02),
           ),
         ),
         item.quizzesDone == 0 && item.watchedVideosCount == 0
             ? Container(
-                height: 153,
-                color: Colors.black.withOpacity(0.02),
+                height: 151,
+                color: Colors.black.withOpacity(0.005),
                 child: Center(
                   child: Text(
                     lang == "en"
@@ -313,7 +314,8 @@ class BuildItem extends StatelessWidget {
                         : "لا يوجد نشاط مسجل حتى الآن!",
                     style: TextStyle(
                         fontSize: 20,
-                        color: Colors.red.withAlpha(150),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black.withOpacity(0.25),
                         fontStyle: FontStyle.italic),
                     textAlign: TextAlign.center,
                   ),

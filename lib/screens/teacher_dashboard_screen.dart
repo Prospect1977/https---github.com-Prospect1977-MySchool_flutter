@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:my_school/screens/teacher_profile_screen.dart';
 import 'package:my_school/screens/teacher_viewsPerLesson_screen.dart';
 import 'package:my_school/screens/teacher_views_screen.dart';
 import 'package:my_school/screens/test_fileUpload.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
+import 'package:my_school/shared/widgets/dashboard_button.dart';
 
 class TeacherDashboardScreen extends StatefulWidget {
   TeacherDashboardScreen({Key key}) : super(key: key);
@@ -51,10 +53,13 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                             crossAxisSpacing: 5,
                             mainAxisSpacing: 5),
                     children: [
-                      button(
+                      dashboardButton(
                         context,
                         () {
-                          navigateTo(context, TestFileUpload());
+                          navigateTo(
+                              context,
+                              TeacherProfileScreen(
+                                  teacherId: Id, readOnly: false));
                         },
                         'MainData.png',
                         lang.toString().toLowerCase() == "ar"
@@ -62,7 +67,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                             : "Main Profile Data",
                         false,
                       ),
-                      button(
+                      dashboardButton(
                         context,
                         () {},
                         'sessions.png',
@@ -71,7 +76,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                             : "Content Management",
                         false,
                       ),
-                      button(
+                      dashboardButton(
                         context,
                         () {
                           navigateTo(context, TeacherViewsPerLessonScreen());
@@ -82,7 +87,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                             : "Views & Interactivity",
                         false,
                       ),
-                      button(
+                      dashboardButton(
                         context,
                         () {
                           navigateTo(context, TeacherViewsPerLessonScreen());
@@ -101,41 +106,4 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
           ),
         ));
   }
-}
-
-Widget button(context, onClick, imageName, title, isDisabled) {
-  return InkWell(
-    onTap: onClick,
-    child: Card(
-      elevation: 3,
-      // margin: EdgeInsets.only(horizontal: 10, vertical: 10),
-      color: Color.fromARGB(255, 240, 240, 240),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-        decoration: BoxDecoration(
-          border: Border.all(color: defaultColor.withOpacity(.4)),
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Expanded(
-              child: Container(
-            width: MediaQuery.of(context).size.width / 5.5,
-            height: MediaQuery.of(context).size.width / 5.5,
-            child: Image.asset(
-              'assets/images/$imageName',
-            ),
-          )),
-          Container(
-            child: Text(
-              title,
-              style: TextStyle(
-                  fontSize: 15,
-                  color: isDisabled ? Colors.black38 : defaultColor),
-              textAlign: TextAlign.center,
-            ),
-          )
-        ]),
-      ),
-    ),
-  );
 }

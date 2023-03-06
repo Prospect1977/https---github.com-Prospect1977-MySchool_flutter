@@ -66,7 +66,7 @@ class ChildrenList extends StatelessWidget {
                 itemBuilder: (context, index) {
                   // cubit.students[index].fullName;
                   return Card(
-                    elevation: 5,
+                    elevation: 0,
                     margin: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                     child: Container(
                       decoration: BoxDecoration(

@@ -21,13 +21,13 @@ class PieChartWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 16,
-                    color: Colors.red,
+                    color: Colors.black.withOpacity(0.35),
                     fontStyle: FontStyle.italic),
               ),
             ),
             decoration: BoxDecoration(
-                color: Colors.red.withAlpha(50),
-                border: Border.all(color: Colors.red.withOpacity(0.3)),
+                color: Colors.black12.withOpacity(0.02),
+                border: Border.all(color: Colors.black.withOpacity(0.2)),
                 borderRadius: BorderRadius.circular(5)),
           )
         : pchart.PieChart(

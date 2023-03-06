@@ -133,22 +133,23 @@ Widget defaultTextButton({
       ),
     );
 
-Widget defaultFormField({
-  @required TextEditingController controller,
-  @required TextInputType type,
-  Function onSubmit,
-  Function onChange,
-  Function onTap,
-  bool isPassword = false,
-  @required Function validate,
-  @required String label,
-  @required IconData prefix,
-  IconData suffix,
-  Function suffixPressed,
-  bool isClickable = true,
-  dynamic defaultValue,
-}) =>
+Widget defaultFormField(
+        {@required TextEditingController controller,
+        @required TextInputType type,
+        Function onSubmit,
+        Function onChange,
+        Function onTap,
+        bool isPassword = false,
+        Function validate,
+        @required String label,
+        IconData prefix,
+        IconData suffix,
+        Function suffixPressed,
+        bool isClickable = true,
+        dynamic defaultValue,
+        int maximumLines}) =>
     TextFormField(
+      maxLines: maximumLines == null ? 1 : maximumLines,
       controller: controller,
       keyboardType: type,
       obscureText: isPassword,
@@ -157,12 +158,14 @@ Widget defaultFormField({
       onChanged: onChange,
       initialValue: defaultValue,
       onTap: onTap,
-      validator: validate,
+      validator: validate != null ? validate : null,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(
-          prefix,
-        ),
+        prefixIcon: prefix != null
+            ? Icon(
+                prefix,
+              )
+            : null,
         suffixIcon: suffix != null
             ? IconButton(
                 onPressed: suffixPressed,

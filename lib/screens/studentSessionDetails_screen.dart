@@ -301,54 +301,58 @@ class Item extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        if (item.type == "Video" || item.type == "Promo") {
-          navigateTo(
-              context,
-              VideoScreen(
-                StudentId: widget.StudentId,
-                VideoId: item.videoId,
-                VideoUrl: item.videoUrl,
-                Title: item.title,
-                SessionHeaderId: widget.SessionHeaderId,
-                LessonName: widget.LessonName,
-                LessonDescription: widget.LessonDescription,
-                dir: widget.dir,
-                TeacherName: widget.TeacherName,
-                VideoName: item.title,
-              ));
-        }
-        if (item.type == "Quiz") {
-          bool readOnly;
-          bool allowRetry;
-          if (roles == "Student") {
-            if (item.quizProgress > 0) {
-              readOnly = true;
-              allowRetry = true;
-            } else {
-              readOnly = false;
-              allowRetry = false;
+      onTap: (cubit.sessionHeader.isFree ||
+              cubit.sessionHeader.isPurchased ||
+              item.type == "Promo")
+          ? () {
+              if (item.type == "Video" || item.type == "Promo") {
+                navigateTo(
+                    context,
+                    VideoScreen(
+                      StudentId: widget.StudentId,
+                      VideoId: item.videoId,
+                      VideoUrl: item.videoUrl,
+                      Title: item.title,
+                      SessionHeaderId: widget.SessionHeaderId,
+                      LessonName: widget.LessonName,
+                      LessonDescription: widget.LessonDescription,
+                      dir: widget.dir,
+                      TeacherName: widget.TeacherName,
+                      VideoName: item.title,
+                    ));
+              }
+              if (item.type == "Quiz") {
+                bool readOnly;
+                bool allowRetry;
+                if (roles == "Student") {
+                  if (item.quizProgress > 0) {
+                    readOnly = true;
+                    allowRetry = true;
+                  } else {
+                    readOnly = false;
+                    allowRetry = false;
+                  }
+                } else {
+                  readOnly = true;
+                  allowRetry = false;
+                }
+                navigateTo(
+                    context,
+                    QuizScreen(
+                      StudentId: widget.StudentId,
+                      QuizId: item.quizId,
+                      LessonName: widget.LessonName,
+                      dir: widget.dir,
+                    ));
+              }
             }
-          } else {
-            readOnly = true;
-            allowRetry = false;
-          }
-          navigateTo(
-              context,
-              QuizScreen(
-                StudentId: widget.StudentId,
-                QuizId: item.quizId,
-                LessonName: widget.LessonName,
-                dir: widget.dir,
-              ));
-        }
-      },
+          : null,
       child: Card(
         //----------------------------------------------Card
         elevation: (cubit.sessionHeader.isFree ||
                 cubit.sessionHeader.isPurchased ||
                 item.type == "Promo")
-            ? 3
+            ? 1
             : 1,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),

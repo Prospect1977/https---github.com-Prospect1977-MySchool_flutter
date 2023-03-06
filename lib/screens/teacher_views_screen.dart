@@ -391,11 +391,13 @@ class BuildItem extends StatelessWidget {
           padding: EdgeInsets.all(4),
           child: Text(
             item.subjectName,
-            style: TextStyle(color: defaultColor.withOpacity(0.8)),
+            style: TextStyle(
+                color: defaultColor.withOpacity(0.8),
+                fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.07),
+              color: Colors.black.withOpacity(0.02),
               border: Border(
                   bottom: BorderSide(color: defaultColor.withOpacity(0.35)))),
         ),
@@ -428,9 +430,8 @@ class BuildItem extends StatelessWidget {
                           lang: lang,
                           item: item,
                           widthFactor: item.videoWatched / MaxCount,
-                          caption: lang == "en"
-                              ? "Watched Videos:"
-                              : "عدد المشاهدات:",
+                          caption:
+                              lang == "en" ? "Views Count:" : "عدد المشاهدات:",
                           value: item.videoWatched.toString(),
                           MaxCount: MaxCount,
                         ),
