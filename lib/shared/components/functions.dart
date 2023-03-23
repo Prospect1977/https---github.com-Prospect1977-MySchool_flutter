@@ -113,3 +113,11 @@ int weekDaySundayBased(int weekDay) {
     return weekDay;
   }
 }
+
+String formatDate(DateTime dataDate, lang) {
+  if (lang == "en") {
+    return '${getDayName(dataDate.weekday, lang)} ${dataDate.day} ${getMonthName(dataDate.month, lang)} ${dataDate.year}';
+  } else {
+    return '${getDayName(dataDate.weekday, lang)} ${dataDate.day} ${getMonthName(dataDate.month, lang)} ${dataDate.year}';
+  }
+}

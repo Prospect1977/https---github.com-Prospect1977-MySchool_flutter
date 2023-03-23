@@ -16,3 +16,30 @@ class StudentSubject {
     ParentId = js['ParentId'];
   }
 }
+
+class TeacherSubject {
+  int SubjectId;
+  int YearSubjectId;
+  String SubjectName;
+  int SortIndex;
+  String dir;
+  int ParentId;
+  TeacherSubject.fromJson(Map<String, dynamic> js) {
+    SubjectId = js['subjectId'];
+    YearSubjectId = js['yearSubjectId'];
+    SubjectName = js['subjectName'];
+    SortIndex = js['sortIndex'];
+    dir = js['dir'];
+    ParentId = js['parentId'];
+  }
+}
+
+class TeacherSubjects {
+  List<TeacherSubject> Subjects = [];
+
+  TeacherSubjects.fromJson(List<Object> js) {
+    js.forEach((j) {
+      Subjects.add(TeacherSubject.fromJson(j));
+    });
+  }
+}

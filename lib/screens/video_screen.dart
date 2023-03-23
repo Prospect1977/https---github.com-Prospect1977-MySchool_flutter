@@ -97,9 +97,19 @@ class _VideoScreenState extends State<VideoScreen> {
           IndicatorPosition = MediaQuery.of(context).size.width *
               (_controller.value.position.inSeconds /
                   _controller.value.duration.inSeconds);
+          print('Indicator Position: ${_controller.value.position.inSeconds}');
         });
       })
       ..play();
+  }
+
+  double getIndicatorPosition() {
+    var pos = (MediaQuery.of(context).size.width -
+                86) * //86=currentTimeLabelWidth + durationLabelWidth
+            (_controller.value.position.inSeconds /
+                _controller.value.duration.inSeconds) -
+        5;
+    return pos;
   }
 
   void GetVideoNotes() {
@@ -501,7 +511,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                           ),
                                           Expanded(
                                             child: Container(
-                                              height: 12,
+                                              height: 16,
                                               child: Stack(
                                                   //----------------------------------video progress indicator Group
                                                   alignment:
@@ -517,16 +527,18 @@ class _VideoScreenState extends State<VideoScreen> {
                                                             defaultColor,
                                                       ),
                                                     ),
-                                                    // Positioned(
-                                                    //     //---------------------------------------Time Circle
-                                                    //     top: 0,
-                                                    //     bottom: 3,
-                                                    //     left: IndicatorPosition,
-                                                    //     child: Icon(
-                                                    //       Icons.circle,
-                                                    //       color: defaultColor,
-                                                    //       size: 15,
-                                                    //     )),
+                                                    Positioned(
+                                                      left:
+                                                          getIndicatorPosition(),
+                                                      top: 2,
+                                                      child: IgnorePointer(
+                                                        child: Icon(
+                                                          Icons.circle,
+                                                          color: defaultColor,
+                                                          size: 15,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ]),
                                             ),
                                           ),
@@ -764,8 +776,11 @@ class _VideoScreenState extends State<VideoScreen> {
                                                           style: TextStyle(
                                                               color:
                                                                   Colors.white,
-                                                              fontSize: 13)),
+                                                              fontSize: 12)),
                                                     ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 7,
                                                   ),
                                                   Row(
                                                     mainAxisAlignment:
@@ -778,11 +793,15 @@ class _VideoScreenState extends State<VideoScreen> {
                                                         Icons
                                                             .sticky_note_2_outlined,
                                                         color: Colors.black26,
-                                                        size: 18,
+                                                        size: 21,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 5,
                                                       ),
                                                       Text(
                                                         item.note,
                                                         style: TextStyle(
+                                                            fontSize: 15,
                                                             color:
                                                                 Colors.black54),
                                                       )

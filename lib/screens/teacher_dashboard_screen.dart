@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:my_school/screens/teacher_content_management_screen.dart';
 import 'package:my_school/screens/teacher_profile_screen.dart';
 import 'package:my_school/screens/teacher_viewsPerLesson_screen.dart';
 import 'package:my_school/screens/teacher_views_screen.dart';
@@ -69,7 +70,10 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                       ),
                       dashboardButton(
                         context,
-                        () {},
+                        () {
+                          navigateTo(
+                              context, TeacherContentManagementScreen(Id));
+                        },
                         'sessions.png',
                         lang.toString().toLowerCase() == "ar"
                             ? "إدارة المحتوى"

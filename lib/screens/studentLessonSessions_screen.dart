@@ -61,7 +61,7 @@ class _StudentLessonSessionsScreenState
             token: token)
         .then((value) {
       print(value.data["data"]);
-      if (value.data["data"] == false) {
+      if (value.data["status"] == false) {
         navigateAndFinish(context, LoginScreen());
         return;
       }
@@ -520,7 +520,7 @@ class _StudentLessonSessionsScreenState
                                               } else {
                                                 showToast(
                                                     text: item.dir == "ltr"
-                                                        ? "Main chapters have now content!"
+                                                        ? "Main chapters have no content!"
                                                         : "الأبواب الرئيسية ليس لها محتوى",
                                                     state: ToastStates.ERROR);
                                               }
