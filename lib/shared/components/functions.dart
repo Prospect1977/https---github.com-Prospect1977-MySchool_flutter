@@ -121,3 +121,19 @@ String formatDate(DateTime dataDate, lang) {
     return '${getDayName(dataDate.weekday, lang)} ${dataDate.day} ${getMonthName(dataDate.month, lang)} ${dataDate.year}';
   }
 }
+
+String QuestionType({String type, String dir}) {
+  String out = "";
+  switch (type) {
+    case "MultipleChoice":
+      out = dir == "ltr" ? "Multiple Choice" : "إختيار من متعدد";
+      break;
+    case "YesNo":
+      out = dir == "ltr" ? "True/False" : "نعم/لا";
+      break;
+    case "Example":
+      out = dir == "ltr" ? "Complete" : "أكمل";
+      break;
+  }
+  return (out);
+}

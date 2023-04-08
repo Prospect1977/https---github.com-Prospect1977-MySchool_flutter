@@ -56,35 +56,38 @@ class TeacherViewsNavigationBarState extends State<TeacherViewsNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      onTap: _selectPage,
-      backgroundColor: interfaceColor,
-      unselectedItemColor: Colors.white,
-      selectedItemColor: Colors.yellow,
-      currentIndex: widget.PageIndex,
-      // type: BottomNavigationBarType.fixed,  //this is the default value, you can instead type BottomNavigationBarType.shifting for animation effect,
-      items: [
-        BottomNavigationBarItem(
-          backgroundColor: interfaceColor,
-          icon: Icon(Icons.adjust_rounded),
-          label: lang == "en" ? 'Lessons Views' : "مشاهدات الدروس",
-        ),
-        BottomNavigationBarItem(
-          backgroundColor: interfaceColor,
-          icon: Icon(Icons.list),
-          label: lang == "en" ? 'Subjects Views' : "مشاهدات المناهج",
-        ),
-        BottomNavigationBarItem(
-          backgroundColor: interfaceColor,
-          icon: Icon(Icons.pie_chart),
-          label: lang == "en" ? 'Charts' : "الرسومات البيانية",
-        ),
-        BottomNavigationBarItem(
-          backgroundColor: interfaceColor,
-          icon: Icon(Icons.stacked_line_chart_outlined),
-          label: lang == "en" ? 'Views over Time' : "المشاهدات عبر الزمن",
-        ),
-      ],
+    return Directionality(
+      textDirection: lang == "en" ? TextDirection.ltr : TextDirection.rtl,
+      child: BottomNavigationBar(
+        onTap: _selectPage,
+        backgroundColor: interfaceColor,
+        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.yellow,
+        currentIndex: widget.PageIndex,
+        // type: BottomNavigationBarType.fixed,  //this is the default value, you can instead type BottomNavigationBarType.shifting for animation effect,
+        items: [
+          BottomNavigationBarItem(
+            backgroundColor: interfaceColor,
+            icon: Icon(Icons.adjust_rounded),
+            label: lang == "en" ? 'Lessons Views' : "مشاهدات الدروس",
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: interfaceColor,
+            icon: Icon(Icons.list),
+            label: lang == "en" ? 'Subjects Views' : "مشاهدات المناهج",
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: interfaceColor,
+            icon: Icon(Icons.pie_chart),
+            label: lang == "en" ? 'Charts' : "الرسومات البيانية",
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: interfaceColor,
+            icon: Icon(Icons.stacked_line_chart_outlined),
+            label: lang == "en" ? 'Views over Time' : "المشاهدات عبر الزمن",
+          ),
+        ],
+      ),
     );
   }
 }

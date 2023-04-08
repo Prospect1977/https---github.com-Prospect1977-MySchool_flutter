@@ -15,6 +15,7 @@ import 'package:my_school/screens/teacher_profile_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -620,11 +621,13 @@ class _StudentLessonSessionsScreenState
                                                                           horizontal:
                                                                               10),
                                                                   child: Text(
-                                                                    intl.DateFormat(
-                                                                            "EEE d-MMM")
-                                                                        .format(
-                                                                            item.dataDate)
-                                                                        .toString(),
+                                                                    formatDate(
+                                                                      item.dataDate,
+                                                                      item.dir ==
+                                                                              "ltr"
+                                                                          ? "en"
+                                                                          : "ar",
+                                                                    ),
                                                                     textAlign:
                                                                         TextAlign
                                                                             .end,

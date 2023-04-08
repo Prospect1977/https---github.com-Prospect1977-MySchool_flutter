@@ -21,7 +21,7 @@ class QuizScreen extends StatefulWidget {
   String LessonName;
 
   QuizScreen(
-      {@required this.StudentId,
+      {this.StudentId,
       @required this.QuizId,
       @required this.dir,
       @required this.LessonName,
@@ -33,6 +33,7 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  String roles = CacheHelper.getData(key: "roles");
   String dir = CacheHelper.getData(key: "lang");
   String token = CacheHelper.getData(key: "token");
   PageController _pageController = PageController();
@@ -49,7 +50,9 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-
+    if (roles == "teacher") {
+      readOnly = false;
+    }
     getQuiz();
   }
 
@@ -105,6 +108,9 @@ class _QuizScreenState extends State<QuizScreen> {
   void saveQuiz() {
     //SaveQuiz(int StudentId,int QuizId,DateTime DataDate,[FromBody]IEnumerable<StudentQuestionAnswer> QuizAnswers)
     print(jsonEncode(StudentAnswers(studentAnswers).toJson()));
+    if (roles == "Teacher") {
+      return;
+    }
     DioHelper.postData(
             url: "StudentQuiz",
             query: {
@@ -130,8 +136,10 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void getQuiz() {
     DioHelper.getData(
-            url: "Quiz",
-            query: {"QuizId": widget.QuizId, "StudentId": widget.StudentId},
+            url: roles == "Teacher" ? "Quiz/getQuizDataForTeacher" : "Quiz",
+            query: roles == "Teacher"
+                ? {"QuizId": widget.QuizId}
+                : {"QuizId": widget.QuizId, "StudentId": widget.StudentId},
             lang: dir == "ltr" ? "en" : "ar",
             token: token)
         .then(
@@ -271,7 +279,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                                           BorderRadius.circular(
                                                               5),
                                                       child: Image.network(
-                                                          '${webUrl}Sessions/QuestionImages/${item.questionImageUrl}'),
+                                                          '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
                                                     ),
                                                   )
                                                 : Container(),
@@ -475,7 +483,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                                         BorderRadius.circular(
                                                             5),
                                                     child: Image.network(
-                                                        '${webUrl}Sessions/QuestionImages/${item.questionImageUrl}'),
+                                                        '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
                                                   )
                                                 : Container(),
                                             SizedBox(

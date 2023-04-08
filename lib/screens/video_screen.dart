@@ -16,6 +16,7 @@ import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
+import 'package:my_school/shared/widgets/teacher_session_navigation_bar.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
@@ -36,7 +37,7 @@ class VideoScreen extends StatefulWidget {
       @required this.VideoId,
       @required this.VideoUrl,
       @required this.Title,
-      @required this.SessionHeaderId,
+      this.SessionHeaderId,
       @required this.LessonName,
       @required this.LessonDescription,
       @required this.dir,
@@ -53,7 +54,7 @@ class _VideoScreenState extends State<VideoScreen> {
   VideoPlayerController _controller;
   bool showControls;
   int stoppedAt;
-
+  String roles = CacheHelper.getData(key: "roles");
   double IndicatorPosition = 0.0;
   var lang = CacheHelper.getData(key: "lang");
   var token = CacheHelper.getData(key: "token");
@@ -83,15 +84,17 @@ class _VideoScreenState extends State<VideoScreen> {
       })
       ..setLooping(false)
       ..initialize().then((_) {
-        DioHelper.getData(query: {
-          "StudentId": widget.StudentId,
-          "VideoId": widget.VideoId
-        }, url: "StudentUpdateVideoProgress", lang: lang, token: token)
-            .then((value) {
-          // print(
-          //     'Stopped At============================================================================$value');
-          _controller.seekTo(Duration(seconds: value.data));
-        });
+        if (roles != 'Teacher') {
+          DioHelper.getData(query: {
+            "StudentId": widget.StudentId,
+            "VideoId": widget.VideoId
+          }, url: "StudentUpdateVideoProgress", lang: lang, token: token)
+              .then((value) {
+            // print(
+            //     'Stopped At============================================================================$value');
+            _controller.seekTo(Duration(seconds: value.data));
+          });
+        }
 
         setState(() {
           IndicatorPosition = MediaQuery.of(context).size.width *
@@ -154,7 +157,9 @@ class _VideoScreenState extends State<VideoScreen> {
     print(
         "--------------------------------Disposed at ${_controller.value.position.inSeconds}--------------------------------------------------");
     super.dispose();
-    SaveProgress(secondsCounter);
+    if (roles != 'Teacher') {
+      SaveProgress(secondsCounter);
+    }
     _controller.dispose();
   }
 
@@ -187,25 +192,27 @@ class _VideoScreenState extends State<VideoScreen> {
   void SaveProgress(int interval /*i.e. save every 5 seconds*/) {
     // print(
     //     "Saved at -------------------------------------------${currentSecond}");
-    DioHelper.postData(
-        url: 'StudentUpdateVideoProgress',
-        query: {
-          "StudentId": widget.StudentId,
-          "VideoId": widget.VideoId,
-          "CurrentSecond": _controller.value.position.inSeconds,
-          "VideoDuration": _controller.value.duration.inSeconds,
-          "SaveInterval": secondsCounter,
-          "DataDate": DateTime.now(),
-        },
-        lang: lang,
-        token: token,
-        data: {}).then((value) {
-      setState(() {
-        secondsCounter = 0;
+    if (roles != 'Teacher') {
+      DioHelper.postData(
+          url: 'StudentUpdateVideoProgress',
+          query: {
+            "StudentId": widget.StudentId,
+            "VideoId": widget.VideoId,
+            "CurrentSecond": _controller.value.position.inSeconds,
+            "VideoDuration": _controller.value.duration.inSeconds,
+            "SaveInterval": secondsCounter,
+            "DataDate": DateTime.now(),
+          },
+          lang: lang,
+          token: token,
+          data: {}).then((value) {
+        setState(() {
+          secondsCounter = 0;
+        });
+      }).catchError((error) {
+        // print(error.toString());
       });
-    }).catchError((error) {
-      // print(error.toString());
-    });
+    }
   }
 
   @override
@@ -570,11 +577,21 @@ class _VideoScreenState extends State<VideoScreen> {
                                                       Orientation.landscape
                                                   ? null
                                                   : () {
-                                                      commentMode = "create";
-                                                      editCommentId = 0;
+                                                      if (roles != "Teacher") {
+                                                        commentMode = "create";
+                                                        editCommentId = 0;
 
-                                                      _startAddComment(
-                                                          ExistingComment: "");
+                                                        _startAddComment(
+                                                            ExistingComment:
+                                                                "");
+                                                      } else {
+                                                        showToast(
+                                                            text: lang == "en"
+                                                                ? "Only students and parents can add a notes!"
+                                                                : "فقط الطلاب وأولاياء الأمور بأمكانهم إضافة ملحوظات!",
+                                                            state: ToastStates
+                                                                .ERROR);
+                                                      }
                                                     },
                                               child: Container(
                                                 color: Colors.black
@@ -730,7 +747,7 @@ class _VideoScreenState extends State<VideoScreen> {
                           ? TextDirection.ltr
                           : TextDirection.rtl,
                       child: Expanded(
-                          child: VideoNotes != null
+                          child: VideoNotes != null && roles != "Teacher"
                               ? ListView.separated(
                                   separatorBuilder: (context, index) =>
                                       Divider(thickness: 1),
@@ -931,9 +948,11 @@ class _VideoScreenState extends State<VideoScreen> {
                                     );
                                   },
                                 )
-                              : Center(
-                                  child: CircularProgressIndicator(),
-                                )),
+                              : roles != 'Teacher'
+                                  ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : Container()),
                     )
                   : Container()
             ])

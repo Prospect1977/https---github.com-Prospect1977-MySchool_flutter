@@ -90,6 +90,7 @@ Widget appBarComponent(context, String title, {backButtonPage}) {
 Widget defaultButton({
   double width = double.infinity,
   Color background = Colors.purple,
+  Color foregroundColor = Colors.white,
   bool isUpperCase = false,
   double borderRadius = 3.0,
   double fontSize = 18,
@@ -105,7 +106,7 @@ Widget defaultButton({
         child: Text(
           isUpperCase ? text.toUpperCase() : text,
           style: TextStyle(
-            color: Colors.white,
+            color: foregroundColor,
             fontSize: fontSize,
             fontWeight: fontWeight,
           ),

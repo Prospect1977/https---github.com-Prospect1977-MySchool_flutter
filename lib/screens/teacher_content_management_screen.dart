@@ -616,15 +616,19 @@ class _TeacherContentManagementScreenState
                                                 Row(
                                                   children: [
                                                     SizedBox(
-                                                      width: 15,
+                                                      width: 0,
                                                     ),
-                                                    Text(
-                                                      item.lessonName,
-                                                      style: TextStyle(
-                                                          color: Colors.black54,
-                                                          fontStyle:
-                                                              FontStyle.italic,
-                                                          fontSize: 15),
+                                                    Container(
+                                                      width: 275,
+                                                      child: Text(
+                                                        item.lessonName,
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black54,
+                                                            fontStyle: FontStyle
+                                                                .italic,
+                                                            fontSize: 15),
+                                                      ),
                                                     )
                                                   ],
                                                 )

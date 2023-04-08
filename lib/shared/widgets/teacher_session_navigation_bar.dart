@@ -1,5 +1,7 @@
 import 'package:my_school/screens/student_followup_list_screen.dart';
 import 'package:my_school/screens/student_followup_piechart_screen.dart';
+import 'package:my_school/screens/teacher_session_screen.dart';
+import 'package:my_school/screens/teacher_session_settings_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 
@@ -8,18 +10,31 @@ import 'package:my_school/shared/styles/colors.dart';
 
 enum pageIndex { List, PieChart }
 
-class StudentNavigationBar extends StatefulWidget {
-  StudentNavigationBar({this.PageIndex, this.StudentId, this.StudentName});
+class TeacherSessionNavigationBar extends StatefulWidget {
+  TeacherSessionNavigationBar(
+      {this.PageIndex,
+      @required this.TeacherId,
+      @required this.YearSubjectId,
+      @required this.TermIndex,
+      @required this.LessonId,
+      @required this.LessonName,
+      @required this.dir});
   final int PageIndex;
-  final int StudentId;
-  final String StudentName;
+  final int TeacherId;
+  int YearSubjectId;
+  int TermIndex;
+  int LessonId;
+  String LessonName;
+  String dir;
   String navigationUrl;
 
   @override
-  State<StudentNavigationBar> createState() => StudentNavigationBarState();
+  State<TeacherSessionNavigationBar> createState() =>
+      TeacherSessionNavigationBarState();
 }
 
-class StudentNavigationBarState extends State<StudentNavigationBar> {
+class TeacherSessionNavigationBarState
+    extends State<TeacherSessionNavigationBar> {
   int _selectedPageIndex = 0;
   String lang = CacheHelper.getData(key: "lang");
   void _selectPage(int index) {
@@ -30,9 +45,13 @@ class StudentNavigationBarState extends State<StudentNavigationBar> {
           {
             navigateTo(
                 context,
-                StudentFollowupListScreen(
-                  StudentId: widget.StudentId,
-                  StudentName: widget.StudentName,
+                TeacherSessionScreen(
+                  LessonId: widget.LessonId,
+                  LessonName: widget.LessonName,
+                  TeacherId: widget.TeacherId,
+                  TermIndex: widget.TermIndex,
+                  YearSubjectId: widget.YearSubjectId,
+                  dir: widget.dir,
                 ));
             break;
           }
@@ -40,9 +59,13 @@ class StudentNavigationBarState extends State<StudentNavigationBar> {
           {
             navigateTo(
                 context,
-                StudentFollowupPiechartScreen(
-                  StudentId: widget.StudentId,
-                  StudentName: widget.StudentName,
+                TeacherSessionSettingsScreen(
+                  LessonId: widget.LessonId,
+                  LessonName: widget.LessonName,
+                  TeacherId: widget.TeacherId,
+                  TermIndex: widget.TermIndex,
+                  YearSubjectId: widget.YearSubjectId,
+                  dir: widget.dir,
                 ));
             break;
           }
@@ -65,12 +88,12 @@ class StudentNavigationBarState extends State<StudentNavigationBar> {
           BottomNavigationBarItem(
             backgroundColor: interfaceColor,
             icon: Icon(Icons.list),
-            label: lang == "en" ? 'Info' : "البيانات",
+            label: lang == "en" ? 'Content List' : "قائمة المحتوى",
           ),
           BottomNavigationBarItem(
             backgroundColor: interfaceColor,
-            icon: Icon(Icons.pie_chart),
-            label: lang == "en" ? 'Charts' : "الرسومات البيانية",
+            icon: Icon(Icons.settings),
+            label: lang == "en" ? 'Settings' : "الإعدادات",
           ),
         ],
       ),
