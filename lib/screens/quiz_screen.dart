@@ -483,7 +483,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                                         BorderRadius.circular(
                                                             5),
                                                     child: Image.network(
-                                                        '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
+                                                      '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}',
+                                                      width: double.infinity,
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   )
                                                 : Container(),
                                             SizedBox(

@@ -24,14 +24,14 @@ class TeacherSessionDetail {
 }
 
 class TeacherSession {
-  // int id;
+  int id;
   bool isFree;
   dynamic price;
   bool active;
   String lessonDescription;
   List<TeacherSessionDetail> teacherSessionDetails;
   TeacherSession.fromJson(Map<String, dynamic> json) {
-    // id = json['id'];
+    id = json['id'];
     isFree = json['isFree'];
     price = json['price'];
     active = json['active'];

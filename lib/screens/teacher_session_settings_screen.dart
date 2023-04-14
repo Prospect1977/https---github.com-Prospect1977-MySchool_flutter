@@ -129,6 +129,7 @@ class _TeacherSessionSettingsScreenState
                       });
                     },
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           active == false
@@ -141,18 +142,23 @@ class _TeacherSessionSettingsScreenState
                         SizedBox(
                           width: 10,
                         ),
-                        Text(
-                          lang == "en"
-                              ? "Content is not ready for students to view"
-                              : "المحتوى غير جاهز للعرض على الطلبة",
-                          style: TextStyle(
-                              color: active == false
-                                  ? Colors.red.shade700
-                                  : Colors.black54,
-                              fontSize: 20),
+                        Expanded(
+                          child: Text(
+                            lang == "en"
+                                ? "Content is not ready for students to view"
+                                : "المحتوى غير جاهز للعرض على الطلبة",
+                            style: TextStyle(
+                                color: active == false
+                                    ? Colors.red.shade700
+                                    : Colors.black54,
+                                fontSize: 20),
+                          ),
                         )
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   InkWell(
                     onTap: () {
@@ -162,6 +168,7 @@ class _TeacherSessionSettingsScreenState
                       });
                     },
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           active
@@ -173,15 +180,17 @@ class _TeacherSessionSettingsScreenState
                         SizedBox(
                           width: 10,
                         ),
-                        Text(
-                          lang == "en"
-                              ? "Content is ready and available for students"
-                              : "المحتوى جاهز ومتاح للطلبة",
-                          style: TextStyle(
-                              color: active
-                                  ? Colors.green.shade700
-                                  : Colors.black54,
-                              fontSize: 20),
+                        Expanded(
+                          child: Text(
+                            lang == "en"
+                                ? "Content is ready and available for students"
+                                : "المحتوى جاهز ومتاح للطلبة",
+                            style: TextStyle(
+                                color: active
+                                    ? Colors.green.shade700
+                                    : Colors.black54,
+                                fontSize: 20),
+                          ),
                         )
                       ],
                     ),

@@ -18,6 +18,8 @@ import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/teacher_session_navigation_bar.dart';
 
+import '../models/StudentSessionHeaderDetail.dart';
+
 class TeacherSessionScreen extends StatefulWidget {
   int TeacherId;
   int YearSubjectId;
@@ -47,6 +49,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
   TeacherSession sessionData = null;
   var lessonsData = null;
   bool showReorderTip = true;
+  bool isSessionActive;
   void getData() async {
     DioHelper.getData(
             url: "TeacherSession",
@@ -61,6 +64,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
       print(value.data);
       setState(() {
         sessionData = TeacherSession.fromJson(value.data['data']);
+        isSessionActive = sessionData.active;
       });
     });
   }
@@ -383,10 +387,12 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                 ],
                                               ),
                                             ),
-                                      sessionData.teacherSessionDetails.length >
-                                                  1 &&
-                                              showReorderTip
-                                          ? Padding(
+                                      sessionData.id == 0 ||
+                                              isSessionActive == true
+                                          ? Container()
+                                          : Container(
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: 5),
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 5),
@@ -402,8 +408,50 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                     Expanded(
                                                       child: Text(
                                                         widget.dir == "ltr"
-                                                            ? "Tap, Hold, then Drag to reorder items"
-                                                            : "للترتيب: إضغط طويلا ثم اسحب العنصر رأسيا",
+                                                            ? "This content is not visible for visitors, tap the settings button below"
+                                                            : "هذا المحتوى غير مرئي للمتصفح، انقر على زر الإعدادات اسفل",
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .amber.shade700,
+                                                            fontStyle: FontStyle
+                                                                .italic),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                    border: Border.all(
+                                                        color: Colors
+                                                            .amber.shade700),
+                                                    color: Colors.amber
+                                                        .withOpacity(0.05)),
+                                              ),
+                                            ),
+                                      sessionData.teacherSessionDetails.length >
+                                                  1 &&
+                                              showReorderTip
+                                          ? Container(
+                                              margin: EdgeInsets.only(top: 10),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5),
+                                              child: Container(
+                                                padding: EdgeInsets.all(5),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.lightbulb,
+                                                      color:
+                                                          Colors.amber.shade700,
+                                                    ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        widget.dir == "ltr"
+                                                            ? "Tap, Long Hold with Drag to reorder items"
+                                                            : "للترتيب: إضغط طويلا مع سحب العنصر رأسيا",
                                                         style: TextStyle(
                                                             color: Colors
                                                                 .amber.shade700,
@@ -738,14 +786,18 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                         ),
                       )
               ]),
-        bottomNavigationBar: TeacherSessionNavigationBar(
-            LessonId: widget.LessonId,
-            LessonName: widget.LessonName,
-            TeacherId: widget.TeacherId,
-            TermIndex: widget.TermIndex,
-            YearSubjectId: widget.YearSubjectId,
-            dir: widget.dir,
-            PageIndex: 0),
+        bottomNavigationBar: sessionData != null
+            ? sessionData.id == 0
+                ? null
+                : TeacherSessionNavigationBar(
+                    LessonId: widget.LessonId,
+                    LessonName: widget.LessonName,
+                    TeacherId: widget.TeacherId,
+                    TermIndex: widget.TermIndex,
+                    YearSubjectId: widget.YearSubjectId,
+                    dir: widget.dir,
+                    PageIndex: 0)
+            : null,
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.green,
           child: Icon(Icons.add),

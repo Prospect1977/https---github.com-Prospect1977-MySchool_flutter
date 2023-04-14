@@ -10,6 +10,7 @@ import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/dio_helper.dart';
+import 'package:my_school/shared/widgets/teacher_image_input.dart';
 
 class TeacherProfileScreen extends StatefulWidget {
   int teacherId;
@@ -30,6 +31,15 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
   String bioDirection;
   bool isDirty = false; //indicates whether the teacher edited his data
   bool savingState = false;
+  void _selectImage(String pickedImage) {
+    setState(() {
+      model.photo = pickedImage;
+      model.urlSource = "api";
+      showChangeProfilePictureControllers = false;
+    });
+  }
+
+  bool showChangeProfilePictureControllers = false;
   var formKey = GlobalKey<FormState>();
   TextEditingController fullNameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
@@ -135,7 +145,7 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                                         : Image.network(
                                             model.urlSource == "web"
                                                 ? '${webUrl}images/Profiles/${model.photo}'
-                                                : '${baseUrl}Assets/ProfileImages/${model.photo}',
+                                                : '${baseUrl0}Assets/ProfileImages/${model.photo}',
                                             fit: BoxFit.cover,
                                             width: 120,
                                             height: 120,
@@ -154,7 +164,12 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                                                 borderRadius:
                                                     BorderRadius.circular(30)),
                                             child: IconButton(
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  setState(() {
+                                                    showChangeProfilePictureControllers =
+                                                        true;
+                                                  });
+                                                },
                                                 icon: Icon(
                                                   Icons.camera_alt_rounded,
                                                   /* shadows: [
@@ -171,7 +186,51 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                                 ]),
                           ),
                         ),
-                      ), //---------------------------------------------------------------------End of avatar
+                      ),
+                      //---------------------------------------------------------------------End of avatar
+                      showChangeProfilePictureControllers == true
+                          ? SizedBox(
+                              height: 10,
+                            )
+                          : Container(),
+                      showChangeProfilePictureControllers == true
+                          ? Stack(
+                              children: [
+                                TeacherImageInput(
+                                    _selectImage, model.photo != null),
+                                Positioned(
+                                  right: 0,
+                                  child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          showChangeProfilePictureControllers =
+                                              false;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: Colors.black38,
+                                        size: 17,
+                                      )),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          showChangeProfilePictureControllers =
+                                              false;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.square_outlined,
+                                        color: Colors.black38,
+                                        size: 20,
+                                      )),
+                                )
+                              ],
+                            )
+                          : Container(),
                       SizedBox(
                         height: 10,
                       ),

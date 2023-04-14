@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/widgets/image_input.dart';
+import 'package:my_school/shared/widgets/question_image_input.dart';
 import 'dart:io' as i;
 
 class TestFileUpload extends StatefulWidget {
@@ -16,10 +17,14 @@ class TestFileUpload extends StatefulWidget {
 class _TestFileUploadState extends State<TestFileUpload> {
   i.File _pickedImage;
   i.File _existImage = null;
+
   void _selectImage(i.File pickedImage) {
     _pickedImage = pickedImage;
   }
 
+  // void _selectImage(String pickedImageUrl) {
+  //   _pickedImage = pickedImage;
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
