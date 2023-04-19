@@ -399,6 +399,8 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                               child: Container(
                                                 padding: EdgeInsets.all(5),
                                                 child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Icon(
                                                       Icons.lightbulb,

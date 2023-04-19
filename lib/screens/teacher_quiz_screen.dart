@@ -129,6 +129,7 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
                             margin: EdgeInsets.all(8),
                             padding: EdgeInsets.all(5),
                             child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(
                                   Icons.lightbulb,
@@ -223,13 +224,26 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
                                                   TextSpan(text: "  "),
                                                   TextSpan(
                                                       text:
-                                                          ' ${QuestionType(type: item.questionType, dir: widget.dir)}. ',
+                                                          ' ${QuestionType(type: item.questionType, dir: widget.dir)} ',
                                                       style: TextStyle(
                                                           height: 1.5,
-                                                          fontSize: 13,
+                                                          fontSize: widget
+                                                                      .dir ==
+                                                                  "ltr"
+                                                              ? 13
+                                                              : 14,
                                                           backgroundColor:
-                                                              Colors.black38,
-                                                          color: Colors.white)),
+                                                              widget.dir ==
+                                                                      "ltr"
+                                                                  ? Colors
+                                                                      .black38
+                                                                  : Colors
+                                                                      .white,
+                                                          color: widget.dir ==
+                                                                  "ltr"
+                                                              ? Colors.white
+                                                              : Colors
+                                                                  .black54)),
                                                 ],
                                               ),
                                             ),

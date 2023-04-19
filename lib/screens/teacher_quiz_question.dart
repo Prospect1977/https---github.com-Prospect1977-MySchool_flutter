@@ -223,13 +223,14 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar:
-            appBarComponent(context, widget.dir == "ltr" ? "Question" : "سؤال"),
-        body: Directionality(
-          textDirection:
-              widget.dir == "ltr" ? TextDirection.ltr : TextDirection.rtl,
-          child: Container(
-              padding: EdgeInsets.all(8),
+      appBar:
+          appBarComponent(context, widget.dir == "ltr" ? "Question" : "سؤال"),
+      body: Directionality(
+        textDirection:
+            widget.dir == "ltr" ? TextDirection.ltr : TextDirection.rtl,
+        child: Container(
+            padding: EdgeInsets.all(8),
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -350,35 +351,19 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                   SizedBox(
                     height: 3,
                   ),
-                  widget.question.questionImageUrl != null
-                      ? Container()
-                      : Stack(children: [
-                          Container(
-                              padding: EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.black38,
-                                  ),
-                                  borderRadius: BorderRadius.circular(5)),
-                              margin: EdgeInsets.only(top: 8),
-                              child: QuestionImageInput(_selectImage)),
-                          Positioned(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 3),
-                              color: Colors.white,
-                              child: Text(
-                                widget.dir == "ltr" ? "Add Image" : "أضف صورة",
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black45,
-                                    backgroundColor: Colors.white),
-                              ),
-                            ),
-                            top: 0,
-                            left: widget.dir == "ltr" ? 8 : null,
-                            right: widget.dir == "rtl" ? 8 : null,
-                          ),
-                        ]),
+                  widget.question == null
+                      ? AddImage(
+                          dir: widget.dir,
+                          selectImage: _selectImage,
+                          isDiabled: true)
+                      : widget.question.questionImageUrl != null
+                          ? Container()
+                          : AddImage(
+                              dir: widget.dir,
+                              selectImage: _selectImage,
+                              isDiabled: widget.question.questionType != "0"
+                                  ? false
+                                  : true),
                   widget.question != null
                       ? widget.question.questionImageUrl != null
                           ? Container(
@@ -539,84 +524,83 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                   SizedBox(
                     height: 8,
                   ),
-                  Expanded(
-                    child: ReorderableListView.builder(
-                      itemBuilder: (context, index) {
-                        var item = Answers[index];
-                        return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            key: ValueKey(item),
-                            children: [
-                              Row(children: [
-                                Column(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          if (SelectedQuestionType !=
-                                              "Example") {
-                                            Answers.forEach((element) {
-                                              element.isRightAnswer = false;
+                  ReorderableListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      var item = Answers[index];
+                      return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          key: ValueKey(item),
+                          children: [
+                            Row(children: [
+                              Column(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        if (SelectedQuestionType != "Example") {
+                                          Answers.forEach((element) {
+                                            element.isRightAnswer = false;
+                                          });
+                                          item.isRightAnswer = true;
+                                        } else {
+                                          item.isRightAnswer = true;
+                                        }
+                                      });
+                                    },
+                                    child: Icon(Icons.check_circle,
+                                        color: item.isRightAnswer
+                                            ? Colors.green
+                                            : Colors.black12),
+                                  ),
+                                  (SelectedQuestionType != "YesNo" &&
+                                          item.id == 0)
+                                      ? InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              widget.question.answers
+                                                  .removeAt(index);
+                                              Answers = [
+                                                ...widget.question.answers
+                                              ];
                                             });
-                                            item.isRightAnswer = true;
-                                          } else {
-                                            item.isRightAnswer = true;
-                                          }
-                                        });
-                                      },
-                                      child: Icon(Icons.check_circle,
-                                          color: item.isRightAnswer
-                                              ? Colors.green
-                                              : Colors.black12),
-                                    ),
-                                    (SelectedQuestionType != "YesNo" &&
-                                            item.id == 0)
-                                        ? InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                widget.question.answers
-                                                    .removeAt(index);
-                                                Answers = [
-                                                  ...widget.question.answers
-                                                ];
-                                              });
-                                            },
-                                            child: Icon(Icons.delete,
-                                                color: Colors.red
-                                                    .withOpacity(0.4)),
-                                          )
-                                        : Container(),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                    child: defaultFormField(
-                                        controller: AnswersControllers[index],
-                                        onChange: (value) {
-                                          item.title = value;
-                                        },
-                                        type: TextInputType.text,
-                                        label: ""))
-                              ]),
+                                          },
+                                          child: Icon(Icons.delete,
+                                              color:
+                                                  Colors.red.withOpacity(0.4)),
+                                        )
+                                      : Container(),
+                                ],
+                              ),
                               SizedBox(
-                                height: 8,
-                              )
-                            ]);
-                      },
-                      itemCount: Answers.length,
-                      onReorder: (oldIndex, newIndex) {
-                        setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex--;
-                          }
-                          final tile = Answers.removeAt(oldIndex);
-                          Answers.insert(newIndex, tile);
-                        });
-                        ReorderAnswers();
-                      },
-                    ),
+                                width: 10,
+                              ),
+                              Expanded(
+                                  child: defaultFormField(
+                                      controller: AnswersControllers[index],
+                                      onChange: (value) {
+                                        item.title = value;
+                                      },
+                                      type: TextInputType.text,
+                                      label: ""))
+                            ]),
+                            SizedBox(
+                              height: 8,
+                            )
+                          ]);
+                    },
+                    itemCount: Answers.length,
+                    onReorder: (oldIndex, newIndex) {
+                      setState(() {
+                        if (oldIndex < newIndex) {
+                          newIndex--;
+                        }
+                        final tile = Answers.removeAt(oldIndex);
+                        Answers.insert(newIndex, tile);
+                      });
+                      ReorderAnswers();
+                    },
                   ),
                   defaultButton(
                       function: SaveChanges,
@@ -624,8 +608,10 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                       foregroundColor: Colors.white,
                       background: Colors.green)
                 ],
-              )),
-        ));
+              ),
+            )),
+      ),
+    );
   }
 }
 
@@ -646,4 +632,51 @@ String getAnswerTitle(String QuestionType, String dir) {
       break;
   }
   return out;
+}
+
+class AddImage extends StatefulWidget {
+  AddImage(
+      {@required this.dir,
+      @required this.selectImage,
+      @required this.isDiabled,
+      Key key})
+      : super(key: key);
+  String dir;
+  Function selectImage;
+  bool isDiabled;
+  @override
+  State<AddImage> createState() => _AddImageState();
+}
+
+class _AddImageState extends State<AddImage> {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: [
+      Container(
+          padding: EdgeInsets.all(2),
+          decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.black38,
+              ),
+              borderRadius: BorderRadius.circular(5)),
+          margin: EdgeInsets.only(top: 8),
+          child: QuestionImageInput(widget.selectImage, widget.isDiabled)),
+      Positioned(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 3),
+          color: Colors.white,
+          child: Text(
+            widget.dir == "ltr" ? "Add Image" : "أضف صورة",
+            style: TextStyle(
+                fontSize: 12,
+                color: Colors.black45,
+                backgroundColor: Colors.white),
+          ),
+        ),
+        top: 0,
+        left: widget.dir == "ltr" ? 8 : null,
+        right: widget.dir == "rtl" ? 8 : null,
+      ),
+    ]);
+  }
 }

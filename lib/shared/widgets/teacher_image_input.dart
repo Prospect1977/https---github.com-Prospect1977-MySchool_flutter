@@ -35,6 +35,7 @@ class _TeacherImageInputState extends State<TeacherImageInput> {
       sourcePath: f.path,
       aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
       aspectRatioPresets: [CropAspectRatioPreset.square],
+      compressQuality: 90,
       uiSettings: [
         AndroidUiSettings(
             toolbarTitle: 'Cropper',
@@ -122,7 +123,7 @@ class _TeacherImageInputState extends State<TeacherImageInput> {
       }
       XFile pickedFile = await ImagePicker().pickImage(
         source: s,
-        maxWidth: 200,
+        maxWidth: 900,
       );
       if (pickedFile == null) {
         return;

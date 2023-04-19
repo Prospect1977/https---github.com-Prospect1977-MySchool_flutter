@@ -378,7 +378,6 @@ class BuildItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 232,
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         border: Border.all(color: defaultColor.withOpacity(0.6)),
@@ -391,6 +390,8 @@ class BuildItem extends StatelessWidget {
           padding: EdgeInsets.all(4),
           child: Text(
             item.subjectName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
                 color: defaultColor.withOpacity(0.8),
                 fontWeight: FontWeight.bold),

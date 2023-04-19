@@ -14,8 +14,8 @@ import 'package:http/http.dart' as http;
 
 class QuestionImageInput extends StatefulWidget {
   final Function onSelectImage;
-
-  QuestionImageInput(this.onSelectImage);
+  final bool isDisabled;
+  QuestionImageInput(this.onSelectImage, this.isDisabled);
 
   @override
   State<QuestionImageInput> createState() => _QuestionImageInputState();
@@ -29,6 +29,8 @@ class _QuestionImageInputState extends State<QuestionImageInput> {
       sourcePath: f.path,
       aspectRatio: CropAspectRatio(ratioX: 3, ratioY: 2),
       aspectRatioPresets: [CropAspectRatioPreset.ratio3x2],
+      compressQuality: 70,
+      compressFormat: ImageCompressFormat.jpg,
       uiSettings: [
         AndroidUiSettings(
             toolbarTitle: 'Cropper',
@@ -56,10 +58,8 @@ class _QuestionImageInputState extends State<QuestionImageInput> {
       // }
     });
     Future<void> _takePicture(ImageSource s) async {
-      XFile pickedFile = await ImagePicker().pickImage(
-        source: s,
-        maxWidth: 200,
-      );
+      XFile pickedFile = await ImagePicker()
+          .pickImage(source: s, maxWidth: 900, imageQuality: 90);
       if (pickedFile == null) {
         return;
       }
@@ -90,14 +90,22 @@ class _QuestionImageInputState extends State<QuestionImageInput> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         TextButton.icon(
-          icon: Icon(Icons.camera_alt),
+          icon: Icon(
+            Icons.camera_alt,
+            color: widget.isDisabled ? Colors.black38 : defaultColor,
+          ),
           label: Text("Camera"),
-          onPressed: (() => _takePicture(ImageSource.camera)),
+          onPressed: (widget.isDisabled
+              ? null
+              : () => _takePicture(ImageSource.camera)),
         ),
         TextButton.icon(
-          icon: Icon(Icons.image),
+          icon: Icon(Icons.image,
+              color: widget.isDisabled ? Colors.black38 : defaultColor),
           label: Text("Gallery"),
-          onPressed: (() => _takePicture(ImageSource.gallery)),
+          onPressed: (widget.isDisabled
+              ? null
+              : () => _takePicture(ImageSource.gallery)),
         ),
       ],
     );

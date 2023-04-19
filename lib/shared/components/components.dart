@@ -5,6 +5,10 @@ import 'package:my_school/cubits/main_cubit.dart';
 import 'package:my_school/screens/changeLanguageScreen.dart';
 
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/parents_landing_screen.dart';
+import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/screens/teacher_dashboard_screen.dart';
+import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,8 +40,25 @@ var AppBarActions = [
       onSelected: (SelectedValue) => {print(SelectedValue)},
       itemBuilder: (ctx) => [
             PopupMenuItem(
-              child: Text('Change Language'),
+              child: Text('Home'),
               value: 0,
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                var roles = CacheHelper.getData(key: "roles");
+                if (roles == "Teacher") {
+                  navigateTo(ctx, TeacherDashboardScreen());
+                }
+                if (roles == "Parent") {
+                  navigateAndFinish(ctx, ParentsLandingScreen());
+                }
+                if (roles == "Student") {
+                  navigateTo(ctx, StudentDashboardScreen());
+                }
+              },
+            ),
+            PopupMenuItem(
+              child: Text('Change Language'),
+              value: 1,
               onTap: () async {
                 final prefs = await SharedPreferences.getInstance();
 
@@ -46,7 +67,7 @@ var AppBarActions = [
             ),
             PopupMenuItem(
               child: Text('Log Out'),
-              value: 0,
+              value: 2,
               onTap: () async {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.remove("token");

@@ -288,7 +288,7 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                                   ? TextDirection.ltr
                                   : TextDirection.rtl,
                               child: Text(
-                                model.biography,
+                                model.biography == null ? "" : model.biography,
                                 style: TextStyle(
                                     fontSize: 18, color: Colors.black54),
                               ))
