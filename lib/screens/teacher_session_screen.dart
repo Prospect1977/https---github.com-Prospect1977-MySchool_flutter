@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get.dart';
 import 'package:my_school/models/teacher_lesson.dart';
 //import 'package:my_school/models/StudentSessionHeaderDetail.dart';
 import 'package:my_school/models/teacher_session.dart';
@@ -16,7 +17,10 @@ import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
+import 'package:my_school/shared/widgets/teacher_file_input.dart';
 import 'package:my_school/shared/widgets/teacher_session_navigation_bar.dart';
+import 'package:my_school/shared/widgets/video_input.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/StudentSessionHeaderDetail.dart';
 
@@ -265,10 +269,10 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
             state: ToastStates.ERROR);
         navigateAndFinish(context, LoginScreen());
         Navigator.pop(context);
-        getData();
       } else {
         Navigator.of(context).pop();
         showToast(text: value.data["message"], state: ToastStates.SUCCESS);
+        getData();
       }
     });
   }
@@ -391,8 +395,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                               isSessionActive == true
                                           ? Container()
                                           : Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 5),
+                                              margin: EdgeInsets.only(top: 5),
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 5),
@@ -436,7 +439,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                   1 &&
                                               showReorderTip
                                           ? Container(
-                                              margin: EdgeInsets.only(top: 10),
+                                              margin: EdgeInsets.only(top: 5),
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 5),
@@ -821,8 +824,56 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
+                                sessionData.teacherSessionDetails
+                                            .where((m) => m.type == "Promo")
+                                            .length ==
+                                        0
+                                    ? InkWell(
+                                        onTap: () async {
+                                          Navigator.of(context).pop();
+                                          await UploadVideo(
+                                              context: context,
+                                              TeacherId: widget.TeacherId,
+                                              LessonId: widget.LessonId,
+                                              IsPromo: true,
+                                              getData: getData);
+                                        },
+                                        child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.personal_video,
+                                                color: defaultColor,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                lang == "en"
+                                                    ? "Add Demo"
+                                                    : "إضافة ديمو",
+                                                style: TextStyle(fontSize: 18),
+                                              )
+                                            ]),
+                                      )
+                                    : Container(),
+                                sessionData.teacherSessionDetails
+                                            .where((m) => m.type == "Promo")
+                                            .length ==
+                                        0
+                                    ? Divider()
+                                    : Container(),
                                 InkWell(
-                                  onTap: () {},
+                                  onTap: () async {
+                                    Navigator.of(context).pop();
+                                    await UploadVideo(
+                                        context: context,
+                                        TeacherId: widget.TeacherId,
+                                        LessonId: widget.LessonId,
+                                        IsPromo: false,
+                                        getData: getData);
+                                  },
                                   child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -897,7 +948,13 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                 ),
                                 Divider(),
                                 InkWell(
-                                  onTap: () {},
+                                  onTap: () async {
+                                    await UploadFile(
+                                        LessonId: widget.LessonId,
+                                        TeacherId: widget.TeacherId,
+                                        context: context,
+                                        getData: getData);
+                                  },
                                   child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -956,7 +1013,7 @@ class Item extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
+      onTap: () async {
         if (item.type == "Video" || item.type == "Promo") {
           navigateTo(
               context,
@@ -984,6 +1041,13 @@ class Item extends StatelessWidget {
                 // TeacherId: widget.TeacherId,
                 dir: widget.dir,
               ));
+        }
+        if (item.type == "Document") {
+          await launchUrl(
+              Uri.parse(item.urlSource == "web"
+                  ? '${webUrl}Sessions/Documents/${item.documentUrl}'
+                  : '${baseUrl0}Sessions/Documents/${item.documentUrl}'),
+              mode: LaunchMode.externalApplication);
         }
       },
       child: Card(
@@ -1019,7 +1083,7 @@ class Item extends StatelessWidget {
                       icon: Icon(Icons.more_horiz,
                           color: Colors.black54), // add this line
                       itemBuilder: (_) => <PopupMenuItem<String>>[
-                            item.type != "Quiz"
+                            item.type != "Quiz" && item.type != "Promo"
                                 ? new PopupMenuItem<String>(
                                     child: Container(
                                         width: 150,
@@ -1198,14 +1262,14 @@ Widget getImage(
     case "Promo":
       return Image.network(
         //'assets/images/${sd.type}_left.png',
-        '${webUrl}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.urlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );
       break;
     case "Video":
       return Image.network(
-        '${webUrl}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.urlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );

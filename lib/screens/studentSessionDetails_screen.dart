@@ -18,6 +18,8 @@ import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
+import 'package:open_file/open_file.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StudentSessionDetailsScreen extends StatefulWidget {
   final int SessionHeaderId;
@@ -189,8 +191,7 @@ class _StudentSessionDetailsScreenState
                               ],
                             ),
                           ),
-                          Container(
-                            height: MediaQuery.of(context).size.height - 250,
+                          Expanded(
                             child: ListView.builder(
                               itemCount: allData.sessionDetails.length,
                               itemBuilder: (context, index) {
@@ -208,6 +209,7 @@ class _StudentSessionDetailsScreenState
                           (allData.sessionHeader.isFree ||
                                   allData.sessionHeader.isPurchased)
                               ? Container(
+                                  height: 80,
                                   child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
@@ -305,7 +307,7 @@ class Item extends StatelessWidget {
       onTap: (cubit.sessionHeader.isFree ||
               cubit.sessionHeader.isPurchased ||
               item.type == "Promo")
-          ? () {
+          ? () async {
               if (item.type == "Video" || item.type == "Promo") {
                 navigateTo(
                     context,
@@ -346,6 +348,13 @@ class Item extends StatelessWidget {
                       dir: widget.dir,
                     ));
               }
+              if (item.type == "Document") {
+                await launchUrl(
+                    Uri.parse(item.urlSource == "web"
+                        ? '${webUrl}Sessions/Documents/${item.documentUrl}'
+                        : '${baseUrl0}Sessions/Documents/${item.documentUrl}'),
+                    mode: LaunchMode.externalApplication);
+              }
             }
           : null,
       child: Card(
@@ -368,6 +377,17 @@ class Item extends StatelessWidget {
           child: Column(
             children: [
               Row(children: [
+                getImage(
+                  item,
+                  cubit.sessionHeader.isFree,
+                  cubit.sessionHeader.isPurchased,
+                  align,
+                  60.0,
+                  60.0,
+                ),
+                SizedBox(
+                  width: 8,
+                ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,14 +401,6 @@ class Item extends StatelessWidget {
                           16.1)
                     ],
                   ),
-                ),
-                getImage(
-                  item,
-                  cubit.sessionHeader.isFree,
-                  cubit.sessionHeader.isPurchased,
-                  align,
-                  60.0,
-                  60.0,
                 ),
               ]),
               item.videoProgress > 0 || item.quizProgress > 0
@@ -439,18 +451,23 @@ class Item extends StatelessWidget {
 
 Widget getImage(SessionDetails sd, bool isFree, bool isPurchased, String align,
     double width, double height) {
+  if (align == "left") {
+    align = "right";
+  } else {
+    align = "left";
+  }
   switch (sd.type) {
     case "Promo":
       return Image.network(
         //'assets/images/${sd.type}_left.png',
-        '${webUrl}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.urlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );
       break;
     case "Video":
       return Image.network(
-        '${webUrl}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.urlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );

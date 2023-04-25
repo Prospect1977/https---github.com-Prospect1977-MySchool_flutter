@@ -248,144 +248,143 @@ class _QuizScreenState extends State<QuizScreen> {
                               controller: _pageController,
                               children:
                                   MyQuiz.Questions.map((item) => Container(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Center(
-                                              child: Text(
-                                                widget.dir == "ltr"
-                                                    ? 'Question ${currentPage + 1} of ${MyQuiz.Questions.length}'
-                                                    : 'السؤال ${currentPage + 1} من ${MyQuiz.Questions.length}',
-                                                style: TextStyle(
-                                                    color: Colors.black54),
+                                        child: SingleChildScrollView(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Center(
+                                                child: Text(
+                                                  widget.dir == "ltr"
+                                                      ? 'Question ${currentPage + 1} of ${MyQuiz.Questions.length}'
+                                                      : 'السؤال ${currentPage + 1} من ${MyQuiz.Questions.length}',
+                                                  style: TextStyle(
+                                                      color: Colors.black54),
+                                                ),
                                               ),
-                                            ),
-                                            Divider(),
-                                            item.title != null
-                                                ? Text(
-                                                    item.title,
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        color: Colors.black54),
-                                                  )
-                                                : Container(),
-                                            item.questionImageUrl != null
-                                                ? Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(vertical: 8),
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                      child: Image.network(
-                                                          '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
+                                              Divider(),
+                                              item.title != null
+                                                  ? Text(
+                                                      item.title,
+                                                      style: TextStyle(
+                                                          fontSize: 18,
+                                                          color:
+                                                              Colors.black54),
+                                                    )
+                                                  : Container(),
+                                              item.questionImageUrl != null
+                                                  ? Container(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 8),
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                        child: Image.network(
+                                                            '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
+                                                      ),
+                                                    )
+                                                  : Container(),
+                                              item.questionType == "Example"
+                                                  ? Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 8),
+                                                      child: TextField(
+                                                          decoration:
+                                                              InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder()),
+                                                          // maxLines: 6,
+                                                          controller:
+                                                              textControllers[
+                                                                  currentPage]),
+                                                    )
+                                                  : Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 8),
+                                                      child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: item.answers
+                                                              .map((e) {
+                                                            return InkWell(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  selectedAnswerIds[
+                                                                          currentPage] =
+                                                                      e.id;
+                                                                });
+                                                              },
+                                                              child: Container(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(8),
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        bottom:
+                                                                            8),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5),
+                                                                  border: Border.all(
+                                                                      width: (selectedAnswerIds[currentPage] == e.id)
+                                                                          ? 2
+                                                                          : 1,
+                                                                      color: (selectedAnswerIds[currentPage] ==
+                                                                              e.id)
+                                                                          ? defaultColor
+                                                                          : Colors.black38),
+                                                                ),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Icon(
+                                                                      (selectedAnswerIds[currentPage] == e.id)
+                                                                          ? Icons
+                                                                              .radio_button_checked
+                                                                          : Icons
+                                                                              .radio_button_off,
+                                                                      color: (selectedAnswerIds[currentPage] ==
+                                                                              e.id)
+                                                                          ? defaultColor
+                                                                          : Colors.black45,
+                                                                      size: 20,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width: 5,
+                                                                    ),
+                                                                    Text(
+                                                                      e.title,
+                                                                      style: TextStyle(
+                                                                          fontWeight: (selectedAnswerIds[currentPage] == e.id)
+                                                                              ? FontWeight
+                                                                                  .bold
+                                                                              : FontWeight
+                                                                                  .normal,
+                                                                          color: (selectedAnswerIds[currentPage] == e.id)
+                                                                              ? defaultColor
+                                                                              : Colors
+                                                                                  .black54,
+                                                                          fontSize:
+                                                                              16),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }).toList()),
                                                     ),
-                                                  )
-                                                : Container(),
-                                            item.questionType == "Example"
-                                                ? Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(vertical: 8),
-                                                    child: TextField(
-                                                        decoration: InputDecoration(
-                                                            border:
-                                                                OutlineInputBorder()),
-                                                        // maxLines: 6,
-                                                        controller:
-                                                            textControllers[
-                                                                currentPage]),
-                                                  )
-                                                : Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 8),
-                                                    child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: item.answers
-                                                            .map((e) {
-                                                          return InkWell(
-                                                            onTap: () {
-                                                              setState(() {
-                                                                selectedAnswerIds[
-                                                                        currentPage] =
-                                                                    e.id;
-                                                              });
-                                                            },
-                                                            child: Container(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(8),
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      bottom:
-                                                                          8),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            5),
-                                                                border: Border.all(
-                                                                    width:
-                                                                        (selectedAnswerIds[currentPage] == e.id)
-                                                                            ? 2
-                                                                            : 1,
-                                                                    color: (selectedAnswerIds[currentPage] ==
-                                                                            e
-                                                                                .id)
-                                                                        ? defaultColor
-                                                                        : Colors
-                                                                            .black38),
-                                                              ),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Icon(
-                                                                    (selectedAnswerIds[currentPage] ==
-                                                                            e
-                                                                                .id)
-                                                                        ? Icons
-                                                                            .radio_button_checked
-                                                                        : Icons
-                                                                            .radio_button_off,
-                                                                    color: (selectedAnswerIds[currentPage] ==
-                                                                            e
-                                                                                .id)
-                                                                        ? defaultColor
-                                                                        : Colors
-                                                                            .black45,
-                                                                    size: 20,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 5,
-                                                                  ),
-                                                                  Text(
-                                                                    e.title,
-                                                                    style: TextStyle(
-                                                                        fontWeight: (selectedAnswerIds[currentPage] == e.id)
-                                                                            ? FontWeight
-                                                                                .bold
-                                                                            : FontWeight
-                                                                                .normal,
-                                                                        color: (selectedAnswerIds[currentPage] == e.id)
-                                                                            ? defaultColor
-                                                                            : Colors
-                                                                                .black54,
-                                                                        fontSize:
-                                                                            16),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }).toList()),
-                                                  ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       )).toList(),
                             ),

@@ -17,6 +17,7 @@ import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/teacher_session_navigation_bar.dart';
+import 'package:video_compress/video_compress.dart';
 
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
@@ -62,20 +63,14 @@ class _VideoScreenState extends State<VideoScreen> {
   String commentMode = "create"; //create or update
   int editCommentId = 0;
   int secondsCounter = 0;
+  double playbackSpeed = 1.0;
+  int currentRes = 480;
+  bool showSpeedOptions = false;
+  bool showResOptions = false;
+  String VideoUrl;
   @override
   StudentVideoNotes VideoNotes;
-  void initState() {
-    super.initState();
-    GetVideoNotes();
-    stoppedAt = 0;
-    showControls = false;
-    // _controller = VideoPlayerController.network(
-    //     '${webUrl}Sessions/Videos/${widget.VideoUrl}')
-    // _controller = VideoPlayerController.network(
-    //     'https://assets.mixkit.co/videos/preview/mixkit-group-of-friends-partying-happily-4640-large.mp4')
-    var VideoUrl = widget.dir == "ltr"
-        ? 'assets/images/Video.mp4'
-        : 'assets/images/Video_ar.mp4';
+  Future<void> _initializePlay(String VideoUrl) async {
     _controller = VideoPlayerController.asset(VideoUrl)
       ..addListener(() {
         if (_controller != null && _controller.value.isInitialized) {
@@ -83,6 +78,7 @@ class _VideoScreenState extends State<VideoScreen> {
         }
       })
       ..setLooping(false)
+      ..setPlaybackSpeed(playbackSpeed)
       ..initialize().then((_) {
         if (roles != 'Teacher') {
           DioHelper.getData(query: {
@@ -104,6 +100,67 @@ class _VideoScreenState extends State<VideoScreen> {
         });
       })
       ..play();
+  }
+
+  void initState() {
+    super.initState();
+
+    if (CacheHelper.getData(key: "resolution") != null) {
+      currentRes = CacheHelper.getData(key: "resolution");
+    }
+    GetVideoNotes();
+    stoppedAt = 0;
+    showControls = false;
+    // _controller = VideoPlayerController.network(
+    //     '${webUrl}Sessions/Videos/${widget.VideoUrl}')
+    // _controller = VideoPlayerController.network(
+    //     'https://assets.mixkit.co/videos/preview/mixkit-group-of-friends-partying-happily-4640-large.mp4')
+    VideoUrl = widget.dir == "ltr"
+        ? 'assets/images/Video.mp4'
+        : 'assets/images/Video_ar.mp4';
+    VideoUrl =
+        '${VideoUrl.substring(0, VideoUrl.length - 4)}_${currentRes}.${VideoUrl.split(".")[VideoUrl.split(".").length - 1]}';
+    // print(
+    //     '________________________________________________________________vidUrl=$VideoUrl2');
+    _initializePlay(VideoUrl);
+  }
+
+  void _setSpeed(double speed) {
+    setState(() {
+      playbackSpeed = speed;
+      _controller.setPlaybackSpeed(speed);
+
+      showControls = false;
+      showSpeedOptions = false;
+      showResOptions = false;
+      _controller.play();
+    });
+  }
+
+  void _setRes(int res) {
+    setState(() {
+      currentRes = res;
+      showControls = false;
+      showSpeedOptions = false;
+      showResOptions = false;
+      VideoUrl =
+          '${VideoUrl.substring(0, VideoUrl.length - 4)}_${res}.${VideoUrl.split(".")[VideoUrl.split(".").length - 1]}';
+      //_controller = VideoPlayerController.asset(VideoUrl)
+      CacheHelper.saveData(key: "resolution", value: res);
+      // saveProgress(context, widget.StudentId, widget.VideoId, secondsCounter);
+      // navigateTo(
+      //     context,
+      //     VideoScreen(
+      //         StudentId: widget.StudentId,
+      //         VideoId: widget.VideoId,
+      //         VideoUrl: VideoUrl,
+      //         Title: widget.Title,
+      //         LessonName: widget.LessonName,
+      //         LessonDescription: widget.LessonDescription,
+      //         dir: widget.dir,
+      //         TeacherName: widget.TeacherName,
+      //         VideoName: widget.VideoName));
+    });
   }
 
   double getIndicatorPosition() {
@@ -393,6 +450,8 @@ class _VideoScreenState extends State<VideoScreen> {
                   onTap: () {
                     setState(() {
                       showControls = !showControls;
+                      showSpeedOptions = false;
+                      showResOptions = false;
                     });
                   },
                   child: Stack(alignment: Alignment.center, children: [
@@ -401,284 +460,392 @@ class _VideoScreenState extends State<VideoScreen> {
                     //_controller.value.isPlaying
                     showControls == false
                         ? Container()
-                        : Container(
-                            ////////---------------------------------------------controlles board
-                            color: Colors.black26,
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          //--------------------------backward Button
-                                          onPressed: () {
-                                            setState(() {
-                                              if (_controller != null &&
-                                                  _controller
-                                                      .value.isInitialized) {
-                                                _controller.seekTo(Duration(
-                                                    seconds: (_controller
-                                                            .value
-                                                            .position
-                                                            .inSeconds -
-                                                        15)));
-                                              }
-                                            });
-                                          },
-                                          icon: Icon(
-                                            Icons.fast_rewind,
-                                            color: Colors.white,
-                                            size: 40,
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 60,
-                                          width: 60,
-                                          child: IconButton(
-                                            //--------------------------Play Button
-                                            onPressed: () {
-                                              setState(() {
-                                                if (_controller != null &&
-                                                    _controller
-                                                        .value.isInitialized) {
-                                                  if (_controller
-                                                      .value.isPlaying) {
-                                                    _controller.pause();
-                                                    SaveProgress(
-                                                        secondsCounter);
-                                                  } else {
-                                                    _controller.play();
-                                                    showControls = false;
-                                                  }
-
-                                                  // _controller.seekTo(Duration(seconds: 500));
-                                                }
-                                              });
-                                            },
-                                            icon: Icon(
-                                              _controller.value.isPlaying
-                                                  ? Icons.pause
-                                                  : Icons.play_arrow,
-                                              color: Colors.white,
-                                              size: 60,
-                                            ),
-                                          ),
-                                        ),
-                                        IconButton(
-                                          //--------------------------forward Button
-                                          onPressed: () {
-                                            setState(() {
-                                              if (_controller != null &&
-                                                  _controller
-                                                      .value.isInitialized) {
-                                                _controller.seekTo(Duration(
-                                                    seconds: (_controller
-                                                            .value
-                                                            .position
-                                                            .inSeconds +
-                                                        15)));
-                                              }
-                                            });
-                                          },
-                                          icon: Icon(
-                                            Icons.fast_forward,
-                                            color: Colors.white,
-                                            size: 40,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height: 55,
-                                  child: Column(
-                                    //-----------------------------------Bottom Compound Column
-                                    children: [
-                                      Row(
-                                        //-------------------------------------------------Timeline row
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.only(
-                                                right: 4, left: 3),
-                                            width: 43,
-                                            child: FittedBox(
-                                              child: Text(
-                                                getPosition(),
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Container(
-                                              height: 16,
-                                              child: Stack(
-                                                  //----------------------------------video progress indicator Group
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  children: [
-                                                    VideoProgressIndicator(
-                                                      //----------------------------------video progress indicator
-                                                      _controller,
-                                                      allowScrubbing: true,
-                                                      colors:
-                                                          VideoProgressColors(
-                                                        playedColor:
-                                                            defaultColor,
-                                                      ),
-                                                    ),
-                                                    Positioned(
-                                                      left:
-                                                          getIndicatorPosition(),
-                                                      top: 2,
-                                                      child: IgnorePointer(
-                                                        child: Icon(
-                                                          Icons.circle,
-                                                          color: defaultColor,
-                                                          size: 15,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ]),
-                                            ),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.only(
-                                                right: 3, left: 4),
-                                            width: 43,
-                                            child: FittedBox(
-                                              child: Text(
-                                                getVideoDuration(),
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        height: 20,
-                                        padding: EdgeInsets.only(bottom: 5),
+                        : Stack(
+                            children: [
+                              Container(
+                                ////////---------------------------------------------controlles board
+                                color: Colors.black26,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: Center(
                                         child: Row(
-                                          //-------------------------------------------Add Note row
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.end,
+                                              CrossAxisAlignment.center,
                                           children: [
-                                            InkWell(
-                                              onTap: MediaQuery.of(context)
-                                                          .orientation ==
-                                                      Orientation.landscape
-                                                  ? null
-                                                  : () {
-                                                      if (roles != "Teacher") {
-                                                        commentMode = "create";
-                                                        editCommentId = 0;
+                                            IconButton(
+                                              //--------------------------backward Button
+                                              onPressed: () {
+                                                setState(() {
+                                                  if (_controller != null &&
+                                                      _controller.value
+                                                          .isInitialized) {
+                                                    _controller.seekTo(Duration(
+                                                        seconds: (_controller
+                                                                .value
+                                                                .position
+                                                                .inSeconds -
+                                                            15)));
+                                                  }
+                                                });
+                                              },
+                                              icon: Icon(
+                                                Icons.fast_rewind,
+                                                color: Colors.white,
+                                                size: 40,
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 60,
+                                              width: 60,
+                                              child: IconButton(
+                                                //--------------------------Play Button
+                                                onPressed: () {
+                                                  setState(() {
+                                                    if (_controller != null &&
+                                                        _controller.value
+                                                            .isInitialized) {
+                                                      if (_controller
+                                                          .value.isPlaying) {
+                                                        _controller.pause();
 
-                                                        _startAddComment(
-                                                            ExistingComment:
-                                                                "");
+                                                        SaveProgress(
+                                                            secondsCounter);
                                                       } else {
-                                                        showToast(
-                                                            text: lang == "en"
-                                                                ? "Only students and parents can add a notes!"
-                                                                : "فقط الطلاب وأولاياء الأمور بأمكانهم إضافة ملحوظات!",
-                                                            state: ToastStates
-                                                                .ERROR);
+                                                        _controller.play();
+                                                        showControls = false;
                                                       }
-                                                    },
-                                              child: Container(
-                                                color: Colors.black
-                                                    .withOpacity(0.05),
-                                                margin:
-                                                    EdgeInsets.only(left: 15),
-                                                width: 20,
-                                                height: 20,
-                                                child: Icon(
-                                                  Icons.note_alt_outlined,
+
+                                                      // _controller.seekTo(Duration(seconds: 500));
+                                                    }
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  _controller.value.isPlaying
+                                                      ? Icons.pause
+                                                      : Icons.play_arrow,
                                                   color: Colors.white,
-                                                  size: 28,
+                                                  size: 60,
                                                 ),
                                               ),
                                             ),
-                                            Expanded(
-                                              child: Container(
-                                                height: 20,
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                              //----------------------------------- Full screen button
-                                              child: Icon(
-                                                MediaQuery.of(context)
-                                                            .orientation ==
-                                                        Orientation.portrait
-                                                    ? Icons.fullscreen
-                                                    : Icons.fullscreen_exit,
-                                                color: Colors.white,
-                                                size: 30,
-                                              ),
-                                              onTap: () async {
-                                                if (MediaQuery.of(context)
-                                                        .orientation ==
-                                                    Orientation.portrait) {
-                                                  SystemChrome
-                                                      .setPreferredOrientations([
-                                                    DeviceOrientation
-                                                        .landscapeRight,
-                                                    DeviceOrientation
-                                                        .landscapeLeft,
-                                                  ]);
-                                                  await Wakelock.enable();
-                                                  SystemChrome
-                                                      .setEnabledSystemUIMode(
-                                                          SystemUiMode
-                                                              .leanBack);
-                                                } else {
-                                                  await Wakelock.disable();
-                                                  SystemChrome
-                                                      .setEnabledSystemUIMode(
-                                                          SystemUiMode.manual,
-                                                          overlays:
-                                                              SystemUiOverlay
-                                                                  .values);
-                                                  SystemChrome
-                                                      .setPreferredOrientations([
-                                                    DeviceOrientation
-                                                        .portraitDown,
-                                                    DeviceOrientation
-                                                        .portraitUp,
-                                                  ]);
-                                                  SystemChrome
-                                                      .setPreferredOrientations([
-                                                    DeviceOrientation
-                                                        .portraitDown,
-                                                    DeviceOrientation
-                                                        .portraitUp,
-                                                    DeviceOrientation
-                                                        .landscapeRight,
-                                                    DeviceOrientation
-                                                        .landscapeLeft,
-                                                  ]);
-                                                }
+                                            IconButton(
+                                              //--------------------------forward Button
+                                              onPressed: () {
+                                                setState(() {
+                                                  if (_controller != null &&
+                                                      _controller.value
+                                                          .isInitialized) {
+                                                    _controller.seekTo(Duration(
+                                                        seconds: (_controller
+                                                                .value
+                                                                .position
+                                                                .inSeconds +
+                                                            15)));
+                                                  }
+                                                });
                                               },
+                                              icon: Icon(
+                                                Icons.fast_forward,
+                                                color: Colors.white,
+                                                size: 40,
+                                              ),
                                             ),
-                                            SizedBox(
-                                              width: 15,
-                                            )
                                           ],
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 55,
+                                      child: Column(
+                                        //-----------------------------------Bottom Compound Column
+                                        children: [
+                                          Row(
+                                            //-------------------------------------------------Timeline row
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.only(
+                                                    right: 4, left: 3),
+                                                width: 43,
+                                                child: FittedBox(
+                                                  child: Text(
+                                                    getPosition(),
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Container(
+                                                  height: 16,
+                                                  child: Stack(
+                                                      //----------------------------------video progress indicator Group
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      children: [
+                                                        VideoProgressIndicator(
+                                                          //----------------------------------video progress indicator
+                                                          _controller,
+                                                          allowScrubbing: true,
+                                                          colors:
+                                                              VideoProgressColors(
+                                                            playedColor:
+                                                                defaultColor,
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          left:
+                                                              getIndicatorPosition(),
+                                                          top: 2,
+                                                          child: IgnorePointer(
+                                                            child: Icon(
+                                                              Icons.circle,
+                                                              color:
+                                                                  defaultColor,
+                                                              size: 15,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ]),
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.only(
+                                                    right: 3, left: 4),
+                                                width: 43,
+                                                child: FittedBox(
+                                                  child: Text(
+                                                    getVideoDuration(),
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            height: 31,
+                                            padding: EdgeInsets.only(bottom: 5),
+                                            child: Row(
+                                              //-------------------------------------------Add Note row
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: MediaQuery.of(context)
+                                                              .orientation ==
+                                                          Orientation.landscape
+                                                      ? () async {
+                                                          SystemChrome
+                                                              .setPreferredOrientations([
+                                                            DeviceOrientation
+                                                                .portraitUp,
+                                                            DeviceOrientation
+                                                                .portraitDown,
+                                                          ]);
+                                                          await Wakelock
+                                                              .disable();
+                                                          if (roles !=
+                                                              "Teacher") {
+                                                            commentMode =
+                                                                "create";
+                                                            editCommentId = 0;
+
+                                                            _startAddComment(
+                                                                ExistingComment:
+                                                                    "");
+                                                          } else {
+                                                            showToast(
+                                                                text: lang ==
+                                                                        "en"
+                                                                    ? "Only students and parents can add a notes!"
+                                                                    : "فقط الطلاب وأولاياء الأمور بأمكانهم إضافة ملحوظات!",
+                                                                state:
+                                                                    ToastStates
+                                                                        .ERROR);
+                                                          }
+                                                        }
+                                                      : () {
+                                                          if (roles !=
+                                                              "Teacher") {
+                                                            commentMode =
+                                                                "create";
+                                                            editCommentId = 0;
+
+                                                            _startAddComment(
+                                                                ExistingComment:
+                                                                    "");
+                                                          } else {
+                                                            showToast(
+                                                                text: lang ==
+                                                                        "en"
+                                                                    ? "Only students and parents can add a notes!"
+                                                                    : "فقط الطلاب وأولاياء الأمور بأمكانهم إضافة ملحوظات!",
+                                                                state:
+                                                                    ToastStates
+                                                                        .ERROR);
+                                                          }
+                                                        },
+                                                  child: Container(
+                                                    margin: EdgeInsets.only(
+                                                        left: 15),
+                                                    width: 30,
+                                                    height: 30,
+                                                    child: Icon(
+                                                      Icons.note_alt_outlined,
+                                                      color: Colors.white,
+                                                      size: 28,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  //--------------------------------------------Playback Speed
+                                                  child: Container(
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: [
+                                                        GestureDetector(
+                                                            onTap: () {
+                                                              setState(() {
+                                                                showSpeedOptions =
+                                                                    true;
+                                                              });
+                                                            },
+                                                            child: Row(
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.speed,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 4,
+                                                                ),
+                                                                Text(
+                                                                  '${playbackSpeed.toStringAsFixed(2)} X',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          15,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                              ],
+                                                            )),
+                                                        //-------------------------------------------------Resolution
+                                                        //Reference to handle the problem: https://stackoverflow.com/questions/59010614/flutter-video-player-change-video-source-dynamically
+                                                        GestureDetector(
+                                                          child: Text(
+                                                            '${currentRes.toString()} PX',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 15),
+                                                          ),
+                                                          onTap: () {
+                                                            setState(() {
+                                                              showResOptions =
+                                                                  true;
+                                                            });
+                                                          },
+                                                        )
+                                                      ],
+                                                    ),
+                                                    height: 30,
+                                                    padding: EdgeInsets.all(0),
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  //----------------------------------- Full screen button
+                                                  child: Icon(
+                                                    MediaQuery.of(context)
+                                                                .orientation ==
+                                                            Orientation.portrait
+                                                        ? Icons.fullscreen
+                                                        : Icons.fullscreen_exit,
+                                                    color: Colors.white,
+                                                    size: 30,
+                                                  ),
+                                                  onTap: () async {
+                                                    if (MediaQuery.of(context)
+                                                            .orientation ==
+                                                        Orientation.portrait) {
+                                                      SystemChrome
+                                                          .setPreferredOrientations([
+                                                        DeviceOrientation
+                                                            .landscapeRight,
+                                                        DeviceOrientation
+                                                            .landscapeLeft,
+                                                      ]);
+                                                      await Wakelock.enable();
+                                                      SystemChrome
+                                                          .setEnabledSystemUIMode(
+                                                              SystemUiMode
+                                                                  .leanBack);
+                                                    } else {
+                                                      await Wakelock.disable();
+                                                      SystemChrome
+                                                          .setEnabledSystemUIMode(
+                                                              SystemUiMode
+                                                                  .manual,
+                                                              overlays:
+                                                                  SystemUiOverlay
+                                                                      .values);
+                                                      SystemChrome
+                                                          .setPreferredOrientations([
+                                                        DeviceOrientation
+                                                            .portraitDown,
+                                                        DeviceOrientation
+                                                            .portraitUp,
+                                                      ]);
+                                                      SystemChrome
+                                                          .setPreferredOrientations([
+                                                        DeviceOrientation
+                                                            .portraitDown,
+                                                        DeviceOrientation
+                                                            .portraitUp,
+                                                        DeviceOrientation
+                                                            .landscapeRight,
+                                                        DeviceOrientation
+                                                            .landscapeLeft,
+                                                      ]);
+                                                    }
+                                                  },
+                                                ),
+                                                SizedBox(
+                                                  width: 15,
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              ////////-----------------------------------speed and res overlay
+                              showResOptions
+                                  ? ResController(
+                                      setRes: _setRes, currentRes: currentRes)
+                                  : Container(),
+                              showSpeedOptions == true
+                                  ? SpeedsController(
+                                      setSpeed: _setSpeed,
+                                      currentSpeed: playbackSpeed,
+                                    )
+                                  : Container(),
+                            ],
                           )
                   ]),
                 ),
@@ -957,6 +1124,95 @@ class _VideoScreenState extends State<VideoScreen> {
                   : Container()
             ])
           : Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+class SpeedsController extends StatelessWidget {
+  SpeedsController(
+      {@required this.setSpeed, @required this.currentSpeed, Key key})
+      : super(key: key);
+  final Function setSpeed;
+  final double currentSpeed;
+  var speeds = <double>[0.5, 0.75, 1.0, 1.25, 1.5, 2];
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 130, vertical: 14),
+      color: Colors.black.withOpacity(0.75),
+      child: Column(children: [
+        ...speeds
+            .map((e) => GestureDetector(
+                  onTap: () {
+                    setSpeed(e);
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${e.toStringAsFixed(2)} X',
+                        style: TextStyle(
+                            color: e == currentSpeed
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.6),
+                            fontWeight: e == currentSpeed
+                                ? FontWeight.bold
+                                : FontWeight.normal),
+                      ),
+                      Divider(
+                        color: Colors.white.withOpacity(0.4),
+                        thickness: 1,
+                      )
+                    ],
+                  ),
+                ))
+            .toList()
+      ]),
+    );
+  }
+}
+
+class ResController extends StatelessWidget {
+  ResController({@required this.setRes, @required this.currentRes, Key key})
+      : super(key: key);
+  Function setRes;
+  int currentRes;
+  var resolutions = <int>[144, 240, 360, 480];
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 130, vertical: 14),
+      color: Colors.black.withOpacity(0.75),
+      child: Column(children: [
+        ...resolutions
+            .map((e) => GestureDetector(
+                  onTap: () {
+                    setRes(e);
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${e.toString()} px',
+                        style: TextStyle(
+                            color: e == currentRes
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.6),
+                            fontWeight: e == currentRes
+                                ? FontWeight.bold
+                                : FontWeight.normal),
+                      ),
+                      Divider(
+                        color: Colors.white.withOpacity(0.4),
+                        thickness: 1,
+                      )
+                    ],
+                  ),
+                ))
+            .toList()
+      ]),
     );
   }
 }

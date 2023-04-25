@@ -222,8 +222,8 @@ class _TeacherContentManagementScreenState
                                       Border.all(color: Colors.green.shade700)),
                               child: Text(
                                 lang == "ar"
-                                    ? "إضافة درس جديد"
-                                    : "Add a new Session",
+                                    ? "إضافة محتوى جديد"
+                                    : "Add a new content",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 20),
                               ),

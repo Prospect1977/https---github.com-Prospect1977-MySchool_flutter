@@ -330,7 +330,7 @@ class SummaryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 35,
+      height: 40,
       padding: EdgeInsets.all(7),
       decoration: BoxDecoration(
           color: defaultColor.withOpacity(0.035),

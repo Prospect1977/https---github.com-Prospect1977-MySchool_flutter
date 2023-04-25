@@ -68,6 +68,15 @@ class _TeacherSessionSettingsScreenState
       showToast(
           text: lang == "en" ? "Price is required!" : "مطلوب تحديد السعر!",
           state: ToastStates.ERROR);
+      navigateTo(
+          context,
+          TeacherSessionScreen(
+              TeacherId: widget.TeacherId,
+              YearSubjectId: widget.YearSubjectId,
+              TermIndex: widget.TermIndex,
+              LessonId: widget.LessonId,
+              LessonName: widget.LessonName,
+              dir: widget.dir));
       return;
     }
     DioHelper.postData(

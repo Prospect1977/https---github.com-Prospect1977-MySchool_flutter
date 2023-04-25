@@ -9,6 +9,7 @@ class TeacherSessionDetail {
   int videoId;
   int quizId;
   int documentId;
+  String urlSource;
   TeacherSessionDetail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
@@ -20,6 +21,7 @@ class TeacherSessionDetail {
     videoId = json['videoId'];
     quizId = json['quizId'];
     documentId = json['documentId'];
+    urlSource = json['urlSource'];
   }
 }
 

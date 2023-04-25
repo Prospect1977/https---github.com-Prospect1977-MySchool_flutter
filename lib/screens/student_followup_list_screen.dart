@@ -334,7 +334,9 @@ class BuildItem extends StatelessWidget {
                           lang: lang,
                           item: item,
                           MaxCount: MaxCount,
-                          widthFactor: item.watchedVideosCount / MaxCount,
+                          widthFactor: MaxCount == 0
+                              ? 0.0
+                              : item.watchedVideosCount / MaxCount,
                           caption: lang == "en"
                               ? "Watched Videos:"
                               : "عدد المشاهدات:",
@@ -345,7 +347,9 @@ class BuildItem extends StatelessWidget {
                           lang: lang,
                           item: item,
                           MaxCount: MaxCount,
-                          widthFactor: item.watchedDuration / maxProgressVideos,
+                          widthFactor: maxProgressVideos == 0
+                              ? 0.0
+                              : item.watchedDuration / maxProgressVideos,
                           caption: lang == "en"
                               ? "Total watched duration:"
                               : "إجمالي زمن المشاهدات:",
@@ -356,7 +360,8 @@ class BuildItem extends StatelessWidget {
                           lang: lang,
                           item: item,
                           MaxCount: MaxCount,
-                          widthFactor: item.quizzesDone / MaxCount,
+                          widthFactor:
+                              MaxCount == 0 ? 0.0 : item.quizzesDone / MaxCount,
                           caption: lang == "en"
                               ? "Quizzes Count:"
                               : "عدد الاختبارات:",
@@ -383,7 +388,7 @@ class BuildItem extends StatelessWidget {
 }
 
 class DataRow extends StatelessWidget {
-  const DataRow(
+  DataRow(
       {Key key,
       @required this.lang,
       @required this.item,
@@ -398,7 +403,7 @@ class DataRow extends StatelessWidget {
   final String caption;
   final String value;
   final int MaxCount;
-  final dynamic widthFactor;
+  dynamic widthFactor = 0;
 
   @override
   Widget build(BuildContext context) {
