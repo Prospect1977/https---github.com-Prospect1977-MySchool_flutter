@@ -814,7 +814,8 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                     child: AnimatedPadding(
                       padding: MediaQuery.of(context).viewInsets,
                       duration: Duration(milliseconds: 200),
-                      child: Padding(
+                      child: Container(
+                        color: Colors.black.withOpacity(0.85),
                         padding:
                             EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                         child: Directionality(
@@ -844,7 +845,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                             children: [
                                               Icon(
                                                 Icons.personal_video,
-                                                color: defaultColor,
+                                                color: Colors.white70,
                                               ),
                                               SizedBox(
                                                 width: 10,
@@ -853,7 +854,9 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                 lang == "en"
                                                     ? "Add Demo"
                                                     : "إضافة ديمو",
-                                                style: TextStyle(fontSize: 18),
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: Colors.white70),
                                               )
                                             ]),
                                       )
@@ -862,7 +865,10 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                             .where((m) => m.type == "Promo")
                                             .length ==
                                         0
-                                    ? Divider()
+                                    ? Divider(
+                                        color: Colors.white54,
+                                        thickness: 0.5,
+                                      )
                                     : Container(),
                                 InkWell(
                                   onTap: () async {
@@ -880,7 +886,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                       children: [
                                         Icon(
                                           Icons.ondemand_video,
-                                          color: defaultColor,
+                                          color: Colors.white70,
                                         ),
                                         SizedBox(
                                           width: 10,
@@ -889,11 +895,16 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                           lang == "en"
                                               ? "Add Video"
                                               : "إضافة فيديو",
-                                          style: TextStyle(fontSize: 18),
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white70),
                                         )
                                       ]),
                                 ),
-                                Divider(),
+                                Divider(
+                                  color: Colors.white54,
+                                  thickness: 0.5,
+                                ),
                                 InkWell(
                                   onTap: () async {
                                     await DioHelper.postData(
@@ -931,9 +942,8 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Icon(
-                                          Icons
-                                              .drive_file_rename_outline_rounded,
-                                          color: defaultColor,
+                                          Icons.list_alt,
+                                          color: Colors.white70,
                                         ),
                                         SizedBox(
                                           width: 10,
@@ -942,11 +952,16 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                           lang == "en"
                                               ? "Add Quiz"
                                               : "إضافة إختبار",
-                                          style: TextStyle(fontSize: 18),
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white70),
                                         )
                                       ]),
                                 ),
-                                Divider(),
+                                Divider(
+                                  color: Colors.white54,
+                                  thickness: 0.5,
+                                ),
                                 InkWell(
                                   onTap: () async {
                                     await UploadFile(
@@ -961,16 +976,18 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                       children: [
                                         Icon(
                                           Icons.file_open_outlined,
-                                          color: defaultColor,
+                                          color: Colors.white70,
                                         ),
                                         SizedBox(
                                           width: 10,
                                         ),
                                         Text(
                                           lang == "en"
-                                              ? "Add File"
-                                              : "إضافة ملف",
-                                          style: TextStyle(fontSize: 18),
+                                              ? "Add PDF"
+                                              : "إضافة  PDF",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white70),
                                         )
                                       ]),
                                 ),

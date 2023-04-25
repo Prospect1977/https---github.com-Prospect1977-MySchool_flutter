@@ -13,7 +13,8 @@ import 'package:my_school/shared/widgets/progress_dialog_widget.dart';
 
 Future<void> UploadFile(
     {var context, int TeacherId, int LessonId, Function getData}) async {
-  var pickedFile = await FilePicker.platform.pickFiles(allowMultiple: false);
+  var pickedFile = await FilePicker.platform.pickFiles(
+      allowMultiple: false, type: FileType.custom, allowedExtensions: ['pdf']);
   if (pickedFile == null) {
     return;
   }
