@@ -832,12 +832,16 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                     ? InkWell(
                                         onTap: () async {
                                           Navigator.of(context).pop();
-                                          await UploadVideo(
-                                              context: context,
-                                              TeacherId: widget.TeacherId,
-                                              LessonId: widget.LessonId,
-                                              IsPromo: true,
-                                              getData: getData);
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (context) => Dialog(
+                                                child: UploadProgressDialog(
+                                                    TeacherId: widget.TeacherId,
+                                                    LessonId: widget.LessonId,
+                                                    IsPromo: true,
+                                                    getData: getData)),
+                                          );
                                         },
                                         child: Row(
                                             mainAxisAlignment:
@@ -873,12 +877,16 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                 InkWell(
                                   onTap: () async {
                                     Navigator.of(context).pop();
-                                    await UploadVideo(
-                                        context: context,
-                                        TeacherId: widget.TeacherId,
-                                        LessonId: widget.LessonId,
-                                        IsPromo: false,
-                                        getData: getData);
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) => Dialog(
+                                          child: UploadProgressDialog(
+                                              TeacherId: widget.TeacherId,
+                                              LessonId: widget.LessonId,
+                                              IsPromo: false,
+                                              getData: getData)),
+                                    );
                                   },
                                   child: Row(
                                       mainAxisAlignment:
@@ -1127,7 +1135,7 @@ class Item extends StatelessWidget {
                                 : null,
                             new PopupMenuItem<String>(
                                 child: Container(
-                                    width: 180,
+                                    width: 182,
                                     // height: 30,
                                     child: Row(
                                       children: [

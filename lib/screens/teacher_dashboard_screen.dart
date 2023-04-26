@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/screens/teacher_content_management_screen.dart';
 import 'package:my_school/screens/teacher_profile_screen.dart';
+import 'package:my_school/screens/teacher_purchases_screen.dart';
 import 'package:my_school/screens/teacher_viewsPerLesson_screen.dart';
 import 'package:my_school/screens/teacher_views_screen.dart';
 import 'package:my_school/screens/test_fileUpload.dart';
@@ -95,7 +96,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                       dashboardButton(
                         context,
                         () {
-                          navigateTo(context, TestFileUpload());
+                          navigateTo(context, TeacherPurchasesScreen());
                         },
                         'money.png',
                         lang.toString().toLowerCase() == "ar"
