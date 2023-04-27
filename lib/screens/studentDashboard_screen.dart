@@ -5,6 +5,7 @@ import 'package:my_school/cubits/StudentDashboard_states.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentDailySchedule_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
+import 'package:my_school/screens/studentLearnBySubjectScreen1.dart';
 import 'package:my_school/screens/studentProfile_screen.dart';
 import 'package:my_school/screens/studentSelectedSubjects_screen.dart';
 import 'package:my_school/screens/student_followup_list_screen.dart';
@@ -153,7 +154,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     (widget.SchoolTypeId == null ||
                             widget.YearOfStudyId == null)
                         ? null
-                        : () {},
+                        : () {
+                            navigateTo(context,
+                                StudentLearnBySubjectScreen1(widget.Id));
+                          },
                     'StudyBySubject.png',
                     lang.toString().toLowerCase() == "ar"
                         ? "مذاكرة حسب المادة"

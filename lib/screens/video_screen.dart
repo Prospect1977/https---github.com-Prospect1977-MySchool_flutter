@@ -33,6 +33,7 @@ class VideoScreen extends StatefulWidget {
   String dir;
   String TeacherName;
   String VideoName;
+  int GoToSecond;
   VideoScreen(
       {@required this.StudentId,
       @required this.VideoId,
@@ -44,6 +45,7 @@ class VideoScreen extends StatefulWidget {
       @required this.dir,
       @required this.TeacherName,
       @required this.VideoName,
+      this.GoToSecond,
       Key key})
       : super(key: key);
 
@@ -81,6 +83,10 @@ class _VideoScreenState extends State<VideoScreen> {
       ..setPlaybackSpeed(playbackSpeed)
       ..initialize().then((_) {
         if (roles != 'Teacher') {
+          if (widget.GoToSecond != null) {
+            _controller.seekTo(Duration(seconds: widget.GoToSecond));
+            return;
+          }
           DioHelper.getData(query: {
             "StudentId": widget.StudentId,
             "VideoId": widget.VideoId
