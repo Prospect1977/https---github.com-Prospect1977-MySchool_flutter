@@ -74,8 +74,8 @@ class RevenueLineChartWidget extends StatelessWidget {
     return SafeArea(
       child: Container(
         height: MediaQuery.of(context).orientation == Orientation.portrait
-            ? 375
-            : 250,
+            ? MediaQuery.of(context).size.height - 300
+            : MediaQuery.of(context).size.height - 50,
         child: SfCartesianChart(
             primaryXAxis: CategoryAxis(),
 

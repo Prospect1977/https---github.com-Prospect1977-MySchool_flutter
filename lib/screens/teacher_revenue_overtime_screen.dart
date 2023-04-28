@@ -241,10 +241,13 @@ class _TeacherRevenueOvertimeScreenState
                                       ? 'From ${getDayName(fromDate.weekday, lang)} ${fromDate.day} ${getMonthName(fromDate.month, lang)} ${fromDate.year} TO ${getDayName(toDate.weekday, lang)} ${toDate.day} ${getMonthName(toDate.month, lang)} ${toDate.year}'
                                       : 'من ${getDayName(fromDate.weekday, lang)} ${fromDate.day} ${getMonthName(fromDate.month, lang)} ${fromDate.year} إلى ${getDayName(toDate.weekday, lang)} ${toDate.day} ${getMonthName(toDate.month, lang)} ${toDate.year}',
                                 ),
-                          ChartTitle(
-                              title: lang == "en"
-                                  ? "Revenue (EGP)"
-                                  : "الدخل (ج.م)"),
+                          MediaQuery.of(context).orientation ==
+                                  Orientation.landscape
+                              ? Container()
+                              : ChartTitle(
+                                  title: lang == "en"
+                                      ? "Revenue (EGP)"
+                                      : "الدخل (ج.م)"),
                           RevenueLineChartWidget(lineChart.items),
                         ],
                       )),

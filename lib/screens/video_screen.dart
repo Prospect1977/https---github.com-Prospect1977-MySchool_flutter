@@ -26,6 +26,7 @@ class VideoScreen extends StatefulWidget {
   int StudentId;
   int VideoId;
   String VideoUrl;
+  String UrlSource;
   String Title;
   int SessionHeaderId;
   String LessonName;
@@ -38,6 +39,7 @@ class VideoScreen extends StatefulWidget {
       {@required this.StudentId,
       @required this.VideoId,
       @required this.VideoUrl,
+      @required this.UrlSource,
       @required this.Title,
       this.SessionHeaderId,
       @required this.LessonName,
@@ -73,6 +75,7 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   StudentVideoNotes VideoNotes;
   Future<void> _initializePlay(String VideoUrl) async {
+    // _controller = VideoPlayerController.network(VideoUrl)
     _controller = VideoPlayerController.asset(VideoUrl)
       ..addListener(() {
         if (_controller != null && _controller.value.isInitialized) {
@@ -110,7 +113,8 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void initState() {
     super.initState();
-
+    print(
+        '-------------------------------------------------UrlSource= ${widget.UrlSource}------------------');
     if (CacheHelper.getData(key: "resolution") != null) {
       currentRes = CacheHelper.getData(key: "resolution");
     }
@@ -121,9 +125,20 @@ class _VideoScreenState extends State<VideoScreen> {
     //     '${webUrl}Sessions/Videos/${widget.VideoUrl}')
     // _controller = VideoPlayerController.network(
     //     'https://assets.mixkit.co/videos/preview/mixkit-group-of-friends-partying-happily-4640-large.mp4')
+
+    //--------------------------------to be uncommented on final deploy-----------------
+
+    // VideoUrl ='${widget.UrlSource == "web" ? webUrl : baseUrl0}assets/images/${widget.VideoUrl}';
+
+    //--------------------------------End to be uncommented on final deploy-----------------
+
+    //--------------------------------to be removed on final deploy-----------------
+
     VideoUrl = widget.dir == "ltr"
         ? 'assets/images/Video.mp4'
         : 'assets/images/Video_ar.mp4';
+    //--------------------------------End to be removed on final deploy-----------------
+
     VideoUrl =
         '${VideoUrl.substring(0, VideoUrl.length - 4)}_${currentRes}.${VideoUrl.split(".")[VideoUrl.split(".").length - 1]}';
     // print(

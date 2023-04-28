@@ -1046,6 +1046,7 @@ class Item extends StatelessWidget {
                 StudentId: 0,
                 VideoId: item.videoId,
                 VideoUrl: item.videoUrl,
+                UrlSource: item.urlSource,
                 Title: item.title,
                 // SessionHeaderId: teacherSession.id,
                 LessonName: widget.LessonName,
