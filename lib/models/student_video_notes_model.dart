@@ -19,6 +19,7 @@ class StudentVideoNote {
   String note;
   String teacherName;
   String videoName;
+  String title;
   int goToSecond;
 
   StudentVideoNote.fromJson(Map<String, dynamic> json) {
@@ -31,6 +32,7 @@ class StudentVideoNote {
     note = json['note'];
     teacherName = json['teacherName'];
     videoName = json['videoName'];
+    title = json['title'];
     goToSecond = json['goToSecond'];
   }
 }

@@ -105,7 +105,7 @@ class _StudentVideoNotesScreenState extends State<StudentVideoNotesScreen> {
                                     StudentId: widget.studentId,
                                     VideoId: item.videoId,
                                     VideoUrl: item.videoUrl,
-                                    Title: item.videoName,
+                                    Title: item.title,
                                     LessonName: item.lessonName,
                                     LessonDescription: item.lessonName,
                                     dir: widget.dir,

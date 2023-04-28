@@ -1153,24 +1153,28 @@ class SpeedsController extends StatelessWidget {
                   onTap: () {
                     setSpeed(e);
                   },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${e.toStringAsFixed(2)} X',
-                        style: TextStyle(
-                            color: e == currentSpeed
-                                ? Colors.white
-                                : Colors.white.withOpacity(0.6),
-                            fontWeight: e == currentSpeed
-                                ? FontWeight.bold
-                                : FontWeight.normal),
-                      ),
-                      Divider(
-                        color: Colors.white.withOpacity(0.4),
-                        thickness: 1,
-                      )
-                    ],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${e.toStringAsFixed(2)} X',
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: e == currentSpeed
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.6),
+                              fontWeight: e == currentSpeed
+                                  ? FontWeight.bold
+                                  : FontWeight.normal),
+                        ),
+                        Divider(
+                          color: Colors.white.withOpacity(0.4),
+                          thickness: 1,
+                          height: 8,
+                        )
+                      ],
+                    ),
                   ),
                 ))
             .toList()
