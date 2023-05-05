@@ -36,6 +36,7 @@ class SessionDetails {
   int quizId;
   String title;
   String videoUrl;
+  dynamic aspectRatio;
   String videoCover;
   dynamic documentUrl;
   dynamic videoProgress;
@@ -53,6 +54,12 @@ class SessionDetails {
     quizId = json['quizId'];
     title = json['title'];
     videoUrl = json['videoUrl'];
+    try {
+      aspectRatio = json['width'] / json['height'];
+    } catch (e) {
+      aspectRatio = 1.0;
+    }
+
     videoCover = json['videoCover'];
     documentUrl = json['documentUrl'];
     videoProgress = json['videoProgress'];

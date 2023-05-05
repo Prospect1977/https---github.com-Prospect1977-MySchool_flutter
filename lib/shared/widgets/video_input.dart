@@ -46,29 +46,34 @@ Future<String> compressVideo(XFile f, int VideoId, var ctx) async {
 
 generateThumbnail(
     int VideoId, var context, Function getData, File fileVideo) async {
-  final thumbnail = await VideoCompress.getFileThumbnail(fileVideo.path);
-  FormData formData = new FormData.fromMap({
-    "image": await MultipartFile.fromFile(thumbnail.path,
-        filename: thumbnail.path.split("/").last,
-        contentType: new MediaType('file', '*/*')),
-    "type": "file"
-  });
+  try {
+    final thumbnail = await VideoCompress.getFileThumbnail(fileVideo.path);
+    FormData formData = new FormData.fromMap({
+      "image": await MultipartFile.fromFile(thumbnail.path,
+          filename: thumbnail.path.split("/").last,
+          contentType: new MediaType('file', '*/*')),
+      "type": "file"
+    });
 
-  DioHelper.postImage(
-          url: 'TeacherSession/TeacherUploadVideoThumbnail',
-          data: formData,
-          query: {
-            "VideoId": VideoId,
-          },
-          lang: "en",
-          token: "")
-      .then((value) {
-    print(value.data["data"]);
+    DioHelper.postImage(
+            url: 'TeacherSession/TeacherUploadVideoThumbnail',
+            data: formData,
+            query: {
+              "VideoId": VideoId,
+            },
+            lang: "en",
+            token: "")
+        .then((value) {
+      print(value.data["data"]);
+      Navigator.of(context).pop();
+      getData();
+    }).onError((error, stackTrace) {
+      print(error.toString());
+    });
+  } catch (e) {
     Navigator.of(context).pop();
     getData();
-  }).onError((error, stackTrace) {
-    print(error.toString());
-  });
+  }
 }
 
 class UploadProgressDialog extends StatefulWidget {
@@ -117,9 +122,11 @@ class _UploadProgressDialogState extends State<UploadProgressDialog> {
     });
     double Duration;
     int Height;
+    int Width;
     await VideoCompress.getMediaInfo(fileVideo.path).then((info) {
       Duration = info.duration;
-      Height = info.height;
+      Height = info.width;
+      Width = info.height;
     });
     DioHelper.postVideo(
             url: 'TeacherSession/TeacherUploadVideo',
@@ -129,6 +136,7 @@ class _UploadProgressDialogState extends State<UploadProgressDialog> {
               "LessonId": LessonId,
               "IsPromo": IsPromo,
               "Height": Height,
+              "Width": Width,
               "Duration": Duration / 1000,
               "DataDate": DateTime.now()
             },

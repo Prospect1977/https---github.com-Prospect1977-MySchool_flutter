@@ -398,67 +398,43 @@ class _QuizScreenState extends State<QuizScreen> {
                           child: CircularProgressIndicator(),
                         ),
                         builder: (context) => Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SingleChildScrollView(
-                              child: Directionality(
-                                textDirection: widget.dir == "ltr"
-                                    ? TextDirection.ltr
-                                    : TextDirection.rtl,
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(0.0),
-                                      child: Directionality(
-                                        textDirection: widget.dir == "ltr"
-                                            ? TextDirection.ltr
-                                            : TextDirection.rtl,
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.all(5),
-                                              decoration: BoxDecoration(
-                                                  color: quizResult < 0.5
-                                                      ? Colors.red
-                                                      : Colors.green,
-                                                  borderRadius:
-                                                      BorderRadius.circular(5)),
-                                              child: Text(
-                                                  widget.dir == "ltr"
-                                                      ? 'Quiz Result: ${quizResultAsFraction} (${quizResultAsPercentage} %)'
-                                                      : "نتيجة الإختبار: ${quizResultAsFraction} (${quizResultAsPercentage} %)",
-                                                  style: TextStyle(
-                                                      color: Colors.white)),
-                                            ),
-                                            Expanded(child: Container()),
-                                            // GestureDetector(
-                                            //     onTap: () {
-                                            //       Navigator.of(context).pop();
-                                            //     },
-                                            //     child: Container(
-                                            //         padding: EdgeInsets.all(5),
-                                            //         decoration: BoxDecoration(
-                                            //             color: defaultColor,
-                                            //             border: Border.all(
-                                            //                 color: Colors.black
-                                            //                     .withOpacity(
-                                            //                         0.1)),
-                                            //             borderRadius:
-                                            //                 BorderRadius
-                                            //                     .circular(5)),
-                                            //         child: Text(
-                                            //           widget.dir == "ltr"
-                                            //               ? "Back to lesson"
-                                            //               : "العودة إلى الدرس",
-                                            //           style: TextStyle(
-                                            //               color: Colors.white),
-                                            //         ))),
-                                          ],
-                                        ),
+                          child: SingleChildScrollView(
+                            child: Directionality(
+                              textDirection: widget.dir == "ltr"
+                                  ? TextDirection.ltr
+                                  : TextDirection.rtl,
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.all(0.0),
+                                    alignment: Alignment.center,
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        color: quizResult < 0.5
+                                            ? Colors.red
+                                            : Colors.green,
                                       ),
+                                      child: Text(
+                                          widget.dir == "ltr"
+                                              ? 'Quiz Result: ${quizResultAsFraction} (${quizResultAsPercentage} %)'
+                                              : "نتيجة الإختبار: ${quizResultAsFraction} (${quizResultAsPercentage} %)",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold)),
                                     ),
-                                    Divider(),
-                                    ListView.builder(
+                                  ),
+                                  Divider(),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8),
+                                    child: ListView.builder(
                                       physics: NeverScrollableScrollPhysics(),
                                       shrinkWrap: true,
                                       itemCount: MyQuiz.Questions.length,
@@ -505,33 +481,34 @@ class _QuizScreenState extends State<QuizScreen> {
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                          studentAnswers[index]
-                                                                              .AnswerText,
-                                                                          style: TextStyle(
-                                                                              fontSize: studentAnswers[index].IsAnswerRight == true ? 18 : 16,
-                                                                              color: studentAnswers[index].IsAnswerRight == true ? Colors.green : Colors.black54)),
-                                                                    ],
-                                                                  ),
+                                                                  Text(
+                                                                      studentAnswers[
+                                                                              index]
+                                                                          .AnswerText,
+                                                                      style: TextStyle(
+                                                                          fontSize: studentAnswers[index].IsAnswerRight == true
+                                                                              ? 18
+                                                                              : 16,
+                                                                          color: studentAnswers[index].IsAnswerRight == true
+                                                                              ? Colors.green
+                                                                              : Colors.red)),
                                                                   studentAnswers[index]
                                                                               .IsAnswerRight ==
                                                                           null
-                                                                      ? Container(
-                                                                          padding:
-                                                                              EdgeInsets.all(5),
-                                                                          margin:
-                                                                              EdgeInsets.only(top: 5),
-                                                                          child: Text(
-                                                                              widget.dir == "ltr" ? "This answer will be reviced by the teacher for approval!" : "سوف يتم مراجعة هذه الإجابة من قبل المُعلم للموافقة!",
-                                                                              style: TextStyle(color: Colors.black38, fontStyle: FontStyle.italic)),
-                                                                          decoration: BoxDecoration(
-                                                                              color: Colors.black12,
-                                                                              border: Border.all(
-                                                                                color: Colors.black26,
+                                                                      ? Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(item.answers[0].title, style: TextStyle(color: Colors.black45, fontStyle: FontStyle.italic)),
+                                                                            ),
+                                                                            Container(
+                                                                              width: 50,
+                                                                              child: Icon(
+                                                                                Icons.check_circle,
+                                                                                size: 18,
+                                                                                color: Colors.green,
                                                                               ),
-                                                                              borderRadius: BorderRadius.circular(5)),
+                                                                            )
+                                                                          ],
                                                                         )
                                                                       : Container(),
                                                                 ],
@@ -597,8 +574,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                         );
                                       },
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),

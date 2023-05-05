@@ -3,6 +3,7 @@ class TeacherSessionDetail {
   String title;
   String videoCover;
   String videoUrl;
+  dynamic aspectRatio;
   String documentUrl;
   bool active;
   String type;
@@ -15,6 +16,12 @@ class TeacherSessionDetail {
     title = json['title'];
     videoCover = json['videoCover'];
     videoUrl = json['videoUrl'];
+    try {
+      aspectRatio = json['width'] / json['height'];
+    } catch (e) {
+      aspectRatio = 1.0;
+    }
+
     documentUrl = json['documentUrl'];
     active = json['active'];
     type = json['type'];

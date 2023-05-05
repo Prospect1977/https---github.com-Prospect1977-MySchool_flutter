@@ -311,6 +311,7 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                               Answers.add(MyAnswer1);
                               Answers.add(MyAnswer2);
                             }
+                            widget.question.questionType = value;
                           });
                         },
                         icon: Padding(
@@ -485,7 +486,11 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                                           Answer MyAnswer1 = Answer.fromJson({
                                             "id": 0,
                                             "title": "",
-                                            "isRightAnswer": false
+                                            "isRightAnswer":
+                                                widget.question.questionType ==
+                                                        "Example"
+                                                    ? true
+                                                    : false
                                           });
 
                                           Answers.add(MyAnswer1);
@@ -507,12 +512,13 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                                         child: Text(
                                           widget.dir == "ltr"
                                               ? "+ Add an Answer"
-                                              : "+إضافة إجابة",
-                                          style:
-                                              TextStyle(color: Colors.purple),
+                                              : "+ إضافة إجابة",
+                                          style: TextStyle(
+                                              color: Colors.purple,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                         decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: Colors.white.withOpacity(.9),
                                             borderRadius:
                                                 BorderRadius.circular(3)),
                                       ),

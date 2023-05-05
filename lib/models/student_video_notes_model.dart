@@ -12,6 +12,7 @@ class StudentVideoNotesModel {
 class StudentVideoNote {
   int videoId;
   String videoUrl;
+  dynamic aspectRatio;
   String urlSource;
   int sessionHeaderId;
   String lessonName;
@@ -26,6 +27,7 @@ class StudentVideoNote {
     videoId = json['videoId'];
     videoUrl = json['videoUrl'];
     urlSource = json['urlSource'];
+    aspectRatio = json['width'] / json['height'];
     sessionHeaderId = json['sessionHeaderId'];
     lessonName = json['lessonName'];
     dir = json['dir'];

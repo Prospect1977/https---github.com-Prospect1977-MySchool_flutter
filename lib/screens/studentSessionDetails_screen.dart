@@ -315,6 +315,7 @@ class Item extends StatelessWidget {
                       StudentId: widget.StudentId,
                       VideoId: item.videoId,
                       VideoUrl: item.videoUrl,
+                      aspectRatio: item.aspectRatio,
                       UrlSource: item.urlSource,
                       Title: item.title,
                       SessionHeaderId: widget.SessionHeaderId,

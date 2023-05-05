@@ -320,7 +320,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
       },
       child: Scaffold(
         appBar: appBarComponent(context, widget.LessonName),
-        body: sessionData == null && lessonsData == null
+        body: sessionData == null || lessonsData == null
             ? Center(child: CircularProgressIndicator())
             : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
                 Container(
@@ -1046,6 +1046,7 @@ class Item extends StatelessWidget {
                 StudentId: 0,
                 VideoId: item.videoId,
                 VideoUrl: item.videoUrl,
+                aspectRatio: item.aspectRatio,
                 UrlSource: item.urlSource,
                 Title: item.title,
                 // SessionHeaderId: teacherSession.id,
