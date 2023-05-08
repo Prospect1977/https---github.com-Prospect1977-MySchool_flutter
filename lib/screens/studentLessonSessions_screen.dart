@@ -209,8 +209,9 @@ class _StudentLessonSessionsScreenState
                                                                 radius: 32,
                                                                 backgroundColor: item
                                                                         .isFree
-                                                                    ? Colors
-                                                                        .black45
+                                                                    ? defaultColor
+                                                                        .withOpacity(
+                                                                            0.65)
                                                                     : item
                                                                             .isPurchased
                                                                         ? Colors
