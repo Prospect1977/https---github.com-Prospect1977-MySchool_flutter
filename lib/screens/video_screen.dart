@@ -79,7 +79,7 @@ class _VideoScreenState extends State<VideoScreen> {
   Future<void> _initializePlay(String VideoUrl) async {
     _controller = VideoPlayerController.network(
         '${widget.UrlSource == "web" ? baseUrl : baseUrl0}Sessions/Videos/$VideoUrl')
-      // _controller = VideoPlayerController.asset(VideoUrl)
+      //_controller = VideoPlayerController.asset(VideoUrl)
       ..addListener(() {
         if (_controller != null && _controller.value.isInitialized) {
           setState(() {});
@@ -132,18 +132,14 @@ class _VideoScreenState extends State<VideoScreen> {
     //--------------------------------to be removed on final deploy-----------------
 
     // VideoUrl = widget.dir == "ltr"
-    //     ? 'assets/images/Video.mp4'
-    //     : 'assets/images/Video_ar.mp4';
+    //     ? 'assets/images/Video_480.mp4'
+    //     : 'assets/images/Video_ar_480.mp4';
     //--------------------------------End to be removed on final deploy-----------------
-
-    // VideoUrl =
-    //     '${widget.VideoUrl.substring(0, widget.VideoUrl.length - 4)}_${currentRes}.${widget.VideoUrl.split(".")[widget.VideoUrl.split(".").length - 1]}';
     VideoUrl =
         '${widget.VideoUrl.substring(0, widget.VideoUrl.length - 4)}_480.${widget.VideoUrl.split(".")[widget.VideoUrl.split(".").length - 1]}';
     print(
         '________________________________________________________________vidUrl=$VideoUrl');
-    print(
-        '------------------------------------------------------------------------Widget.aspectRatio:  ${widget.aspectRatio}');
+
     _initializePlay(VideoUrl);
   }
 
@@ -196,11 +192,17 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void GetVideoNotes() {
     DioHelper.getData(
-      url: 'StudentVideoNote',
-      query: {
-        "StudentId": widget.StudentId,
-        "VideoId": widget.VideoId,
-      },
+      url: roles == "Student" || roles == "Parent"
+          ? 'StudentVideoNote'
+          : 'TeacherVideoNote',
+      query: roles == "Student" || roles == "Parent"
+          ? {
+              "StudentId": widget.StudentId,
+              "VideoId": widget.VideoId,
+            }
+          : {
+              "VideoId": widget.VideoId,
+            },
       lang: lang,
       token: token,
     ).then((value) {
@@ -215,11 +217,18 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void DeleteVideoNote(int NoteId) {
     DioHelper.deleteData(
-      url: 'StudentVideoNote',
-      query: {
-        "StudentId": widget.StudentId,
-        "NoteId": NoteId,
-      },
+      url: roles == "Student" || roles == "Parent"
+          ? 'StudentVideoNote'
+          : 'TeacherVideoNote',
+      query: roles == "Student" || roles == "Parent"
+          ? {
+              "StudentId": widget.StudentId,
+              "NoteId": NoteId,
+            }
+          : {
+              "VideoId": widget.VideoId,
+              "NoteId": NoteId,
+            },
       lang: lang,
       token: token,
     ).then((value) {
@@ -325,17 +334,27 @@ class _VideoScreenState extends State<VideoScreen> {
       }
       if (commentMode == "create") {
         DioHelper.postData(
-            url: "StudentVideoNote",
-            lang: lang,
-            token: token,
-            data: {},
-            query: {
-              "StudentId": widget.StudentId,
-              "VideoId": widget.VideoId,
-              "DataDate": DateTime.now(),
-              "NoteTime": _controller.value.position.inSeconds,
-              "Note": commentController.text,
-            }).then((value) {
+                url: roles == "Student" || roles == "Parent"
+                    ? "StudentVideoNote"
+                    : "TeacherVideoNote",
+                lang: lang,
+                token: token,
+                data: {},
+                query: roles == "Student" || roles == "Parent"
+                    ? {
+                        "StudentId": widget.StudentId,
+                        "VideoId": widget.VideoId,
+                        "DataDate": DateTime.now(),
+                        "NoteTime": _controller.value.position.inSeconds,
+                        "Note": commentController.text,
+                      }
+                    : {
+                        "VideoId": widget.VideoId,
+                        "DataDate": DateTime.now(),
+                        "NoteTime": _controller.value.position.inSeconds,
+                        "Note": commentController.text,
+                      })
+            .then((value) {
           if (value.data["status"] == false) {
             showToast(
                 text: widget.dir == "ltr"
@@ -351,14 +370,22 @@ class _VideoScreenState extends State<VideoScreen> {
         });
       } else if (commentMode == "update") {
         DioHelper.updateData(
-            url: "StudentVideoNote",
-            lang: lang,
-            token: token,
-            data: {},
-            query: {
-              "StudentNoteId": editCommentId,
-              "Note": commentController.text
-            }).then((value) {
+                url: roles == "Student" || roles == "Parent"
+                    ? "StudentVideoNote"
+                    : "TeacherVideoNote",
+                lang: lang,
+                token: token,
+                data: {},
+                query: roles == "Student" || roles == "Parent"
+                    ? {
+                        "StudentNoteId": editCommentId,
+                        "Note": commentController.text
+                      }
+                    : {
+                        "TeacherNoteId": editCommentId,
+                        "Note": commentController.text
+                      })
+            .then((value) {
           if (value.data["status"] == false) {
             showToast(
                 text: widget.dir == "ltr"
@@ -588,7 +615,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                         ),
                                       ),
                                       Container(
-                                        height: 55,
+                                        height: 91,
                                         child: Column(
                                           //-----------------------------------Bottom Compound Column
                                           children: [
@@ -609,7 +636,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                                 ),
                                                 Expanded(
                                                   child: Container(
-                                                    height: 16,
+                                                    height: 50,
                                                     child: Stack(
                                                         //----------------------------------video progress indicator Group
                                                         alignment: Alignment
@@ -618,6 +645,9 @@ class _VideoScreenState extends State<VideoScreen> {
                                                           VideoProgressIndicator(
                                                             //----------------------------------video progress indicator
                                                             _controller,
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    10),
                                                             allowScrubbing:
                                                                 true,
                                                             colors:
@@ -629,14 +659,18 @@ class _VideoScreenState extends State<VideoScreen> {
                                                           Positioned(
                                                             left:
                                                                 getIndicatorPosition(),
-                                                            top: 2,
+                                                            top: 16,
                                                             child:
                                                                 IgnorePointer(
                                                               child: Icon(
                                                                 Icons.circle,
-                                                                color:
-                                                                    defaultColor,
-                                                                size: 15,
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        200,
+                                                                        200,
+                                                                        200),
+                                                                size: 17,
                                                               ),
                                                             ),
                                                           ),
@@ -682,46 +716,15 @@ class _VideoScreenState extends State<VideoScreen> {
                                                             ]);
                                                             await Wakelock
                                                                 .disable();
-                                                            if (roles !=
-                                                                "Teacher") {
-                                                              commentMode =
-                                                                  "create";
-                                                              editCommentId = 0;
 
-                                                              _startAddComment(
-                                                                  ExistingComment:
-                                                                      "");
-                                                            } else {
-                                                              showToast(
-                                                                  text: lang ==
-                                                                          "en"
-                                                                      ? "Only students and parents can add a notes!"
-                                                                      : "فقط الطلاب وأولاياء الأمور بأمكانهم إضافة ملحوظات!",
-                                                                  state:
-                                                                      ToastStates
-                                                                          .ERROR);
-                                                            }
+                                                            _startAddComment(
+                                                                ExistingComment:
+                                                                    "");
                                                           }
                                                         : () {
-                                                            if (roles !=
-                                                                "Teacher") {
-                                                              commentMode =
-                                                                  "create";
-                                                              editCommentId = 0;
-
-                                                              _startAddComment(
-                                                                  ExistingComment:
-                                                                      "");
-                                                            } else {
-                                                              showToast(
-                                                                  text: lang ==
-                                                                          "en"
-                                                                      ? "Only students and parents can add a notes!"
-                                                                      : "فقط الطلاب وأولاياء الأمور بأمكانهم إضافة ملحوظات!",
-                                                                  state:
-                                                                      ToastStates
-                                                                          .ERROR);
-                                                            }
+                                                            _startAddComment(
+                                                                ExistingComment:
+                                                                    "");
                                                           },
                                                     child: Container(
                                                       margin: EdgeInsets.only(
@@ -953,7 +956,7 @@ class _VideoScreenState extends State<VideoScreen> {
                         textDirection: widget.dir == "ltr"
                             ? TextDirection.ltr
                             : TextDirection.rtl,
-                        child: VideoNotes != null && roles != "Teacher"
+                        child: VideoNotes != null
                             ? ListView.separated(
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,

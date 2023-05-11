@@ -386,7 +386,7 @@ class BuildItem extends StatelessWidget {
       ),
       child: Column(children: [
         Container(
-          height: 57,
+          height: item.dir == "ltr" ? 54 : 61,
           width: double.infinity,
           padding: EdgeInsets.all(4),
           child: Center(
