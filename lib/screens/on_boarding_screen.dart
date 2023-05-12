@@ -27,7 +27,8 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   var boardController = PageController();
-
+  bool loading = false;
+  //var lang = CacheHelper.getData(key: "lang");
   List<BoardingModel> boarding = [
     BoardingModel(
         image: 'assets/images/onboard_1.png',
@@ -35,14 +36,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           lange: lang,
         )),
     BoardingModel(
-      image: 'assets/images/onboard_2.png',
-      title: 'On Board 2 Title',
-      body: 'On Board 2 Body',
+      image: 'assets/images/onboard_3.png',
+      title: 'Study any time ',
+      body: 'With your favorite teacher',
     ),
     BoardingModel(
-      image: 'assets/images/onboard_3.png',
-      title: 'On Board 3 Title',
-      body: 'On Board 3 Body',
+      image: 'assets/images/onboard_2.png',
+      title: 'Follow up',
+      body: 'Monitor your child activity day by day',
     ),
   ];
 
@@ -50,6 +51,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   void submit() {
     //o CacheHelper.saveData(key: "lang", value: "ar");
+    setState(() {
+      loading = true;
+    });
     CacheHelper.saveData(
       key: 'onBoarding',
       value: true,
@@ -65,80 +69,82 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(30.0),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            alignment: Alignment.centerRight,
-            child: defaultTextButton(
-                function: submit,
-                text: 'skip',
-                fontSize: 16.1,
-                fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            child: PageView.builder(
-              physics: BouncingScrollPhysics(),
-              controller: boardController,
-              onPageChanged: (int index) {
-                if (index == boarding.length - 1) {
-                  setState(() {
-                    isLast = true;
-                  });
-                } else {
-                  setState(() {
-                    isLast = false;
-                  });
-                }
-              },
-              itemBuilder: (context, index) =>
-                  buildBoardingItem(boarding[index]),
-              itemCount: boarding.length,
-            ),
-          ),
-          SizedBox(
-            height: 40.0,
-          ),
-          Row(
-            children: [
-              SmoothPageIndicator(
-                controller: boardController,
-                effect: ExpandingDotsEffect(
-                  dotColor: Colors.grey,
-                  activeDotColor: defaultColor,
-                  dotHeight: 10,
-                  expansionFactor: 4,
-                  dotWidth: 10,
-                  spacing: 5.0,
+    return loading
+        ? Center(child: CircularProgressIndicator())
+        : Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(30.0),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  alignment: Alignment.centerRight,
+                  child: defaultTextButton(
+                      function: submit,
+                      text: 'skip',
+                      fontSize: 16.1,
+                      fontWeight: FontWeight.bold),
                 ),
-                count: boarding.length,
-              ),
-              Spacer(),
-              FloatingActionButton(
-                onPressed: () {
-                  if (isLast) {
-                    submit();
-                  } else {
-                    boardController.nextPage(
-                      duration: Duration(
-                        milliseconds: 750,
+                Expanded(
+                  child: PageView.builder(
+                    physics: BouncingScrollPhysics(),
+                    controller: boardController,
+                    onPageChanged: (int index) {
+                      if (index == boarding.length - 1) {
+                        setState(() {
+                          isLast = true;
+                        });
+                      } else {
+                        setState(() {
+                          isLast = false;
+                        });
+                      }
+                    },
+                    itemBuilder: (context, index) =>
+                        buildBoardingItem(boarding[index]),
+                    itemCount: boarding.length,
+                  ),
+                ),
+                SizedBox(
+                  height: 40.0,
+                ),
+                Row(
+                  children: [
+                    SmoothPageIndicator(
+                      controller: boardController,
+                      effect: ExpandingDotsEffect(
+                        dotColor: Colors.grey,
+                        activeDotColor: defaultColor,
+                        dotHeight: 10,
+                        expansionFactor: 4,
+                        dotWidth: 10,
+                        spacing: 5.0,
                       ),
-                      curve: Curves.fastLinearToSlowEaseIn,
-                    );
-                  }
-                },
-                child: Icon(
-                  Icons.arrow_forward_ios,
+                      count: boarding.length,
+                    ),
+                    Spacer(),
+                    FloatingActionButton(
+                      onPressed: () {
+                        if (isLast) {
+                          submit();
+                        } else {
+                          boardController.nextPage(
+                            duration: Duration(
+                              milliseconds: 750,
+                            ),
+                            curve: Curves.fastLinearToSlowEaseIn,
+                          );
+                        }
+                      },
+                      child: Icon(
+                        Icons.arrow_forward_ios,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+              ],
+            ),
+          );
   }
 
   Widget buildBoardingItem(BoardingModel model) => Column(

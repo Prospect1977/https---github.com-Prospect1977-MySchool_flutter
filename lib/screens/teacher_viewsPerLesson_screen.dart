@@ -391,16 +391,16 @@ class BuildItem extends StatelessWidget {
           padding: EdgeInsets.all(4),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
                   item.lessonName,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: TextOverflow.clip,
                   style: TextStyle(
                       color: defaultColor.withOpacity(0.8),
                       fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.start,
                 ),
                 Text(
                   '${item.subjectName} ${item.yearOfStudy}',

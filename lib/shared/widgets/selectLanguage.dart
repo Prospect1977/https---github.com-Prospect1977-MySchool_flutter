@@ -10,13 +10,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectLanguageWidget extends StatefulWidget {
   String lange = lang;
-  SelectLanguageWidget({@required this.lange, Key key}) : super(key: key);
+  Function setLang;
+  SelectLanguageWidget({@required this.lange, this.setLang, Key key})
+      : super(key: key);
 
   @override
   State<SelectLanguageWidget> createState() => _SelectLanguageWidgetState();
 }
 
 class _SelectLanguageWidgetState extends State<SelectLanguageWidget> {
+  var lang = CacheHelper.getData(key: "lang");
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,8 +29,12 @@ class _SelectLanguageWidgetState extends State<SelectLanguageWidget> {
           onTap: () async {
             setState(() {
               widget.lange = "en";
+              try {
+                widget.setLang("en");
+              } catch (e) {}
             });
             // CacheHelper.init();
+
             CacheHelper.saveData(key: "lang", value: "en");
             lang = "en";
           },
@@ -77,6 +84,9 @@ class _SelectLanguageWidgetState extends State<SelectLanguageWidget> {
           onTap: () async {
             setState(() {
               widget.lange = "ar";
+              try {
+                widget.setLang("ar");
+              } catch (e) {}
             });
             //CacheHelper.init();
             CacheHelper.saveData(key: "lang", value: "ar");

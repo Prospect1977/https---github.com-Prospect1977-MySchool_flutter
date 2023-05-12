@@ -494,7 +494,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                       Container(
                                         height:
                                             MediaQuery.of(context).size.height -
-                                                250,
+                                                256,
                                         child: ReorderableListView.builder(
                                           itemCount: sessionData
                                               .teacherSessionDetails.length,
