@@ -26,8 +26,8 @@ class ParentsLandingScreen extends StatelessWidget {
         var cubit = ParentStudentCubit.get(context);
         return Scaffold(
           appBar: (state is SuccessState)
-              ? appBarComponent(context,
-                  cubit.lang.toLowerCase() == "en" ? "Children" : "الأبناء")
+              ? appBarComponent(
+                  context, cubit.lang == "en" ? "Children" : "الأبناء")
               : appBarComponent(context, "الأبناء"),
           body: (state is SuccessState)
               ? ChildrenList(cubit: cubit)
@@ -51,9 +51,7 @@ class ChildrenList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: cubit.lang.toLowerCase() == "ar"
-          ? TextDirection.rtl
-          : TextDirection.ltr,
+      textDirection: cubit.lang == "ar" ? TextDirection.rtl : TextDirection.ltr,
       child: Padding(
         padding: const EdgeInsets.only(
           top: 8.0,
@@ -137,9 +135,7 @@ class ChildrenList extends StatelessWidget {
                 function: () {
                   navigateTo(context, AddStudentScreen());
                 },
-                text: cubit.lang.toLowerCase() == "en"
-                    ? 'Add a Student'
-                    : 'إضافة طالب',
+                text: cubit.lang == "en" ? 'Add a Student' : 'إضافة طالب',
                 isUpperCase: false,
                 borderRadius: 0,
                 fontWeight: FontWeight.bold,

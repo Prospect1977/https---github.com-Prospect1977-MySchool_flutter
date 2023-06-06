@@ -18,7 +18,8 @@ class UserData {
   String token;
   bool studentHasParent;
   int teacherId;
-
+  String phoneNumber;
+  String email;
   // named constructor
   UserData.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -28,5 +29,7 @@ class UserData {
     token = json['token'];
     studentHasParent = json['studentHasParent'];
     teacherId = json['teacherId'];
+    phoneNumber = json['phoneNumber'];
+    email = json['email'];
   }
 }

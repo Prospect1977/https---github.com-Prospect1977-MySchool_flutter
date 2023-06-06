@@ -63,6 +63,23 @@ class DioHelper {
     );
   }
 
+  static Future<Response> postPaymobData({
+    @required String url,
+    Map<String, dynamic> query,
+    dynamic data,
+  }) async {
+    dio.options.headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    return dio.post(
+      url,
+      queryParameters: query,
+      data: data,
+    );
+  }
+
   static Future<Response> postImage({
     @required String url,
     Map<String, dynamic> query,

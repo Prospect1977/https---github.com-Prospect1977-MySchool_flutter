@@ -10,6 +10,8 @@ import 'package:my_school/cubits/StudentSessionHeaderDetail_states.dart';
 import 'package:my_school/models/StudentSessionHeaderDetail.dart';
 
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/paymob_options_screen.dart';
+import 'package:my_school/screens/paymob_creditcard_screen.dart';
 import 'package:my_school/screens/quiz_screen.dart';
 import 'package:my_school/screens/studentLessonSessions_screen.dart';
 import 'package:my_school/screens/video_screen.dart';
@@ -265,19 +267,37 @@ class _StudentSessionDetailsScreenState
                                             : Container()
                                       ]),
                                 )
-                              : defaultButton(
-                                  function: () {
-                                    postPurchase(
-                                      widget.StudentId,
-                                      widget.SessionHeaderId,
-                                    );
-                                    setState(() {
-                                      allData.sessionHeader.isPurchased = true;
-                                    });
-                                  },
-                                  text: widget.dir == "ltr"
-                                      ? "Purchase (${allData.sessionHeader.price} EGP)"
-                                      : "شراء ${allData.sessionHeader.price} ج.م"),
+                              : Container(
+                                  margin: EdgeInsets.only(bottom: 8),
+                                  child: defaultButton(
+                                      function: () {
+                                        // postPurchase(
+                                        //   widget.StudentId,
+                                        //   widget.SessionHeaderId,
+                                        // );
+                                        setState(() {
+                                          navigateTo(
+                                              context,
+                                              PaymobOptionsScreen(
+                                                StudentId: widget.StudentId,
+                                                Payment: allData
+                                                        .sessionHeader.price *
+                                                    100,
+                                                SessionHeaderId:
+                                                    widget.SessionHeaderId,
+                                                LessonDescription:
+                                                    widget.LessonDescription,
+                                                LessonName: widget.LessonName,
+                                                TeacherName: widget.TeacherName,
+                                                dir: widget.dir,
+                                              ));
+                                          //allData.sessionHeader.isPurchased = true;
+                                        });
+                                      },
+                                      text: widget.dir == "ltr"
+                                          ? "Purchase (${allData.sessionHeader.price} EGP)"
+                                          : "شراء ${allData.sessionHeader.price} ج.م"),
+                                ),
                         ]),
                   ))),
     );

@@ -45,6 +45,8 @@ class LoginCubit extends Cubit<LoginStates> {
           key: "studentHasParent", value: userData.studentHasParent);
       CacheHelper.saveData(key: "teacherId", value: userData.teacherId);
       CacheHelper.saveData(key: "fullName", value: userData.fullName);
+      CacheHelper.saveData(key: "phoneNumber", value: userData.phoneNumber);
+      CacheHelper.saveData(key: "email", value: userData.email);
       print(
           "_____________________________________________IsStudentHasParent=${CacheHelper.getData(key: "studentHasParent")}");
       // CacheHelper.saveData(key: "token", value: loginModel.data.token); handled on the login screen
