@@ -8,7 +8,7 @@
 PRODUCT_NAME = my_school
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.mySchool
+PRODUCT_BUNDLE_IDENTIFIER = com.digischool.my_school
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2023 com.digischool. All rights reserved.

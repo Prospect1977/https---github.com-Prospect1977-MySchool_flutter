@@ -8,6 +8,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:my_school/cubits/StudentSessionHeaderDetail_cubit.dart';
 import 'package:my_school/cubits/StudentSessionHeaderDetail_states.dart';
 import 'package:my_school/models/StudentSessionHeaderDetail.dart';
+import 'package:my_school/screens/document_screen.dart';
 
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/paymob_options_screen.dart';
@@ -276,6 +277,7 @@ class _StudentSessionDetailsScreenState
                                         //   widget.SessionHeaderId,
                                         // );
                                         setState(() {
+                                          Navigator.of(context).pop();
                                           navigateTo(
                                               context,
                                               PaymobOptionsScreen(
@@ -371,6 +373,14 @@ class Item extends StatelessWidget {
                     ));
               }
               if (item.type == "Document") {
+                // navigateTo(
+                //     context,
+                //     DocumentScreen(
+                //         Url: item.urlSource == "web"
+                //             ? '${webUrl}Sessions/Documents/${item.documentUrl}'
+                //             : '${baseUrl0}Sessions/Documents/${item.documentUrl}',
+                //         Title: item.title));
+
                 await launchUrl(
                     Uri.parse(item.urlSource == "web"
                         ? '${webUrl}Sessions/Documents/${item.documentUrl}'

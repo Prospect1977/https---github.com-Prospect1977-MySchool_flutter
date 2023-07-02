@@ -68,6 +68,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      CacheHelper.saveData(key: "lang", value: lang);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return loading
         ? Center(child: CircularProgressIndicator())

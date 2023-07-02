@@ -68,9 +68,10 @@ class ChildrenList extends StatelessWidget {
                     margin: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                     child: Container(
                       decoration: BoxDecoration(
-                          border: Border.all(color: defaultColor, width: 1),
+                          border:
+                              Border.all(color: Colors.grey.shade400, width: 1),
                           borderRadius: BorderRadius.circular(5)),
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: InkWell(
                         onTap: () {
                           navigateTo(
@@ -89,8 +90,8 @@ class ChildrenList extends StatelessWidget {
                             leading: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(65),
-                                  border:
-                                      Border.all(color: Colors.grey, width: 2)),
+                                  border: Border.all(
+                                      color: Colors.black45, width: 2)),
                               child: cubit.students[index].Gender == null
                                   ? ClipRRect(
                                       borderRadius:
@@ -121,8 +122,8 @@ class ChildrenList extends StatelessWidget {
                             ),
                             title: Text(
                               cubit.students[index].FullName,
-                              style:
-                                  TextStyle(fontSize: 22, color: Colors.purple),
+                              style: TextStyle(
+                                  fontSize: 22, color: Colors.black54),
                             )),
                       ),
                     ),

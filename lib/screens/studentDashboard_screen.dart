@@ -9,6 +9,7 @@ import 'package:my_school/screens/studentLearnBySubjectScreen1.dart';
 import 'package:my_school/screens/studentProfile_screen.dart';
 import 'package:my_school/screens/studentSelectedSubjects_screen.dart';
 import 'package:my_school/screens/student_followup_list_screen.dart';
+import 'package:my_school/screens/under_construction_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
@@ -188,11 +189,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             widget.YearOfStudyId == null)
                         ? null
                         : () {
-                            // navigateTo(
-                            //     context,
-                            //     StudentFollowupListScreen(
-                            //         StudentId: widget.Id,
-                            //         StudentName: widget.FullName));
+                            navigateTo(context, UnderConstructionScreen());
                           },
                     'Chat.png',
                     lang.toString().toLowerCase() == "ar"

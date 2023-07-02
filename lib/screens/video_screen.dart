@@ -9,6 +9,7 @@ import 'package:my_school/models/StudentVideoNote_model.dart';
 import 'package:my_school/providers/StudentVideo_provider.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
+import 'package:my_school/screens/under_construction_screen.dart';
 //import 'package:my_school/cubits/StudentVideo_cubit.dart';
 //import 'package:my_school/providers/StudentVideo_provider.dart';
 import 'package:my_school/shared/cache_helper.dart';
@@ -778,24 +779,24 @@ class _VideoScreenState extends State<VideoScreen> {
                                                               )),
                                                           //-------------------------------------------------Resolution
                                                           //Reference to handle the problem: https://stackoverflow.com/questions/59010614/flutter-video-player-change-video-source-dynamically
-                                                          GestureDetector(
-                                                            child: Text(
-                                                              '${currentRes.toString()} PX',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 15),
-                                                            ),
-                                                            onTap: () {
-                                                              setState(() {
-                                                                showResOptions =
-                                                                    true;
-                                                              });
-                                                            },
-                                                          )
+                                                          // GestureDetector(
+                                                          //   child: Text(
+                                                          //     '${currentRes.toString()} PX',
+                                                          //     style: TextStyle(
+                                                          //         color: Colors
+                                                          //             .white,
+                                                          //         fontWeight:
+                                                          //             FontWeight
+                                                          //                 .bold,
+                                                          //         fontSize: 15),
+                                                          //   ),
+                                                          //   onTap: () {
+                                                          //     setState(() {
+                                                          //       showResOptions =
+                                                          //           true;
+                                                          //     });
+                                                          //   },
+                                                          // )
                                                         ],
                                                       ),
                                                       height: 30,
@@ -918,7 +919,10 @@ class _VideoScreenState extends State<VideoScreen> {
                               Container(
                                 height: 30,
                                 child: ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      navigateTo(
+                                          context, UnderConstructionScreen());
+                                    },
                                     style: ElevatedButton.styleFrom(
                                         elevation: 0,
                                         backgroundColor:
