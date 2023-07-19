@@ -21,7 +21,7 @@ import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_file_safe/open_file_safe.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StudentSessionDetailsScreen extends StatefulWidget {

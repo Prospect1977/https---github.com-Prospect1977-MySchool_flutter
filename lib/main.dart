@@ -41,7 +41,7 @@ void main() async {
   //Remove Later
 
   bool onBoarding = CacheHelper.getData(key: 'onBoarding');
-  //bool onBoarding = false;
+  // bool onBoarding = false;
   String token = CacheHelper.getData(key: 'token');
   String roles = CacheHelper.getData(key: 'roles');
   if (onBoarding == true) {

@@ -109,7 +109,7 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
             "first_name": fullName.split(' ')[0],
             "street": "NA",
             "building": "NA",
-            "phone_number": phoneNumber,
+            "phone_number": phoneNumber == null ? "6818189198" : phoneNumber,
             "shipping_method": "NA",
             "postal_code": "NA",
             "city": "NA",
