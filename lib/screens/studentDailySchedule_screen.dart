@@ -332,7 +332,7 @@ Widget mainSubListItem(context, Lesson l, studentId) {
       onTap: () {
         navigateTo(
             context,
-            StudentLessonSessionsScreen(studentId, l.lessonId, l.lessonName,
+            StudentLessonSessionsScreen(studentId, l.lessonId, 0, l.lessonName,
                 l.lessonDescription, l.yearSubjectId, l.dir));
       },
       child: l.lessonName == null

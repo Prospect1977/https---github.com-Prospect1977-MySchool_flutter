@@ -2,6 +2,7 @@ import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:my_school/screens/forgot_password_screen.dart';
 import 'package:my_school/screens/landing_screen.dart';
 import 'package:my_school/cubits/login_cubit.dart';
 import 'package:my_school/cubits/login_states.dart';
@@ -55,10 +56,10 @@ class LoginScreen extends StatelessWidget {
           } else {
             // print(state.loginModel.message);
 
-            // showToast(
-            //   text: state.loginModel.message,
-            //   state: ToastStates.ERROR,
-            // );
+            showToast(
+              text: "Invalid Email or Password!",
+              state: ToastStates.ERROR,
+            );
           }
         },
         builder: (context, state) {
@@ -74,13 +75,37 @@ class LoginScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'LOGIN',
-                          style: Theme.of(context).textTheme.headline4.copyWith(
-                                color: Colors.black,
-                              ),
+                          'Login',
+                          style: TextStyle(
+                              fontSize: 32,
+                              color: Colors.black87.withOpacity(0.7),
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Don\'t have an account?',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(
+                              width: 2,
+                            ),
+                            defaultTextButton(
+                              underline: true,
+                              function: () {
+                                navigateTo(
+                                  context,
+                                  RegisterScreen(),
+                                );
+                              },
+                              fontSize: 16,
+                              text: 'Register',
+                            ),
+                          ],
                         ),
                         SizedBox(
-                          height: 15.0,
+                          height: 5.0,
                         ),
                         defaultFormField(
                           controller: emailController,
@@ -120,8 +145,24 @@ class LoginScreen extends StatelessWidget {
                           label: 'Password',
                           prefix: Icons.lock_outline,
                         ),
+                        Container(
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.symmetric(horizontal: 0),
+                          margin: EdgeInsets.all(0),
+                          child: defaultTextButton(
+                            color: Colors.black38,
+                            function: () {
+                              navigateTo(
+                                context,
+                                ForgotPasswordScreen(),
+                              );
+                            },
+                            fontSize: 16,
+                            text: 'Forgot Password?',
+                          ),
+                        ),
                         SizedBox(
-                          height: 30.0,
+                          height: 5,
                         ),
                         ConditionalBuilder(
                             condition: state is! LoginLoadingState,
@@ -134,8 +175,9 @@ class LoginScreen extends StatelessWidget {
                                       );
                                     }
                                   },
-                                  text: 'login',
-                                  isUpperCase: true,
+                                  borderRadius: 5,
+                                  text: 'Login',
+                                  isUpperCase: false,
                                 ),
                             fallback: (context) {
                               if (state is LoginErrorState) {
@@ -148,8 +190,8 @@ class LoginScreen extends StatelessWidget {
                                       );
                                     }
                                   },
-                                  text: 'login',
-                                  isUpperCase: true,
+                                  text: 'Login',
+                                  isUpperCase: false,
                                 );
                               } else {
                                 return Center(
@@ -158,23 +200,6 @@ class LoginScreen extends StatelessWidget {
                             }),
                         SizedBox(
                           height: 15.0,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Don\'t have an account?',
-                            ),
-                            defaultTextButton(
-                              function: () {
-                                navigateTo(
-                                  context,
-                                  RegisterScreen(),
-                                );
-                              },
-                              text: 'register',
-                            ),
-                          ],
                         ),
                       ],
                     ),

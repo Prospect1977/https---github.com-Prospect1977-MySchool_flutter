@@ -23,13 +23,14 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class StudentLessonSessionsScreen extends StatefulWidget {
   final int studentId;
   final int lessonId;
+  final int TermIndex;
   final String lessonName;
   final String lessonDescription;
   final int YearSubjectId;
   final String dir;
 
-  StudentLessonSessionsScreen(this.studentId, this.lessonId, this.lessonName,
-      this.lessonDescription, this.YearSubjectId, this.dir,
+  StudentLessonSessionsScreen(this.studentId, this.lessonId, this.TermIndex,
+      this.lessonName, this.lessonDescription, this.YearSubjectId, this.dir,
       {Key key})
       : super(key: key);
 
@@ -52,6 +53,7 @@ class _StudentLessonSessionsScreenState
     super.initState();
     getSessions(widget.studentId, widget.lessonId);
     getLessons(widget.studentId, widget.YearSubjectId, widget.lessonId);
+    print(widget.TermIndex);
   }
 
   void getSessions(Id, LessonId) {
@@ -81,7 +83,11 @@ class _StudentLessonSessionsScreenState
   void getLessons(Id, YearSubjectId, LessonId) {
     DioHelper.getData(
             url: 'LessonsByYearSubjectId',
-            query: {'Id': Id, 'YearSubjectId': YearSubjectId},
+            query: {
+              'Id': Id,
+              'YearSubjectId': YearSubjectId,
+              'TermIndex': widget.TermIndex,
+            },
             lang: lang,
             token: token)
         .then((value) {
@@ -152,323 +158,290 @@ class _StudentLessonSessionsScreenState
                                     },
                                   )),
                               Expanded(
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: ListView.builder(
-                                        itemCount:
-                                            StudentLessonSessionCollection
-                                                .items.length,
-                                        itemBuilder: (context, index) {
-                                          var item =
-                                              StudentLessonSessionCollection
-                                                  .items[index];
-                                          //-----------------------------------------------------------card
-                                          return InkWell(
-                                            onTap: () {
-                                              navigateTo(
-                                                  context,
-                                                  StudentSessionDetailsScreen(
-                                                    SessionHeaderId:
-                                                        item.sessionId,
-                                                    LessonName:
-                                                        widget.lessonName,
-                                                    LessonDescription: widget
-                                                        .lessonDescription,
-                                                    dir: widget.dir,
-                                                    StudentId: widget.studentId,
-                                                    TeacherName:
-                                                        item.teacherName,
-                                                  ));
-                                            },
-                                            child: Card(
-                                              elevation: 1,
-                                              child: Container(
-                                                  padding: EdgeInsets.all(5),
-                                                  child: Column(
-                                                    children: [
-                                                      Row(
-                                                          //-------------------------------------------------card row
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            InkWell(
-                                                              onTap: () {
-                                                                navigateTo(
-                                                                    context,
-                                                                    TeacherProfileScreen(
-                                                                        teacherId:
-                                                                            item
-                                                                                .teacherId,
-                                                                        readOnly:
-                                                                            true));
-                                                              },
-                                                              child:
-                                                                  CircleAvatar(
-                                                                radius: 32,
-                                                                backgroundColor: item
-                                                                        .isFree
-                                                                    ? defaultColor
-                                                                        .withOpacity(
-                                                                            0.65)
-                                                                    : item
-                                                                            .isPurchased
-                                                                        ? Colors
-                                                                            .green
-                                                                        : Colors
-                                                                            .amber[700],
-                                                                child:
-                                                                    CircleAvatar(
-                                                                  //-----------------------------------------Avatar
-                                                                  radius: 30,
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  child: Stack(
-                                                                      alignment:
-                                                                          Alignment
-                                                                              .bottomRight,
-                                                                      children: [
-                                                                        ClipRRect(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(30),
-                                                                          child: item.teacherPhoto == null
-                                                                              ? Image.asset(
-                                                                                  'assets/images/Teacher.jpg',
-                                                                                  fit: BoxFit.cover,
-                                                                                )
-                                                                              : Image.network(
-                                                                                  item.urlSource == "web" ? '${webUrl}images/Profiles/${item.teacherPhoto}' : '${baseUrl0}Assets/ProfileImages/${item.teacherPhoto}',
-                                                                                  fit: BoxFit.cover,
-                                                                                ),
-                                                                        ),
-                                                                        item.isFree ==
-                                                                                false
-                                                                            ? item.isPurchased
-                                                                                ? Image.asset(
-                                                                                    "assets/images/UnLock.png",
-                                                                                    width: 18,
-                                                                                  )
-                                                                                : Image.asset(
-                                                                                    "assets/images/Lock.png",
-                                                                                    width: 20,
-                                                                                  )
-                                                                            : Container()
-                                                                      ]),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              width: 5,
-                                                            ),
-                                                            Expanded(
-                                                              child: Column(
-                                                                //------------------------------------Name & Rating
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Text(
-                                                                    item.teacherName,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            18),
-                                                                  ),
-                                                                  item.watches >
-                                                                          0
-                                                                      ? Row(
-                                                                          children: [
-                                                                            Icon(Icons.remove_red_eye_rounded,
-                                                                                color: Colors.black45,
-                                                                                size: 20),
-                                                                            SizedBox(
-                                                                              width: 7,
-                                                                            ),
-                                                                            Text('${item.watches.toString()} views')
-                                                                          ],
-                                                                        )
-                                                                      : Container(),
-                                                                  SizedBox(
-                                                                    height: 3,
-                                                                  ),
-                                                                  RatingBarIndicator(
-                                                                    rating: double.parse(item
-                                                                        .rate
-                                                                        .toStringAsFixed(
-                                                                            2)),
-                                                                    itemBuilder:
-                                                                        (context,
-                                                                                index) =>
-                                                                            Icon(
-                                                                      Icons
-                                                                          .star,
-                                                                      color: Colors
-                                                                          .amber,
-                                                                    ),
-                                                                    itemCount:
-                                                                        5,
-                                                                    itemSize:
-                                                                        20.0,
-                                                                    direction: Axis
-                                                                        .horizontal,
-                                                                    itemPadding:
-                                                                        EdgeInsets.symmetric(
-                                                                            horizontal:
-                                                                                0),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                                //----------------------------------------Statistics
-                                                                width: 50,
-                                                                child: Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  children: [
-                                                                    SizedBox(
-                                                                      height: 8,
-                                                                    ),
-                                                                    Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .video_collection,
-                                                                            color:
-                                                                                Colors.black45),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              3,
-                                                                        ),
-                                                                        Text(item
-                                                                            .videos
-                                                                            .toString())
-                                                                      ],
-                                                                    ),
-                                                                    SizedBox(
-                                                                      height: 5,
-                                                                    ),
-                                                                    Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .quiz,
-                                                                            color:
-                                                                                Colors.black45),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              3,
-                                                                        ),
-                                                                        Text(item
-                                                                            .quizes
-                                                                            .toString())
-                                                                      ],
-                                                                    ),
-                                                                  ],
-                                                                ))
-                                                          ]),
-                                                      item.videosProgress > 0
-                                                          ? Container(
-                                                              height: 10,
-                                                              child: Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  Icon(
-                                                                    Icons
-                                                                        .video_collection_outlined,
-                                                                    size: 15,
-                                                                    color: Colors
-                                                                        .green,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child: Stack(
-                                                                        children: [
-                                                                          FractionallySizedBox(
-                                                                            widthFactor: item.videosProgress > 100
-                                                                                ? 1
-                                                                                : item.videosProgress / 100,
-                                                                            heightFactor:
-                                                                                0.4,
-                                                                            child:
-                                                                                Container(color: Colors.green),
-                                                                          ),
-                                                                          Container(
-                                                                            height:
-                                                                                4,
-                                                                            color:
-                                                                                Colors.black12,
-                                                                          )
-                                                                        ]),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            )
-                                                          : Container(),
-                                                      item.quizesProgress > 0
-                                                          ? SizedBox(
-                                                              height: 4,
-                                                            )
-                                                          : Container(),
-                                                      item.quizesProgress > 0
-                                                          ? Container(
-                                                              height: 10,
-                                                              child: Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  Icon(
-                                                                    Icons
-                                                                        .quiz_outlined,
-                                                                    size: 15,
-                                                                    color: Colors
-                                                                        .green,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child: Stack(
-                                                                        children: [
-                                                                          FractionallySizedBox(
-                                                                            widthFactor: item.quizesProgress > 100
-                                                                                ? 1
-                                                                                : item.quizesProgress / 100,
-                                                                            heightFactor:
-                                                                                0.4,
-                                                                            child:
-                                                                                Container(color: Colors.green),
-                                                                          ),
-                                                                          Container(
-                                                                            height:
-                                                                                4,
-                                                                            color:
-                                                                                Colors.black12,
-                                                                          )
-                                                                        ]),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            )
-                                                          : Container()
-                                                    ],
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Colors.black87
-                                                            .withOpacity(0.3),
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5))),
+                                child:
+                                    StudentLessonSessionCollection
+                                                .items.length ==
+                                            0
+                                        ? Center(
+                                            child: Text(
+                                              widget.dir == "ltr"
+                                                  ? 'No Content Available!'
+                                                  : 'لا يوجد محتوى!',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black54),
                                             ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                          )
+                                        : Column(
+                                            children: [
+                                              Expanded(
+                                                child: ListView.builder(
+                                                  itemCount:
+                                                      StudentLessonSessionCollection
+                                                          .items.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    var item =
+                                                        StudentLessonSessionCollection
+                                                            .items[index];
+                                                    //-----------------------------------------------------------card
+                                                    return InkWell(
+                                                      onTap: () {
+                                                        navigateTo(
+                                                            context,
+                                                            StudentSessionDetailsScreen(
+                                                              SessionHeaderId:
+                                                                  item.sessionId,
+                                                              LessonName: widget
+                                                                  .lessonName,
+                                                              LessonDescription:
+                                                                  widget
+                                                                      .lessonDescription,
+                                                              dir: widget.dir,
+                                                              StudentId: widget
+                                                                  .studentId,
+                                                              TeacherName: item
+                                                                  .teacherName,
+                                                            ));
+                                                      },
+                                                      child: Card(
+                                                        elevation: 1,
+                                                        child: Container(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    5),
+                                                            child: Column(
+                                                              children: [
+                                                                Row(
+                                                                    //-------------------------------------------------card row
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      InkWell(
+                                                                        onTap:
+                                                                            () {
+                                                                          navigateTo(
+                                                                              context,
+                                                                              TeacherProfileScreen(teacherId: item.teacherId, readOnly: true));
+                                                                        },
+                                                                        child:
+                                                                            CircleAvatar(
+                                                                          radius:
+                                                                              32,
+                                                                          backgroundColor: item.isFree
+                                                                              ? defaultColor.withOpacity(0.65)
+                                                                              : item.isPurchased
+                                                                                  ? Colors.green
+                                                                                  : Colors.amber[700],
+                                                                          child:
+                                                                              CircleAvatar(
+                                                                            //-----------------------------------------Avatar
+                                                                            radius:
+                                                                                30,
+                                                                            backgroundColor:
+                                                                                Colors.white,
+                                                                            child:
+                                                                                Stack(alignment: Alignment.bottomRight, children: [
+                                                                              ClipRRect(
+                                                                                borderRadius: BorderRadius.circular(30),
+                                                                                child: item.teacherPhoto == null
+                                                                                    ? Image.asset(
+                                                                                        'assets/images/Teacher.jpg',
+                                                                                        fit: BoxFit.cover,
+                                                                                      )
+                                                                                    : Image.network(
+                                                                                        item.urlSource == "web" ? '${webUrl}images/Profiles/${item.teacherPhoto}' : '${baseUrl0}Assets/ProfileImages/${item.teacherPhoto}',
+                                                                                        fit: BoxFit.cover,
+                                                                                      ),
+                                                                              ),
+                                                                              item.isFree == false
+                                                                                  ? item.isPurchased
+                                                                                      ? Image.asset(
+                                                                                          "assets/images/UnLock.png",
+                                                                                          width: 18,
+                                                                                        )
+                                                                                      : Image.asset(
+                                                                                          "assets/images/Lock.png",
+                                                                                          width: 20,
+                                                                                        )
+                                                                                  : Container()
+                                                                            ]),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            5,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                            Column(
+                                                                          //------------------------------------Name & Rating
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            Text(
+                                                                              item.teacherName,
+                                                                              style: TextStyle(fontSize: 18),
+                                                                            ),
+                                                                            item.watches > 0
+                                                                                ? Row(
+                                                                                    children: [
+                                                                                      Icon(Icons.remove_red_eye_rounded, color: Colors.black45, size: 20),
+                                                                                      SizedBox(
+                                                                                        width: 7,
+                                                                                      ),
+                                                                                      Text('${item.watches.toString()} views')
+                                                                                    ],
+                                                                                  )
+                                                                                : Container(),
+                                                                            SizedBox(
+                                                                              height: 3,
+                                                                            ),
+                                                                            RatingBarIndicator(
+                                                                              rating: double.parse(item.rate.toStringAsFixed(2)),
+                                                                              itemBuilder: (context, index) => Icon(
+                                                                                Icons.star,
+                                                                                color: Colors.amber,
+                                                                              ),
+                                                                              itemCount: 5,
+                                                                              itemSize: 20.0,
+                                                                              direction: Axis.horizontal,
+                                                                              itemPadding: EdgeInsets.symmetric(horizontal: 0),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                      Container(
+                                                                          //----------------------------------------Statistics
+                                                                          width:
+                                                                              50,
+                                                                          child:
+                                                                              Column(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              SizedBox(
+                                                                                height: 8,
+                                                                              ),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Icon(Icons.video_collection, color: Colors.black45),
+                                                                                  SizedBox(
+                                                                                    width: 3,
+                                                                                  ),
+                                                                                  Text(item.videos.toString())
+                                                                                ],
+                                                                              ),
+                                                                              SizedBox(
+                                                                                height: 5,
+                                                                              ),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Icon(Icons.quiz, color: Colors.black45),
+                                                                                  SizedBox(
+                                                                                    width: 3,
+                                                                                  ),
+                                                                                  Text(item.quizes.toString())
+                                                                                ],
+                                                                              ),
+                                                                            ],
+                                                                          ))
+                                                                    ]),
+                                                                item.videosProgress >
+                                                                        0
+                                                                    ? Container(
+                                                                        height:
+                                                                            10,
+                                                                        child:
+                                                                            Row(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.end,
+                                                                          children: [
+                                                                            Icon(
+                                                                              Icons.video_collection_outlined,
+                                                                              size: 15,
+                                                                              color: Colors.green,
+                                                                            ),
+                                                                            Expanded(
+                                                                              child: Stack(children: [
+                                                                                FractionallySizedBox(
+                                                                                  widthFactor: item.videosProgress > 100 ? 1 : item.videosProgress / 100,
+                                                                                  heightFactor: 0.4,
+                                                                                  child: Container(color: Colors.green),
+                                                                                ),
+                                                                                Container(
+                                                                                  height: 4,
+                                                                                  color: Colors.black12,
+                                                                                )
+                                                                              ]),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      )
+                                                                    : Container(),
+                                                                item.quizesProgress >
+                                                                        0
+                                                                    ? SizedBox(
+                                                                        height:
+                                                                            4,
+                                                                      )
+                                                                    : Container(),
+                                                                item.quizesProgress >
+                                                                        0
+                                                                    ? Container(
+                                                                        height:
+                                                                            10,
+                                                                        child:
+                                                                            Row(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.end,
+                                                                          children: [
+                                                                            Icon(
+                                                                              Icons.quiz_outlined,
+                                                                              size: 15,
+                                                                              color: Colors.green,
+                                                                            ),
+                                                                            Expanded(
+                                                                              child: Stack(children: [
+                                                                                FractionallySizedBox(
+                                                                                  widthFactor: item.quizesProgress > 100 ? 1 : item.quizesProgress / 100,
+                                                                                  heightFactor: 0.4,
+                                                                                  child: Container(color: Colors.green),
+                                                                                ),
+                                                                                Container(
+                                                                                  height: 4,
+                                                                                  color: Colors.black12,
+                                                                                )
+                                                                              ]),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      )
+                                                                    : Container()
+                                                              ],
+                                                            ),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                    border:
+                                                                        Border
+                                                                            .all(
+                                                                      color: Colors
+                                                                          .black87
+                                                                          .withOpacity(
+                                                                              0.3),
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            5))),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                               ),
                             ],
                           )
@@ -515,6 +488,7 @@ class _StudentLessonSessionsScreenState
                                                     StudentLessonSessionsScreen(
                                                         widget.studentId,
                                                         item.id,
+                                                        widget.TermIndex,
                                                         item.lessonName,
                                                         item.lessonDescription,
                                                         widget.YearSubjectId,

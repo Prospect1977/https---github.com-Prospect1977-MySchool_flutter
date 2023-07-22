@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:intl/intl.dart' as intl;
-import 'package:my_school/cubits/StudentLessonSessions_cubit.dart';
-import 'package:my_school/cubits/StudentLessonSessions_states.dart';
-import 'package:my_school/models/StudentLessonSessions_model.dart';
+
 import 'package:my_school/models/StudentLessonsByYearSubjectId_model.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentLessonSessions_screen.dart';
-import 'package:my_school/screens/studentSessionDetails_screen.dart';
-import 'package:my_school/screens/teacher_profile_screen.dart';
+
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
-import 'package:my_school/shared/components/constants.dart';
+
 import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
@@ -43,10 +34,100 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
 
   var lang = CacheHelper.getData(key: "lang");
   var token = CacheHelper.getData(key: "token");
+  int TermIndex = 0;
+  int TermsCount = 0;
+  List<DropdownMenuItem> Terms = [];
+  void getTermsIndecies() {
+    Terms = [
+      DropdownMenuItem(
+        child: Container(
+          decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white))),
+          alignment: widget.dir == "ltr"
+              ? Alignment.centerLeft
+              : Alignment.centerRight,
+          child: Text(
+            widget.dir == "ltr" ? '1st Term' : 'الفصل الدراسي الأول',
+          ),
+        ),
+        value: 1,
+      ),
+      DropdownMenuItem(
+        child: Container(
+          decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white))),
+          alignment: widget.dir == "ltr"
+              ? Alignment.centerLeft
+              : Alignment.centerRight,
+          child: Text(
+            widget.dir == "ltr" ? '2nd Term' : 'الفصل الدراسي الثاني',
+          ),
+        ),
+        value: 2,
+      ),
+      if (TermsCount > 2)
+        DropdownMenuItem(
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white))),
+            alignment: widget.dir == "ltr"
+                ? Alignment.centerLeft
+                : Alignment.centerRight,
+            child: Text(
+              widget.dir == "ltr" ? '3rd Term' : 'الفصل الدراسي الثالث',
+            ),
+          ),
+          value: 3,
+        ),
+      if (TermsCount > 3)
+        DropdownMenuItem(
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white))),
+            alignment: widget.dir == "ltr"
+                ? Alignment.centerLeft
+                : Alignment.centerRight,
+            child: Text(
+              widget.dir == "ltr" ? '4th Term' : 'الفصل الدراسي الرابع',
+            ),
+          ),
+          value: 4,
+        ),
+      if (TermsCount > 4)
+        DropdownMenuItem(
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white))),
+            alignment: widget.dir == "ltr"
+                ? Alignment.centerLeft
+                : Alignment.centerRight,
+            child: Text(
+              widget.dir == "ltr" ? '5th Term' : 'الفصل الدراسي الخامس',
+            ),
+          ),
+          value: 5,
+        ),
+      if (TermsCount > 5)
+        DropdownMenuItem(
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white))),
+            alignment: widget.dir == "ltr"
+                ? Alignment.centerLeft
+                : Alignment.centerRight,
+            child: Text(
+              widget.dir == "ltr" ? '6th Term' : 'الفصل الدراسي السادس',
+            ),
+          ),
+          value: 6,
+        ),
+    ];
+  }
 
   @override
   void initState() {
     super.initState();
+
     getLessons(widget.studentId, widget.YearSubjectId);
   }
 
@@ -57,11 +138,15 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
 
     DioHelper.getData(
             url: 'LessonsByYearSubjectId',
-            query: {'Id': Id, 'YearSubjectId': YearSubjectId},
+            query: {
+              'Id': Id,
+              'YearSubjectId': YearSubjectId,
+              'TermIndex': TermIndex
+            },
             lang: lang,
             token: token)
         .then((value) {
-      print(value.data["data"]);
+      print(value.data);
       if (value.data["status"] == false) {
         navigateAndFinish(context, LoginScreen());
         return;
@@ -70,6 +155,8 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
         StudentLessonsByYearSubjectIdCollection =
             StudentLessonsByYearSubjectId_collection.fromJson(
                 value.data["data"]);
+        TermsCount = value.data["additionalData"];
+        getTermsIndecies();
       });
     }).catchError((error) {
       print(error.toString());
@@ -80,6 +167,7 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
   }
 
   final ItemScrollController _itemScrollController = ItemScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,6 +181,59 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
                   getLessons(widget.studentId, widget.YearSubjectId);
                 },
                 child: Column(children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Colors.black26)),
+                    child: DropdownButton(
+                      //key: ValueKey(1),
+                      value: TermIndex,
+                      items: [
+                        //add items in the dropdown
+                        DropdownMenuItem(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(color: Colors.white))),
+                            alignment: widget.dir == "ltr"
+                                ? Alignment.centerLeft
+                                : Alignment.centerRight,
+                            child: Text(
+                              widget.dir == "ltr"
+                                  ? "Current Term"
+                                  : "الفصل الدراسي الحالي",
+                            ),
+                          ),
+                          value: 0,
+                        ),
+                        ...Terms,
+                      ],
+
+                      onChanged: (value) {
+                        setState(() {
+                          TermIndex = value;
+                        });
+                        getLessons(widget.studentId, widget.YearSubjectId);
+                      },
+                      icon: Padding(
+                          //Icon at tail, arrow bottom is default icon
+                          padding: EdgeInsets.all(0),
+                          child: Icon(Icons.keyboard_arrow_down)),
+                      iconEnabledColor: Colors.black54, //Icon color
+                      style: TextStyle(
+                          //te
+                          color: Colors.black87, //Font color
+                          fontSize: 16 //font size on dropdown button
+                          ),
+                      underline: Container(),
+
+                      dropdownColor: Colors.white, //dropdown background color
+                      //remove underline
+                      isExpanded: true, //make true to make width 100%
+                    ),
+                  ),
                   Expanded(
                       child: ScrollablePositionedList.builder(
                           itemScrollController: _itemScrollController,
@@ -109,6 +250,7 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
                                       StudentLessonSessionsScreen(
                                           widget.studentId,
                                           item.id,
+                                          TermIndex,
                                           item.lessonName,
                                           item.lessonDescription,
                                           widget.YearSubjectId,

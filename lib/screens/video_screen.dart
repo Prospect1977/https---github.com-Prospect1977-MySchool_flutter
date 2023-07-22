@@ -545,7 +545,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                                                   .value
                                                                   .position
                                                                   .inSeconds -
-                                                              15)));
+                                                              5)));
                                                     }
                                                   });
                                                 },
@@ -601,7 +601,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                                                   .value
                                                                   .position
                                                                   .inSeconds +
-                                                              15)));
+                                                              5)));
                                                     }
                                                   });
                                                 },

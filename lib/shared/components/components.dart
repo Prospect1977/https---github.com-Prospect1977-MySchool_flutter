@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -144,15 +146,24 @@ Widget defaultButton({
 Widget defaultTextButton({
   @required Function function,
   @required String text,
+  bool isUpperCase = false,
   double fontSize = 14.1,
+  Color color = defaultColor,
+  bool underline = false,
   FontWeight fontWeight = FontWeight.normal,
 }) =>
     TextButton(
       onPressed: function,
       child: Text(
-        text.toUpperCase(),
-        style: TextStyle(fontSize: fontSize, fontWeight: fontWeight),
+        isUpperCase ? text.toUpperCase() : text,
+        style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            color: color,
+            decoration:
+                underline ? TextDecoration.underline : TextDecoration.none),
       ),
+      style: TextButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 3)),
     );
 
 Widget defaultFormField(

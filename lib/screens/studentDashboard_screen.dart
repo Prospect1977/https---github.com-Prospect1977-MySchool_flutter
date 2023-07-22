@@ -23,10 +23,10 @@ class StudentDashboardScreen extends StatefulWidget {
   int YearOfStudyId;
   StudentDashboardScreen(
       {this.Id = 0,
-      this.FullName = '',
-      this.Gender = null,
-      this.SchoolTypeId = null,
-      this.YearOfStudyId = null});
+      this.FullName,
+      this.Gender,
+      this.SchoolTypeId,
+      this.YearOfStudyId});
 
   @override
   State<StudentDashboardScreen> createState() => _StudentDashboardScreenState();
@@ -54,6 +54,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             listener: (context, state) {},
             builder: (context, state) {
               var cubit = StudentDashboardCubit.get(context);
+              widget.FullName = cubit.FullName;
               widget.Id = cubit.Id;
               widget.Gender = cubit.Gender;
               widget.SchoolTypeId = cubit.SchoolTypeId;
@@ -94,26 +95,22 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 children: [
                   dashboardButton(
                     context,
-                    isStudentHasParent && roles == "Student"
-                        ? null
-                        : () {
-                            navigateTo(
-                                context,
-                                StudentProfileScreen(
-                                  widget.Id,
-                                  FullName: widget.FullName,
-                                  Gender: widget.Gender,
-                                  SchoolTypeId: widget.SchoolTypeId,
-                                  YearOfStudyId: widget.YearOfStudyId,
-                                ));
-                          },
-                    isStudentHasParent && roles == "Student"
-                        ? 'MainData_disabled.png'
-                        : 'MainData.png',
+                    () {
+                      navigateTo(
+                          context,
+                          StudentProfileScreen(
+                            widget.Id,
+                            FullName: widget.FullName,
+                            Gender: widget.Gender,
+                            SchoolTypeId: widget.SchoolTypeId,
+                            YearOfStudyId: widget.YearOfStudyId,
+                          ));
+                    },
+                    'MainData.png',
                     lang.toString().toLowerCase() == "ar"
                         ? "البيانات الرئيسية${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (غير مكتملة)" : ""}"
                         : "Main Profile Data${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (Not Completed)" : ""}",
-                    isStudentHasParent && roles == "Student" ? true : false,
+                    false,
                   ),
                   dashboardButton(
                     context,
