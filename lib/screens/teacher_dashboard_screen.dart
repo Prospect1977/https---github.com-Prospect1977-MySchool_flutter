@@ -9,6 +9,8 @@ import 'package:my_school/screens/teacher_viewsPerLesson_screen.dart';
 import 'package:my_school/screens/teacher_views_screen.dart';
 import 'package:my_school/screens/test_fileUpload.dart';
 import 'package:my_school/screens/test_screen.dart';
+import 'package:my_school/screens/ticket_screen.dart';
+import 'package:my_school/screens/under_construction_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
@@ -47,7 +49,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height - 300,
+                  height: MediaQuery.of(context).size.height - 150,
                   child: GridView(
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -102,6 +104,17 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                         lang.toString().toLowerCase() == "ar"
                             ? "تحليل الدخل"
                             : "Income Analysis",
+                        false,
+                      ),
+                      dashboardButton(
+                        context,
+                        () {
+                          navigateTo(context, TicketScreen());
+                        },
+                        'Chat.png',
+                        lang.toString().toLowerCase() == "ar"
+                            ? "تواصل معنا"
+                            : "Contact us",
                         false,
                       ),
                     ],

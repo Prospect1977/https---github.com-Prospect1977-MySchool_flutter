@@ -161,12 +161,25 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
               ? Alignment.centerLeft
               : Alignment.centerRight,
           child: Text(
+            widget.dir == "ltr" ? "Question Type" : "نوع السؤال",
+          ),
+        ),
+        value: "0",
+      ),
+      DropdownMenuItem(
+        child: Container(
+          decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white))),
+          alignment: widget.dir == "ltr"
+              ? Alignment.centerLeft
+              : Alignment.centerRight,
+          child: Text(
             QuestionType(type: "MultipleChoice", dir: widget.dir),
           ),
         ),
         value: "MultipleChoice",
       ),
-      if (widget.question == null || SelectedQuestionType == "YesNo")
+      if (widget.question.id == 0 || SelectedQuestionType == "YesNo")
         DropdownMenuItem(
           child: Container(
             decoration: BoxDecoration(
@@ -214,7 +227,14 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
         AnswersControllers.add(AnswerController);
       });
     } else {
+      widget.question = Question(
+          id: 0,
+          questionType: "0",
+          answers: [],
+          title: "",
+          questionImageUrl: null);
       SelectedQuestionType = "0";
+
       QuestionTitleController.text = "";
     }
     getQuestionTypes();
@@ -244,24 +264,6 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                         //key: ValueKey(1),
                         value: SelectedQuestionType,
                         items: [
-                          if (widget.question == null)
-                            DropdownMenuItem(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom:
-                                            BorderSide(color: Colors.white))),
-                                alignment: widget.dir == "ltr"
-                                    ? Alignment.centerLeft
-                                    : Alignment.centerRight,
-                                child: Text(
-                                  widget.dir == "ltr"
-                                      ? "Question Type"
-                                      : "نوع السؤال",
-                                ),
-                              ),
-                              value: "0",
-                            ),
                           ...QuestionTypes,
                         ],
 
@@ -282,7 +284,7 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                               });
                             }
                             if (value == "YesNo" &&
-                                widget.question == null &&
+                                widget.question.id == 0 &&
                                 Answers.length == 0) {
                               AnswersControllers = [];
                               Answers = [];
@@ -623,6 +625,11 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
 
 String getAnswerTitle(String QuestionType, String dir) {
   String out;
+  if (QuestionType == null) {
+    QuestionType = "0";
+    out = "";
+    return out;
+  }
   switch (QuestionType) {
     case "MultipleChoice":
       out = dir == "ltr" ? "Choices" : "الخيارات";

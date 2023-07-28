@@ -382,6 +382,7 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
           navigateTo(
               context,
               TeacherQuizQuestionScreen(
+                // question: Question(questionType: "0"),
                 TeacherId: TeacherId,
                 QuizId: widget.QuizId,
                 dir: widget.dir,

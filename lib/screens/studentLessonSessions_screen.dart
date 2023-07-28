@@ -281,9 +281,14 @@ class _StudentLessonSessionsScreenState
                                                                           crossAxisAlignment:
                                                                               CrossAxisAlignment.start,
                                                                           children: [
-                                                                            Text(
-                                                                              item.teacherName,
-                                                                              style: TextStyle(fontSize: 18),
+                                                                            GestureDetector(
+                                                                              onTap: () {
+                                                                                navigateTo(context, TeacherProfileScreen(teacherId: item.teacherId, readOnly: true));
+                                                                              },
+                                                                              child: Text(
+                                                                                item.teacherName,
+                                                                                style: TextStyle(color: Colors.blue, fontSize: 18),
+                                                                              ),
                                                                             ),
                                                                             item.watches > 0
                                                                                 ? Row(

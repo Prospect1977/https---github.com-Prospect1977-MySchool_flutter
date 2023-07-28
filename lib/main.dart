@@ -47,19 +47,16 @@ void main() async {
   if (onBoarding == true) {
     if (token != null) {
       print('Current Role:$roles');
-      switch (roles) {
-        case "Parent":
-          widget = ParentsLandingScreen();
-          break;
-        case "Student":
-          widget = StudentDashboardScreen();
-          // widget = LoginScreen();
-          break;
-        case "Teacher":
-          widget = TeacherDashboardScreen();
-        //widget = LoginScreen();
-      }
 
+      if (roles.contains("Teacher")) {
+        widget = TeacherDashboardScreen();
+      }
+      if (roles.contains("Parent")) {
+        widget = ParentsLandingScreen();
+      }
+      if (roles.contains("Student")) {
+        widget = StudentDashboardScreen();
+      }
       // widget = LandingScreen(); //the page after signing in
     } else {
       widget = LoginScreen();

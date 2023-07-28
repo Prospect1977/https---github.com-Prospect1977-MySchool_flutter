@@ -124,6 +124,7 @@ String formatDate(DateTime dataDate, lang) {
 
 String QuestionType({String type, String dir}) {
   String out = "";
+ 
   switch (type) {
     case "MultipleChoice":
       out = dir == "ltr" ? "Multiple Choice" : "إختيار من متعدد";

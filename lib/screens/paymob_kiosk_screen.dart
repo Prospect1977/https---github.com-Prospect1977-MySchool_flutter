@@ -142,6 +142,7 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
           "payment_token": token_second
         }).then((t) {
       print(t.data["data"]["bill_reference"]);
+      print(t.data["data"]);
       setState(() {
         isLoaded = true;
         isResponseRecieved = true;

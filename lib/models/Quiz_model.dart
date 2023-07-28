@@ -15,7 +15,13 @@ class Question {
   String urlSource;
 
   List<Answer> answers;
-
+  Question(
+      {this.id,
+      this.questionType,
+      this.title,
+      this.questionImageUrl,
+      this.urlSource,
+      this.answers});
   Question.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     questionType = json['questionType'];

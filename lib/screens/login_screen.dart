@@ -13,6 +13,7 @@ import 'package:my_school/screens/studentDashboard_screen.dart';
 import 'package:my_school/screens/teacher_dashboard_screen.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/cache_helper.dart';
+import 'package:my_school/shared/styles/colors.dart';
 
 class LoginScreen extends StatelessWidget {
   var formKey = GlobalKey<FormState>();
@@ -32,7 +33,7 @@ class LoginScreen extends StatelessWidget {
             // print(state.loginModel.data.token);
             CacheHelper.saveData(key: "roles", value: state.userModel.roles);
             CacheHelper.saveData(key: "userId", value: state.userModel.userId);
-
+            FocusScope.of(context).unfocus();
             CacheHelper.saveData(
               key: 'token',
               value: state.userModel.token,
@@ -52,14 +53,15 @@ class LoginScreen extends StatelessWidget {
                 context,
                 page,
               );
+            }).catchError((e) {
+              showToast(
+                text: "Invalid Email or Password!",
+                state: ToastStates.ERROR,
+              );
             });
           } else {
             // print(state.loginModel.message);
 
-            showToast(
-              text: "Invalid Email or Password!",
-              state: ToastStates.ERROR,
-            );
           }
         },
         builder: (context, state) {
@@ -150,7 +152,7 @@ class LoginScreen extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: 0),
                           margin: EdgeInsets.all(0),
                           child: defaultTextButton(
-                            color: Colors.black38,
+                            color: defaultColor.withOpacity(0.7),
                             function: () {
                               navigateTo(
                                 context,

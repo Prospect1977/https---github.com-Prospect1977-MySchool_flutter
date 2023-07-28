@@ -28,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var accountType = "Parent";
   bool showPassword = false;
   void sendForm() async {
-    //if (formKey.currentState.validate()) {
+    FocusScope.of(context).unfocus();
     DioHelper.postDataForLogin(
         url: "Account/Register?DataDate=${DateTime.now()}",
         data: {
@@ -72,7 +72,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               : "البريد الإلكتروني غير مكتوب بشكل صحيح أو تم تسجيله من قبل!",
           state: ToastStates.ERROR);
     });
-    //}
   }
 
   @override

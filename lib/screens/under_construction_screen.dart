@@ -23,7 +23,7 @@ class _UnderConstructionScreenState extends State<UnderConstructionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bar Chart'),
+        title: Text(lang == "en" ? 'Contact us' : "تواصل معنا"),
         actions: [
           Container(
             margin: EdgeInsets.only(right: 10),
