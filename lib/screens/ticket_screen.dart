@@ -8,6 +8,9 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/dio_helper.dart';
+import 'dart:io' as i;
+
+import 'package:my_school/shared/widgets/image_input_ticket.dart';
 
 class TicketScreen extends StatefulWidget {
   TicketScreen({this.StudentId, Key key}) : super(key: key);
@@ -58,6 +61,7 @@ class _TicketScreenState extends State<TicketScreen> {
       isSendingData = true;
     });
     print(widget.StudentId);
+    print(_pickedImage);
     //SaveTicket(string UserId,string PhoneNumber,int StudentId,string Title,
     //string Description,string DescriptionDir,DateTime PublishDate, string? FileUrl)
     DioHelper.postData(
@@ -69,7 +73,7 @@ class _TicketScreenState extends State<TicketScreen> {
               //'Title': titleController.text,
               'Description': descriptionController.text,
               'DescriptionDir': descDirection,
-              'PublishDate': DateTime.now()
+              'PublishDate': DateTime.now(), "FileUrl": _pickedImage,
             },
             lang: "ar",
             token: token)
@@ -110,6 +114,14 @@ class _TicketScreenState extends State<TicketScreen> {
     getUserData();
     setState(() {
       descDirection = lang == "en" ? "ltr" : "rtl";
+    });
+  }
+
+  String _pickedImage;
+  i.File _existImage = null;
+  void _selectImage(String pickedImage) {
+    setState(() {
+      _pickedImage = pickedImage;
     });
   }
 
@@ -252,6 +264,13 @@ class _TicketScreenState extends State<TicketScreen> {
                                 ),
                               )
                             ]),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Container(
+                              child:
+                                  ImageInputTicket(_selectImage, _existImage),
+                            ),
                             SizedBox(
                               height: 15,
                             ),

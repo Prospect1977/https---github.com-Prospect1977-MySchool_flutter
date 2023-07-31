@@ -43,6 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       CacheHelper.saveData(key: "token", value: userData.token);
       CacheHelper.saveData(key: "roles", value: userData.roles);
       CacheHelper.saveData(key: "fullName", value: userData.fullName);
+      CacheHelper.saveData(key: "email", value: userData.email);
       if (userData.roles == "Parent") {
         navigateAndFinish(context, ParentsLandingScreen());
       }
@@ -151,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       type: TextInputType.text,
                       prefix: Icons.account_circle_rounded,
                       validate: (String value) {
-                        if (value.isEmpty) {
+                        if (value.isEmpty || value.split(" ").length < 2) {
                           return lang == "en"
                               ? 'please enter your Full Name'
                               : "من فضلك ادخل الإسم بالكامل";

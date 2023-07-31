@@ -84,7 +84,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                       type: TextInputType.text,
                       prefix: Icons.account_circle_rounded,
                       validate: (String value) {
-                        if (value.isEmpty) {
+                        if (value.isEmpty || value.split(" ").length < 2) {
                           return lang == "en"
                               ? 'please enter your Full Name'
                               : "من فضلك ادخل الإسم بالكامل";
