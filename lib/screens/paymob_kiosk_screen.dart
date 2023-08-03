@@ -51,8 +51,9 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
             query: {
               'StudentId': StudentId,
               'SessionHeaderId': SessionHeaderId,
-              'TransactionId': OrderId,
+              'OrderId': OrderId,
               'DataDate': DateTime.now(),
+              'Source': "kiosk",
             },
             lang: lang,
             token: token)
@@ -148,6 +149,22 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
         isResponseRecieved = true;
         bill_reference = t.data["data"]["bill_reference"];
       });
+      DioHelper.postData(
+              url: 'StudentPurchaseSession/UpdateKioskTransactionId',
+              data: {},
+              query: {
+                'OrderId': OrderId.toString(),
+                'TransactionId': t.data["data"]["bill_reference"]
+              },
+              lang: lang,
+              token: token)
+          .then((value) {
+        print(value.data["data"]);
+        if (value.data["status"] == false) {}
+      }).catchError((error) {
+        print(error.toString());
+        //emit(ErrorState(error.toString()));
+      });
     }).catchError((e) {
       print(e.toString());
     });
@@ -188,14 +205,15 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
                         color: Colors.black87),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 5,
                   ),
+                  Image.asset('assets/images/AmanMasaryMomken.png'),
                   Container(
                     width: MediaQuery.of(context).size.width / 1.5,
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: Text(
-                        "إذهب بالكود إلى المتجر واخبرهم بأنك ترغب في الدفع عن طريق: Paymob accept، وسوف يتم تفعيل الدرس فور إتمام عملية الدفع",
+                        "إذهب بالكود إلى المتجر واخبرهم بأنك ترغب في الدفع عن طريق: امان أو مصاري أو ممكن، وسوف يتم تفعيل الدرس فور إتمام عملية الدفع",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 20, color: Colors.black54),
                       ),

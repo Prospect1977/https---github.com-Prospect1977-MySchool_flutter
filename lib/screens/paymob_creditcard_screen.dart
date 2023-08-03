@@ -49,8 +49,9 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
             query: {
               'StudentId': StudentId,
               'SessionHeaderId': SessionHeaderId,
-              'TransactionId': OrderId,
+              'OrderId': OrderId,
               'DataDate': DateTime.now(),
+              'Source': "iframe",
             },
             lang: lang,
             token: token)
@@ -84,6 +85,7 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
       "items": []
     }).then((value) {
       print('order id: ${value.data['id']}');
+      print('response2: ${value.data}');
       setState(() {
         OrderId = value.data['id'];
       });

@@ -110,6 +110,19 @@ Widget appBarComponent(context, String title, {backButtonPage}) {
       actions: AppBarActions);
 }
 
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const CustomAppBar({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize => const Size(double.maxFinite, 80);
+}
+
 Widget defaultButton({
   double width = double.infinity,
   Color background = Colors.purple,
