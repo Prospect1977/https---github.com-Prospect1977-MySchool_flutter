@@ -35,9 +35,14 @@ void navigateAndFinish(
     );
 var AppBarActions = [
   PopupMenuButton(
-      icon: Icon(
-        Icons.more_vert,
-        color: Colors.white,
+      iconSize: 30,
+      icon: CircleAvatar(
+        backgroundColor: Colors.black38,
+        child: Icon(
+          Icons.more_vert,
+          size: 20,
+          color: Colors.white,
+        ),
       ),
       onSelected: (SelectedValue) => {print(SelectedValue)},
       itemBuilder: (ctx) => [
@@ -81,41 +86,149 @@ var AppBarActions = [
             ),
           ]),
 ];
-Widget appBarComponent(context, String title, {backButtonPage}) {
-  return AppBar(
-      elevation: 3,
-      backgroundColor: interfaceColor,
-      title: Center(
-        child: Text(
-          title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      leading: backButtonPage == null
-          ? null
-          : IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ),
-              onPressed: backButtonPage == null
-                  ? () {
-                      Navigator.of(context).pop();
-                    }
-                  : () {
-                      navigateAndFinish(context, backButtonPage);
-                    },
-            ),
-      actions: AppBarActions);
-}
+// Widget appBarComponent(context, String title, {backButtonPage}) {
+//   return AppBar(
+//       elevation: 3,
+//       backgroundColor: interfaceColor,
+//       title: Center(
+//         child: Text(
+//           title,
+//           maxLines: 1,
+//           overflow: TextOverflow.ellipsis,
+//         ),
+//       ),
+//       leading: backButtonPage == null
+//           ? null
+//           : IconButton(
+//               icon: Icon(
+//                 Icons.arrow_back,
+//                 color: Colors.white,
+//               ),
+//               onPressed: backButtonPage == null
+//                   ? () {
+//                       Navigator.of(context).pop();
+//                     }
+//                   : () {
+//                       navigateAndFinish(context, backButtonPage);
+//                     },
+//             ),
+//       actions: AppBarActions);
+// }
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({Key key}) : super(key: key);
+// class appBarComponent extends StatelessWidget implements PreferredSizeWidget {
+//   appBarComponent(context, this.title, {this.backButtonPage, Key key})
+//       : super(key: key);
+//   final String title;
+//   Widget backButtonPage;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SafeArea(
+//       child: Container(
+//         margin: EdgeInsets.only(top: 5, left: 8, right: 8),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(30),
+//           color: defaultColor.withOpacity(0.8),
+//         ),
+//         child:
+//             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+//           Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 5),
+//               child: CircleAvatar(
+//                 backgroundColor: Colors.white,
+//                 child: Padding(
+//                   padding: const EdgeInsets.only(left: 0),
+//                   child: IconButton(
+//                     icon: Icon(Icons.arrow_back_ios_rounded),
+//                     onPressed: backButtonPage == null
+//                         ? () {
+//                             Navigator.maybePop(context);
+//                           }
+//                         : () {
+//                             navigateAndFinish(context, backButtonPage);
+//                           },
+//                     color: defaultColor,
+//                   ),
+//                 ),
+//               )),
+//           Expanded(
+//             child: Text(
+//               title,
+//               textAlign: TextAlign.center,
+//               style: TextStyle(
+//                   color: Colors.white,
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.w600),
+//               overflow: TextOverflow.ellipsis,
+//             ),
+//           ),
+//           Container(width: 50, child: AppBarActions[0])
+//         ]),
+//       ),
+//     );
+//   }
+class appBarComponent extends StatelessWidget implements PreferredSizeWidget {
+  appBarComponent(context, this.title, {this.backButtonPage, Key key})
+      : super(key: key);
+  final String title;
+  Widget backButtonPage;
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return SafeArea(
+      child: Container(
+        margin: EdgeInsets.only(top: 5, left: 8, right: 8),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              child: CircleAvatar(
+                radius: 15,
+                backgroundColor: Colors.black38,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back_ios_rounded),
+                    iconSize: 15,
+                    onPressed: backButtonPage == null
+                        ? () {
+                            Navigator.maybePop(context);
+                          }
+                        : () {
+                            navigateAndFinish(context, backButtonPage);
+                          },
+                    color: Colors.white,
+                  ),
+                ),
+              )),
+          Expanded(
+            child: Container(
+              height: 30,
+              // padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Colors.black26,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(width: 45, height: 45, child: AppBarActions[0])
+        ]),
+      ),
+    );
   }
 
   @override

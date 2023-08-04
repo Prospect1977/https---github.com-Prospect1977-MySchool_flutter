@@ -26,8 +26,7 @@ class ParentsLandingScreen extends StatelessWidget {
         var cubit = ParentStudentCubit.get(context);
         return Scaffold(
           appBar: (state is SuccessState)
-              ? appBarComponent(
-                  context, cubit.lang == "en" ? "Children" : "الأبناء")
+              ? appBarComponent(context, "الأبناء")
               : appBarComponent(context, "الأبناء"),
           body: (state is SuccessState)
               ? ChildrenList(cubit: cubit)

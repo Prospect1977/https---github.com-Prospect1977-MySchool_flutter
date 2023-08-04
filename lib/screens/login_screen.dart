@@ -66,7 +66,7 @@ class LoginScreen extends StatelessWidget {
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: appBarComponent(context, ""),
+            //appBar: appBarComponent(context, ""),
             body: Center(
               child: SingleChildScrollView(
                 child: Padding(
