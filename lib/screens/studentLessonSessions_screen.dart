@@ -258,8 +258,8 @@ class _StudentLessonSessionsScreenState
                                                                               item.isFree == false
                                                                                   ? item.isPurchased
                                                                                       ? Image.asset(
-                                                                                          "assets/images/UnLock.png",
-                                                                                          width: 18,
+                                                                                          "assets/images/key.png",
+                                                                                          width: 30,
                                                                                         )
                                                                                       : Image.asset(
                                                                                           "assets/images/Lock.png",

@@ -52,13 +52,13 @@ var AppBarActions = [
               onTap: () async {
                 final prefs = await SharedPreferences.getInstance();
                 var roles = CacheHelper.getData(key: "roles");
-                if (roles == "Teacher") {
+                if (roles.contains("Teacher")) {
                   navigateTo(ctx, TeacherDashboardScreen());
                 }
-                if (roles == "Parent") {
+                if (roles.contains("Parent")) {
                   navigateAndFinish(ctx, ParentsLandingScreen());
                 }
-                if (roles == "Student") {
+                if (roles.contains("Student")) {
                   navigateTo(ctx, StudentDashboardScreen());
                 }
               },
@@ -86,34 +86,6 @@ var AppBarActions = [
             ),
           ]),
 ];
-// Widget appBarComponent(context, String title, {backButtonPage}) {
-//   return AppBar(
-//       elevation: 3,
-//       backgroundColor: interfaceColor,
-//       title: Center(
-//         child: Text(
-//           title,
-//           maxLines: 1,
-//           overflow: TextOverflow.ellipsis,
-//         ),
-//       ),
-//       leading: backButtonPage == null
-//           ? null
-//           : IconButton(
-//               icon: Icon(
-//                 Icons.arrow_back,
-//                 color: Colors.white,
-//               ),
-//               onPressed: backButtonPage == null
-//                   ? () {
-//                       Navigator.of(context).pop();
-//                     }
-//                   : () {
-//                       navigateAndFinish(context, backButtonPage);
-//                     },
-//             ),
-//       actions: AppBarActions);
-// }
 
 // class appBarComponent extends StatelessWidget implements PreferredSizeWidget {
 //   appBarComponent(context, this.title, {this.backButtonPage, Key key})
@@ -126,20 +98,18 @@ var AppBarActions = [
 //     return SafeArea(
 //       child: Container(
 //         margin: EdgeInsets.only(top: 5, left: 8, right: 8),
-//         decoration: BoxDecoration(
-//           borderRadius: BorderRadius.circular(30),
-//           color: defaultColor.withOpacity(0.8),
-//         ),
 //         child:
 //             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
 //           Padding(
 //               padding: EdgeInsets.symmetric(horizontal: 5),
 //               child: CircleAvatar(
-//                 backgroundColor: Colors.white,
+//                 radius: 15,
+//                 backgroundColor: Colors.black38,
 //                 child: Padding(
 //                   padding: const EdgeInsets.only(left: 0),
 //                   child: IconButton(
 //                     icon: Icon(Icons.arrow_back_ios_rounded),
+//                     iconSize: 15,
 //                     onPressed: backButtonPage == null
 //                         ? () {
 //                             Navigator.maybePop(context);
@@ -147,22 +117,35 @@ var AppBarActions = [
 //                         : () {
 //                             navigateAndFinish(context, backButtonPage);
 //                           },
-//                     color: defaultColor,
+//                     color: Colors.white,
 //                   ),
 //                 ),
 //               )),
 //           Expanded(
-//             child: Text(
-//               title,
-//               textAlign: TextAlign.center,
-//               style: TextStyle(
-//                   color: Colors.white,
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.w600),
-//               overflow: TextOverflow.ellipsis,
+//             child: Container(
+//               height: 30,
+//               // padding: EdgeInsets.all(4),
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.circular(30),
+//                 color: Colors.black26,
+//               ),
+//               child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   Text(
+//                     title,
+//                     textAlign: TextAlign.center,
+//                     style: TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 16,
+//                         fontWeight: FontWeight.w600),
+//                     overflow: TextOverflow.ellipsis,
+//                   ),
+//                 ],
+//               ),
 //             ),
 //           ),
-//           Container(width: 50, child: AppBarActions[0])
+//           Container(width: 45, height: 45, child: AppBarActions[0])
 //         ]),
 //       ),
 //     );

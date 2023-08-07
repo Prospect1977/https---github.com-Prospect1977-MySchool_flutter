@@ -90,7 +90,7 @@ class _TicketScreenState extends State<TicketScreen> {
                 : "حدث خطأ غير معروف!",
             state: ToastStates.ERROR);
       }
-
+//
       Timer(Duration(seconds: 3), () {
         Navigator.of(context).pop();
       });

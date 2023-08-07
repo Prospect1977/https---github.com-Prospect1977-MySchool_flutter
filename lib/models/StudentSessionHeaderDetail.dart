@@ -17,12 +17,18 @@ class AllData {
 class SessionHeader {
   int price;
   bool isFree;
-  bool isPurchased;
+  bool isPurchaseExist;
+  bool isPurchaseCompleted;
+  String source;
+  int kioskNumber;
   dynamic studentRate;
   SessionHeader.fromJson(Map<String, dynamic> json) {
     price = json['price'];
     isFree = json['isFree'] == null ? true : json['isFree'];
-    isPurchased = json['isPurchased'];
+    isPurchaseExist = json['isPurchaseExist'];
+    isPurchaseCompleted = json['isPurchaseCompleted'];
+    source = json['source'];
+    kioskNumber = json['kioskNumber'];
     studentRate = json['studentRate'];
   }
 }
@@ -44,6 +50,7 @@ class SessionDetails {
   dynamic quizDegree;
   dynamic videoStoppedAt;
   String urlSource;
+  String coverUrlSource;
 
   SessionDetails.fromJson(Map<String, dynamic> json) {
     type = json['type'];
@@ -61,6 +68,7 @@ class SessionDetails {
     }
 
     videoCover = json['videoCover'];
+    coverUrlSource = json['coverUrlSource'];
     documentUrl = json['documentUrl'];
     videoProgress = json['videoProgress'];
     quizProgress = json['quizProgress'];

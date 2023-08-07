@@ -210,7 +210,7 @@ class _StudentSessionDetailsScreenState
                             ),
                           ),
                           (allData.sessionHeader.isFree ||
-                                  allData.sessionHeader.isPurchased)
+                                  allData.sessionHeader.isPurchaseCompleted)
                               ? Container(
                                   height: 80,
                                   child: Column(
@@ -268,38 +268,109 @@ class _StudentSessionDetailsScreenState
                                             : Container()
                                       ]),
                                 )
-                              : Container(
-                                  margin: EdgeInsets.only(bottom: 8),
-                                  child: defaultButton(
-                                      function: () {
-                                        // postPurchase(
-                                        //   widget.StudentId,
-                                        //   widget.SessionHeaderId,
-                                        // );
-                                        setState(() {
-                                          Navigator.of(context).pop();
-                                          navigateTo(
-                                              context,
-                                              PaymobOptionsScreen(
-                                                StudentId: widget.StudentId,
-                                                Payment: allData
-                                                        .sessionHeader.price *
-                                                    100,
-                                                SessionHeaderId:
-                                                    widget.SessionHeaderId,
-                                                LessonDescription:
-                                                    widget.LessonDescription,
-                                                LessonName: widget.LessonName,
-                                                TeacherName: widget.TeacherName,
-                                                dir: widget.dir,
-                                              ));
-                                          //allData.sessionHeader.isPurchased = true;
-                                        });
-                                      },
-                                      text: widget.dir == "ltr"
-                                          ? "Purchase (${allData.sessionHeader.price} EGP)"
-                                          : "شراء ${allData.sessionHeader.price} ج.م"),
-                                ),
+                              : allData.sessionHeader.isPurchaseExist &&
+                                      allData.sessionHeader.source == "kiosk"
+                                  ? Container(
+                                      margin: EdgeInsets.only(bottom: 8),
+                                      child: Column(children: [
+                                        Container(
+                                          width: double.infinity,
+                                          height: 55,
+                                          margin: EdgeInsets.only(bottom: 8),
+                                          decoration: BoxDecoration(
+                                              color: Colors.black45,
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          child: Center(
+                                            child: Text(
+                                              widget.dir == "ltr"
+                                                  ? "Payment Code: ${allData.sessionHeader.kioskNumber}"
+                                                  : ' كود الدفع: ${allData.sessionHeader.kioskNumber}',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          widget.dir == "ltr" ? "OR" : "أو",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black54),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        defaultButton(
+                                            borderRadius: 8,
+                                            function: () {
+                                              // postPurchase(
+                                              //   widget.StudentId,
+                                              //   widget.SessionHeaderId,
+                                              // );
+                                              setState(() {
+                                                Navigator.of(context).pop();
+                                                navigateTo(
+                                                    context,
+                                                    PaymobCreditCardScreen(
+                                                        StudentId:
+                                                            widget.StudentId,
+                                                        SessionHeaderId: widget
+                                                            .SessionHeaderId,
+                                                        Payment: allData
+                                                            .sessionHeader
+                                                            .price,
+                                                        LessonName:
+                                                            widget.LessonName,
+                                                        LessonDescription: widget
+                                                            .LessonDescription,
+                                                        dir: widget.dir,
+                                                        TeacherName: widget
+                                                            .TeacherName));
+                                                //allData.sessionHeader.isPurchased = true;
+                                              });
+                                            },
+                                            text: widget.dir == "ltr"
+                                                ? "Purchase with Bank Card (${allData.sessionHeader.price} EGP)"
+                                                : "شراء ببطاقة البنك ${allData.sessionHeader.price} ج.م"),
+                                      ]),
+                                    )
+                                  : Container(
+                                      margin: EdgeInsets.only(bottom: 8),
+                                      child: defaultButton(
+                                          function: () {
+                                            // postPurchase(
+                                            //   widget.StudentId,
+                                            //   widget.SessionHeaderId,
+                                            // );
+                                            setState(() {
+                                              Navigator.of(context).pop();
+                                              navigateTo(
+                                                  context,
+                                                  PaymobOptionsScreen(
+                                                    StudentId: widget.StudentId,
+                                                    Payment: allData
+                                                            .sessionHeader
+                                                            .price *
+                                                        100,
+                                                    SessionHeaderId:
+                                                        widget.SessionHeaderId,
+                                                    LessonDescription: widget
+                                                        .LessonDescription,
+                                                    LessonName:
+                                                        widget.LessonName,
+                                                    TeacherName:
+                                                        widget.TeacherName,
+                                                    dir: widget.dir,
+                                                  ));
+                                              //allData.sessionHeader.isPurchased = true;
+                                            });
+                                          },
+                                          text: widget.dir == "ltr"
+                                              ? "Purchase (${allData.sessionHeader.price} EGP)"
+                                              : "شراء ${allData.sessionHeader.price} ج.م"),
+                                    ),
                         ]),
                   ))),
     );
@@ -327,7 +398,7 @@ class Item extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (cubit.sessionHeader.isFree ||
-              cubit.sessionHeader.isPurchased ||
+              cubit.sessionHeader.isPurchaseCompleted ||
               item.type == "Promo")
           ? () async {
               if (item.type == "Video" || item.type == "Promo") {
@@ -392,7 +463,7 @@ class Item extends StatelessWidget {
       child: Card(
         //----------------------------------------------Card
         elevation: (cubit.sessionHeader.isFree ||
-                cubit.sessionHeader.isPurchased ||
+                cubit.sessionHeader.isPurchaseCompleted ||
                 item.type == "Promo")
             ? 1
             : 1,
@@ -401,7 +472,7 @@ class Item extends StatelessWidget {
           decoration: BoxDecoration(
               border: Border.all(
                   color: (cubit.sessionHeader.isFree ||
-                          cubit.sessionHeader.isPurchased ||
+                          cubit.sessionHeader.isPurchaseCompleted ||
                           item.type == "Promo")
                       ? defaultColor.withOpacity(0.5)
                       : Colors.black26),
@@ -412,7 +483,7 @@ class Item extends StatelessWidget {
                 getImage(
                   item,
                   cubit.sessionHeader.isFree,
-                  cubit.sessionHeader.isPurchased,
+                  cubit.sessionHeader.isPurchaseCompleted,
                   align,
                   60.0,
                   60.0,
@@ -429,7 +500,7 @@ class Item extends StatelessWidget {
                           widget.LessonName,
                           item,
                           cubit.sessionHeader.isFree,
-                          cubit.sessionHeader.isPurchased,
+                          cubit.sessionHeader.isPurchaseCompleted,
                           16.1)
                     ],
                   ),
@@ -492,14 +563,14 @@ Widget getImage(SessionDetails sd, bool isFree, bool isPurchased, String align,
     case "Promo":
       return Image.network(
         //'assets/images/${sd.type}_left.png',
-        '${sd.urlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.coverUrlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );
       break;
     case "Video":
       return Image.network(
-        '${sd.urlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.coverUrlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );

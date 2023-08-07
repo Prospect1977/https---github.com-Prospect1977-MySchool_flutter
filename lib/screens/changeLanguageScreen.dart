@@ -19,11 +19,14 @@ class ChangeLanguageScreen extends StatefulWidget {
 }
 
 class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
+  String langCurrent = CacheHelper.getData(key: "lang") != null
+      ? CacheHelper.getData(key: "lang")
+      : lang;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarComponent(
-          context, lang == "ar" ? "لغة التطبيق" : "App Language"),
+          context, langCurrent == "ar" ? "لغة التطبيق" : "App Language"),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -35,18 +38,16 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
                   function: () {
                     if (CacheHelper.getData(key: "token") != null) {
                       var roles = CacheHelper.getData(key: "roles");
-                      switch (roles) {
-                        case "Parent":
-                          navigateAndFinish(context, ParentsLandingScreen());
-                          break;
-                        case "Student":
-                          navigateAndFinish(context, StudentDashboardScreen());
-                          break;
-                        case "Teacher":
-                          navigateAndFinish(context, TeacherDashboardScreen());
-                          break;
-                      }
 
+                      if (roles.contains("Parent")) {
+                        navigateAndFinish(context, ParentsLandingScreen());
+                      }
+                      if (roles.contains("Student")) {
+                        navigateAndFinish(context, StudentDashboardScreen());
+                      }
+                      if (roles.contains("Teacher")) {
+                        navigateAndFinish(context, TeacherDashboardScreen());
+                      }
                       // widget = LandingScreen(); //the page after signing in
                     } else
                       navigateAndFinish(context, LoginScreen());

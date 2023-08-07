@@ -9,7 +9,9 @@ import 'package:my_school/shared/styles/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectLanguageWidget extends StatefulWidget {
-  String lange = lang;
+  String lange = CacheHelper.getData(key: "lang") != null
+      ? CacheHelper.getData(key: "lang")
+      : lang;
   Function setLang;
   SelectLanguageWidget({@required this.lange, this.setLang, Key key})
       : super(key: key);
@@ -19,7 +21,6 @@ class SelectLanguageWidget extends StatefulWidget {
 }
 
 class _SelectLanguageWidgetState extends State<SelectLanguageWidget> {
-  var lang = CacheHelper.getData(key: "lang");
   @override
   Widget build(BuildContext context) {
     return Container(

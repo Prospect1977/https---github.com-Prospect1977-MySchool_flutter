@@ -5,6 +5,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_school/models/teacher_lesson.dart';
 //import 'package:my_school/models/StudentSessionHeaderDetail.dart';
 import 'package:my_school/models/teacher_session.dart';
@@ -22,7 +23,11 @@ import 'package:my_school/shared/widgets/teacher_session_navigation_bar.dart';
 import 'package:my_school/shared/widgets/video_input.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models/StudentSessionHeaderDetail.dart';
+import 'package:dio/dio.dart' as dio;
+
+import 'package:http_parser/http_parser.dart';
+
+import 'dart:io';
 
 class TeacherSessionScreen extends StatefulWidget {
   int TeacherId;
@@ -179,10 +184,43 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
     });
   }
 
+  void _uploadVideoThumnail(int VideoId) async {
+    final imageFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 200,
+    );
+    if (imageFile == null) {
+      return;
+    }
+    String filename = await imageFile.path.split("/").last;
+
+    dio.FormData formData = new dio.FormData.fromMap({
+      "image": await dio.MultipartFile.fromFile(imageFile.path,
+          filename: filename, contentType: new MediaType('file', '*/*')),
+      "type": "file"
+    });
+
+    DioHelper.postImage(
+            url: 'TeacherSession/TeacherUploadVideoThumbnail',
+            data: formData,
+            query: {"VideoId": VideoId},
+            lang: "en",
+            token: "")
+        .then((value) {
+      print(value.data);
+      getData();
+      //  widget.onSelectImage(value.data);
+    });
+    setState(() {
+      //  _storedImage = File(imageFile.path);
+    });
+  }
+
   void _startEditTitle(ctx, {String title, int sessionDetailId}) {
     setState(() {
       titleController.text = title;
     });
+
     showModalBottomSheet(
         context: ctx,
         builder: (_) {
@@ -520,6 +558,9 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                               teacherSession: sessionData,
                                               widget: widget,
                                               align: align,
+                                              UploadVideoThumbnail: () =>
+                                                  _uploadVideoThumnail(
+                                                      item.videoId),
                                               RenameSessionDetail: () =>
                                                   _startEditTitle(context,
                                                       sessionDetailId: item.id,
@@ -531,7 +572,8 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                       item.id),
                                               DeactivateSessionDetail: () =>
                                                   DeactivateSessionDetail(
-                                                      item.id),
+                                                item.id,
+                                              ),
                                             );
                                           },
                                         ),
@@ -1024,6 +1066,7 @@ class Item extends StatelessWidget {
     @required this.RenameSessionDetail,
     @required this.ActivateSessionDetail,
     @required this.DeactivateSessionDetail,
+    @required this.UploadVideoThumbnail,
   }) : super(key: key);
 
   final TeacherSessionDetail item;
@@ -1035,6 +1078,7 @@ class Item extends StatelessWidget {
   final Function RenameSessionDetail;
   final Function ActivateSessionDetail;
   final Function DeactivateSessionDetail;
+  final Function UploadVideoThumbnail;
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -1134,6 +1178,31 @@ class Item extends StatelessWidget {
                                           ],
                                         )),
                                     value: 'edit')
+                                : null,
+                            item.type == "Video" || item.type == "Promo"
+                                ? new PopupMenuItem<String>(
+                                    child: Container(
+                                        width: 150,
+                                        // height: 30,
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.image,
+                                              color: Colors.blue.shade700,
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              widget.dir == "ltr"
+                                                  ? "Video Thumbnail"
+                                                  : "أيقونة الفيديو",
+                                              style: TextStyle(
+                                                  color: Colors.black87),
+                                            ),
+                                          ],
+                                        )),
+                                    value: 'changeVideoThumbnail')
                                 : null,
                             new PopupMenuItem<String>(
                                 child: Container(
@@ -1264,6 +1333,9 @@ class Item extends StatelessWidget {
                             break;
                           case 'setActive':
                             ActivateSessionDetail();
+                            break;
+                          case 'changeVideoThumbnail':
+                            UploadVideoThumbnail();
                             break;
                           //-------------------------------------Edit Note
                         }
