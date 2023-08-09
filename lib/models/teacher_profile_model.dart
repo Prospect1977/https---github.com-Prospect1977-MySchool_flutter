@@ -7,6 +7,8 @@ class TeacherProfileModel {
   dynamic rate;
   String biography;
   String biographyDir;
+  int views;
+  String nationalId;
 
   TeacherProfileModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -17,5 +19,7 @@ class TeacherProfileModel {
     rate = json['rate'];
     biography = json['biography'];
     biographyDir = json['biographyDir'];
+    views = json["views"];
+    nationalId = json["nationalId"];
   }
 }

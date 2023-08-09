@@ -25,6 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var confirmPasswordController = TextEditingController();
   var fullNameController = TextEditingController();
   var phoneNumberController = TextEditingController();
+  var nationalIdController = TextEditingController();
   var accountType = "Parent";
   bool showPassword = false;
   void sendForm() async {
@@ -36,6 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "password": passwordController.text,
           "FullName": fullNameController.text,
           "PhoneNumber": phoneNumberController.text,
+          "NationalId": nationalIdController.text,
           "Role": accountType,
         }).then((value) {
       print(value.data);
@@ -193,6 +195,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     label: lang == "en" ? 'Email Address' : "البريد الإلكتروني",
                     prefix: Icons.email_outlined,
                   ),
+                  accountType == "Teacher"
+                      ? SizedBox(
+                          height: 15.0,
+                        )
+                      : Container(),
+                  accountType == "Teacher"
+                      ? defaultFormField(
+                          controller: nationalIdController,
+                          type: TextInputType.number,
+                          validate: (String value) {
+                            if (accountType == "Teacher" && value.isEmpty) {
+                              return lang == "en"
+                                  ? 'please enter your National ID'
+                                  : "من فضلك ادخل الرقم القومي";
+                            }
+                          },
+                          label: lang == "en" ? 'National ID' : "الرقم القومي",
+                          prefix: Icons.credit_card,
+                        )
+                      : Container(),
                   SizedBox(
                     height: 15.0,
                   ),

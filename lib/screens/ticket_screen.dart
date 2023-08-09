@@ -73,7 +73,10 @@ class _TicketScreenState extends State<TicketScreen> {
               //'Title': titleController.text,
               'Description': descriptionController.text,
               'DescriptionDir': descDirection,
-              'PublishDate': DateTime.now(), "FileUrl": _pickedImage,
+              'PublishDate': DateTime.now(),
+              'Roles': CacheHelper.getData(key: 'roles'),
+
+              "FileUrl": _pickedImage,
             },
             lang: "ar",
             token: token)
