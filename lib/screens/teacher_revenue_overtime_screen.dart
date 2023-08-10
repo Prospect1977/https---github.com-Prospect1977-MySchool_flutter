@@ -246,8 +246,8 @@ class _TeacherRevenueOvertimeScreenState
                               ? Container()
                               : ChartTitle(
                                   title: lang == "en"
-                                      ? "Revenue (EGP)"
-                                      : "الدخل (ج.م)"),
+                                      ? "Net Revenue (EGP)"
+                                      : "صافي الدخل (ج.م)"),
                           RevenueLineChartWidget(lineChart.items),
                         ],
                       )),

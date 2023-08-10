@@ -33,6 +33,7 @@ class _TeacherPurchasesScreenState extends State<TeacherPurchasesScreen> {
   TeacherPurchases model;
   dynamic maxPurchasesCount = 1;
   dynamic maxPurchasesAmount = 1.0;
+  dynamic netMaxPurchasesAmount = 1.0;
   DateTime fromDate = DateTime.now();
   TeacherPurchasesTotals modelTotal;
   // of to be removed
@@ -100,8 +101,12 @@ class _TeacherPurchasesScreenState extends State<TeacherPurchasesScreen> {
             TeacherPurchasesTotals.fromJson(value.data["additionalData"]);
         maxPurchasesAmount = [...model.Records].fold<dynamic>(
             1, (max, e) => e.totalAmount > max ? e.totalAmount : max);
-        maxPurchasesCount = [...model.Records].fold<dynamic>(
-            1, (max, e) => e.totalPurchases > max ? e.totalPurchases : max);
+        maxPurchasesAmount = [...model.Records].fold<dynamic>(
+            1, (max, e) => e.totalAmount > max ? e.totalAmount : max);
+        netMaxPurchasesAmount = [...model.Records]
+            .fold<dynamic>(
+                1, (max, e) => e.netTotalAmount > max ? e.netTotalAmount : max)
+            .toStringAsFixed(2);
 
         print(
             'maxPurchasesCount=-----------------------------------$maxPurchasesCount');
@@ -247,6 +252,12 @@ class _TeacherPurchasesScreenState extends State<TeacherPurchasesScreen> {
                                         ? "Total Revenue:"
                                         : "إجمالي الدخل:",
                                     value: modelTotal.totalPurchasesAmount
+                                        .toStringAsFixed(2)),
+                                SummaryRow(
+                                    label: lang == "en"
+                                        ? "Net Revenue:"
+                                        : "صافي الدخل:",
+                                    value: modelTotal.netTotalPurchasesAmount
                                         .toStringAsFixed(2)),
                                 Divider(
                                     height: 0,
@@ -410,6 +421,15 @@ class BuildItem extends StatelessWidget {
                               lang == "en" ? "Total Revenue:" : "إجمالي الدخل:",
                           value: item.totalAmount.toStringAsFixed(2),
                         ),
+                        DataRow(
+                          lang: lang,
+                          item: item,
+                          widthFactor: item.totalAmount / maxAmount,
+                          caption: lang == "en"
+                              ? "Net Total Revenue:"
+                              : "صافي إجمالي الدخل:",
+                          value: item.netTotalAmount.toStringAsFixed(2),
+                        ),
                         Divider(
                           thickness: 1,
                           color: Colors.black45,
@@ -542,6 +562,35 @@ class BuildItem extends StatelessWidget {
                           ),
                           Expanded(
                             child: Text('${rec.amount}',
+                                style: TextStyle(
+                                    fontSize: 16, color: defaultColor)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: lang == "en" ? 107 : 85,
+                            alignment: lang == "en"
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Text(
+                              '${lang == "en" ? "Net Revenue:" : "صافي الدخل:"}',
+                              style:
+                                  TextStyle(fontSize: 16, color: defaultColor),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: Text('${rec.netAmount.toStringAsFixed(2)}',
                                 style: TextStyle(
                                     fontSize: 16, color: defaultColor)),
                           ),

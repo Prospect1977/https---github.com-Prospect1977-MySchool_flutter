@@ -13,11 +13,13 @@ class Record {
   String dataDate;
   dynamic totalPurchases;
   dynamic totalAmount;
+  dynamic netTotalAmount;
   List<Items> items;
   Record.fromJson(Map<String, dynamic> json) {
     dataDate = json['dataDate'];
     totalPurchases = json['totalPurchases'];
     totalAmount = json['totalAmount'];
+    netTotalAmount = json['netTotalAmount'];
     if (json['items'] != null) {
       items = <Items>[];
       json['items'].forEach((v) {
@@ -37,6 +39,7 @@ class Items {
   int termIndex;
   int count;
   dynamic amount;
+  dynamic netAmount;
   Items.fromJson(Map<String, dynamic> json) {
     yearOfStudy = json['yearOfStudy'];
     subjectName = json['subjectName'];
@@ -47,15 +50,18 @@ class Items {
     termIndex = json['termIndex'];
     count = json['count'];
     amount = json['amount'];
+    netAmount = json['netAmount'];
   }
 }
 
 class TeacherPurchasesTotals {
   int totalPurchasesCount;
   dynamic totalPurchasesAmount;
+  dynamic netTotalPurchasesAmount;
   TeacherPurchasesTotals.fromJson(Map<String, dynamic> json) {
     totalPurchasesCount = json['totalPurchasesCount'];
     totalPurchasesAmount = json['totalPurchasesAmount'];
+    netTotalPurchasesAmount = json['netTotalPurchasesAmount'];
   }
 }
 

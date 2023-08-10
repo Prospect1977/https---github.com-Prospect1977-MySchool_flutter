@@ -34,7 +34,6 @@ class _ImageInputTicketState extends State<ImageInputTicket> {
     Future<void> _takePicture(ImageSource s) async {
       final imageFile = await ImagePicker().pickImage(
         source: s,
-        maxWidth: 200,
       );
       if (imageFile == null) {
         return;
