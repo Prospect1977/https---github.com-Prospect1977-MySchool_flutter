@@ -376,7 +376,7 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                                 borderRadius: BorderRadius.circular(8),
                                 child: Stack(children: [
                                   Image.network(
-                                    '${widget.question.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${widget.question.questionImageUrl}',
+                                    '${widget.question.urlSource == "web" || widget.question.urlSource == "Web" ? webUrl : baseUrl0}Sessions/QuestionImages/${widget.question.questionImageUrl}',
                                     height: 100,
                                     fit: BoxFit.contain,
                                   ),

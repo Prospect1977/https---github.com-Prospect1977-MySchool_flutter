@@ -251,7 +251,7 @@ class _StudentLessonSessionsScreenState
                                                                                         fit: BoxFit.cover,
                                                                                       )
                                                                                     : Image.network(
-                                                                                        item.urlSource == "web" ? '${webUrl}images/Profiles/${item.teacherPhoto}' : '${baseUrl0}Assets/ProfileImages/${item.teacherPhoto}',
+                                                                                        item.urlSource == "web" || item.urlSource == "Web" ? '${webUrl}images/Profiles/${item.teacherPhoto}' : '${baseUrl0}Assets/ProfileImages/${item.teacherPhoto}',
                                                                                         fit: BoxFit.cover,
                                                                                       ),
                                                                               ),

@@ -282,7 +282,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                                             BorderRadius
                                                                 .circular(5),
                                                         child: Image.network(
-                                                            '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
+                                                            '${item.urlSource == "web" || item.urlSource == "Web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
                                                       ),
                                                     )
                                                   : Container(),
@@ -458,7 +458,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                                         BorderRadius.circular(
                                                             5),
                                                     child: Image.network(
-                                                      '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}',
+                                                      '${item.urlSource == "web" || item.urlSource == "Web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}',
                                                       width: double.infinity,
                                                       fit: BoxFit.fill,
                                                     ),

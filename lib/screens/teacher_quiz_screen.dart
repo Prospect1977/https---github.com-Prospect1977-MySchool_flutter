@@ -262,7 +262,7 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
                                                         BorderRadius.circular(
                                                             8),
                                                     child: Image.network(
-                                                        '${item.urlSource == "web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
+                                                        '${item.urlSource == "web" || item.urlSource == "Web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}'),
                                                   )
                                                 : Container(),
                                           ],

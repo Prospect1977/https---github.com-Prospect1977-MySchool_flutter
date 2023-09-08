@@ -63,6 +63,10 @@ class _StudentSessionDetailsScreenState
   }
 
   void getSessionDetails(StudentId, SessionHeaderId) {
+    print("---------------------------------StudentId:${StudentId}");
+    print(
+        "---------------------------------SessionHeaderId:${SessionHeaderId}");
+
     DioHelper.getData(
             url: 'StudentSessionHeaderDetails',
             query: {'Id': StudentId, 'SessionHeaderId': SessionHeaderId},
@@ -453,7 +457,7 @@ class Item extends StatelessWidget {
                 //         Title: item.title));
 
                 await launchUrl(
-                    Uri.parse(item.urlSource == "web"
+                    Uri.parse(item.urlSource == "web" || item.urlSource == "Web"
                         ? '${webUrl}Sessions/Documents/${item.documentUrl}'
                         : '${baseUrl0}Sessions/Documents/${item.documentUrl}'),
                     mode: LaunchMode.externalApplication);
@@ -563,14 +567,14 @@ Widget getImage(SessionDetails sd, bool isFree, bool isPurchased, String align,
     case "Promo":
       return Image.network(
         //'assets/images/${sd.type}_left.png',
-        '${sd.coverUrlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.coverUrlSource == "web" || sd.coverUrlSource == "Web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );
       break;
     case "Video":
       return Image.network(
-        '${sd.coverUrlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.coverUrlSource == "web" || sd.coverUrlSource == "Web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );

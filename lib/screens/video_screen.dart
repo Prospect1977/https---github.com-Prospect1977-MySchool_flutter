@@ -79,7 +79,7 @@ class _VideoScreenState extends State<VideoScreen> {
   StudentVideoNotes VideoNotes;
   Future<void> _initializePlay(String VideoUrl) async {
     _controller = VideoPlayerController.network(
-        '${widget.UrlSource == "web" ? baseUrl : baseUrl0}Sessions/Videos/$VideoUrl')
+        '${widget.UrlSource == "web" || widget.UrlSource == "web" ? webUrl : baseUrl0}Sessions/Videos/$VideoUrl')
       //_controller = VideoPlayerController.asset(VideoUrl)
       ..addListener(() {
         if (_controller != null && _controller.value.isInitialized) {
@@ -139,7 +139,7 @@ class _VideoScreenState extends State<VideoScreen> {
     VideoUrl =
         '${widget.VideoUrl.substring(0, widget.VideoUrl.length - 4)}_480.${widget.VideoUrl.split(".")[widget.VideoUrl.split(".").length - 1]}';
     print(
-        '________________________________________________________________vidUrl=$VideoUrl');
+        '________________________________________________________________vidUrl=${webUrl}Sessions/Videos/$VideoUrl');
 
     _initializePlay(VideoUrl);
   }

@@ -151,7 +151,8 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                                               fit: BoxFit.cover,
                                             )
                                           : Image.network(
-                                              model.urlSource == "web"
+                                              model.urlSource == "web" ||
+                                                      model.urlSource == "Web"
                                                   ? '${webUrl}images/Profiles/${model.photo}'
                                                   : '${baseUrl0}Assets/ProfileImages/${model.photo}',
                                               fit: BoxFit.cover,

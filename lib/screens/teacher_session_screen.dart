@@ -345,6 +345,9 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    print(
+        "--------------------------------------TeacherId:${widget.TeacherId}");
+    print("--------------------------------------LessonId:${widget.LessonId}");
     getData();
     getLessons();
   }
@@ -1114,10 +1117,10 @@ class Item extends StatelessWidget {
               ));
         }
         if (item.type == "Document") {
-          await launchUrl(
-              Uri.parse(item.urlSource == "web"
-                  ? '${webUrl}Sessions/Documents/${item.documentUrl}'
-                  : '${baseUrl0}Sessions/Documents/${item.documentUrl}'),
+          var docUrl =
+              "${(item.urlSource == "web" || item.urlSource == "Web") ? '${webUrl}Sessions/Documents/${item.documentUrl}' : '${baseUrl0}Sessions/Documents/${item.documentUrl}'}";
+          print("-------------------DocumentUrl=$docUrl");
+          await launchUrl(Uri.parse(docUrl),
               mode: LaunchMode.externalApplication);
         }
       },
@@ -1361,14 +1364,14 @@ Widget getImage(
     case "Promo":
       return Image.network(
         //'assets/images/${sd.type}_left.png',
-        '${sd.urlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.coverUrlSource == "web" || sd.coverUrlSource == "Web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );
       break;
     case "Video":
       return Image.network(
-        '${sd.urlSource == "web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
+        '${sd.coverUrlSource == "web" || sd.coverUrlSource == "Web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
         width: width,
         height: height,
       );
