@@ -21,6 +21,8 @@ class StudentVideoNote {
   String teacherName;
   String videoName;
   String title;
+  String coverUrl;
+  String coverUrlSource;
   int goToSecond;
 
   StudentVideoNote.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,10 @@ class StudentVideoNote {
     note = json['note'];
     teacherName = json['teacherName'];
     videoName = json['videoName'];
+    title = json['title'];
+
+    coverUrlSource = json['coverUrlSource'];
+    coverUrl = json['coverUrl'];
     title = json['title'];
     goToSecond = json['goToSecond'];
   }

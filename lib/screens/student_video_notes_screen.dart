@@ -11,6 +11,8 @@ import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/studentStudyBySubject_navigation_bar.dart';
 
+import '../shared/components/constants.dart';
+
 class StudentVideoNotesScreen extends StatefulWidget {
   const StudentVideoNotesScreen(
       {@required this.studentId,
@@ -48,7 +50,8 @@ class _StudentVideoNotesScreenState extends State<StudentVideoNotesScreen> {
             lang: lang,
             token: token)
         .then((value) {
-      print(value.data["data"]);
+      print(
+          "--------------------------------------------------------------${value.data["data"]}");
       if (value.data["status"] == false) {
         navigateAndFinish(context, LoginScreen());
         return;
@@ -67,6 +70,7 @@ class _StudentVideoNotesScreenState extends State<StudentVideoNotesScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    print("---------------YearSubjectId:${widget.YearSubjectId}");
     super.initState();
     getData();
   }
@@ -110,6 +114,10 @@ class _StudentVideoNotesScreenState extends State<StudentVideoNotesScreen> {
                                     Title: item.title,
                                     LessonName: item.lessonName,
                                     LessonDescription: item.lessonName,
+                                    CoverUrl: item.coverUrlSource == "web" ||
+                                            item.coverUrlSource == "Web"
+                                        ? "${webUrl}Sessions/VideoCovers/${item.coverUrl}"
+                                        : "${baseUrl0}Sessions/VideoCovers/${item.coverUrl}",
                                     dir: widget.dir,
                                     TeacherName: item.teacherName,
                                     VideoName: item.videoName,

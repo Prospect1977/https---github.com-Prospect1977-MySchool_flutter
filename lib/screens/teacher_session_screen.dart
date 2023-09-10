@@ -187,7 +187,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
   void _uploadVideoThumnail(int VideoId) async {
     final imageFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
-      maxWidth: 200,
+      maxWidth: 700,
     );
     if (imageFile == null) {
       return;
@@ -1096,6 +1096,10 @@ class Item extends StatelessWidget {
                 aspectRatio: item.aspectRatio,
                 UrlSource: item.urlSource,
                 Title: item.title,
+                CoverUrl:
+                    item.coverUrlSource == "web" || item.coverUrlSource == "Web"
+                        ? "${webUrl}Sessions/VideoCovers/${item.videoCover}"
+                        : "${baseUrl0}Sessions/VideoCovers/${item.videoCover}",
                 // SessionHeaderId: teacherSession.id,
                 LessonName: widget.LessonName,
                 LessonDescription: teacherSession.lessonDescription == null

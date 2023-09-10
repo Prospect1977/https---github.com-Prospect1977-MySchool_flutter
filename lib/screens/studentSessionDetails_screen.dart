@@ -412,6 +412,10 @@ class Item extends StatelessWidget {
                       StudentId: widget.StudentId,
                       VideoId: item.videoId,
                       VideoUrl: item.videoUrl,
+                      CoverUrl: item.coverUrlSource == "web" ||
+                              item.coverUrlSource == "Web"
+                          ? "${webUrl}Sessions/VideoCovers/${item.videoCover}"
+                          : "${baseUrl0}Sessions/VideoCovers/${item.videoCover}",
                       aspectRatio: item.aspectRatio,
                       UrlSource: item.urlSource,
                       Title: item.title,
