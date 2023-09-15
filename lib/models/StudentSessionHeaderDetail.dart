@@ -51,6 +51,7 @@ class SessionDetails {
   dynamic videoStoppedAt;
   String urlSource;
   String coverUrlSource;
+  int duration;
 
   SessionDetails.fromJson(Map<String, dynamic> json) {
     type = json['type'];
@@ -75,5 +76,6 @@ class SessionDetails {
     quizDegree = json['quizDegree'];
     videoStoppedAt = json['videoStoppedAt'];
     urlSource = json['urlSource'];
+    duration = json['duration'];
   }
 }

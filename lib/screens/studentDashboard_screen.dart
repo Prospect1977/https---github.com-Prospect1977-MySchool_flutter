@@ -123,13 +123,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             navigateTo(context,
                                 StudentSelectedSubjectsScreen(widget.Id));
                           },
-                    isStudentHasParent && roles == "Student"
-                        ? 'SelectSubjects_disabled.png'
-                        : 'SelectSubjects.png',
+                    // isStudentHasParent && roles == "Student"
+                    //     ? 'SelectSubjects_disabled.png'
+                    //     :
+                    'SelectSubjects.png',
                     lang.toString().toLowerCase() == "ar"
                         ? "إختر المواد الدراسية"
                         : "Select Learning Subjects",
-                    isStudentHasParent && roles == "Student" ? true : false,
+                    // isStudentHasParent && roles == "Student" ? true : false,
+                    false,
                   ),
                   dashboardButton(
                     context,
@@ -208,7 +210,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     );
   }
 }
-
 
 // Widget Gridtile (String lang,Widget icon,String Title,Function onTap){
 //   return GridTile(child: Container(color:Colors.orange.withOpacity(0.7),child:Column(children: [

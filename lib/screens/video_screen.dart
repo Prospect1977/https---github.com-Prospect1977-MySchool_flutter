@@ -1195,7 +1195,12 @@ class _VideoScreenState extends State<VideoScreen> {
                     fit: BoxFit.cover,
                   ),
                   Center(
-                    child: CircularProgressIndicator(color: Colors.black12),
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.black26,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.black, //<-- SEE HERE
+                      ),
+                    ),
                   )
                 ]),
               ));

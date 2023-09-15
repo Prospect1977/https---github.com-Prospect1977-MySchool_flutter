@@ -1142,12 +1142,48 @@ class Item extends StatelessWidget {
           child: Column(
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                getImage(
-                  item,
-                  align,
-                  60.0,
-                  60.0,
-                ),
+                item.type == "Video" || item.type == "Promo"
+                    ? Stack(
+                        children: [
+                          getImage(
+                            item,
+                            align,
+                            60.0,
+                            60.0,
+                          ),
+                          Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.black26,
+                          ),
+                          Container(
+                            width: 60,
+                            height: 60,
+                            child: Center(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/play.png",
+                                      width: 25,
+                                      height: 25,
+                                    ),
+                                    Text(
+                                      getVideoDuration(item.duration),
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                  ]),
+                            ),
+                          ),
+                        ],
+                      )
+                    : getImage(
+                        item,
+                        align,
+                        60.0,
+                        60.0,
+                      ),
                 SizedBox(
                   width: 15,
                 ),
@@ -1349,6 +1385,9 @@ class Item extends StatelessWidget {
                       }),
                 ),
               ]),
+              SizedBox(
+                height: 3,
+              ),
             ],
           ),
         ),
@@ -1369,15 +1408,16 @@ Widget getImage(
       return Image.network(
         //'assets/images/${sd.type}_left.png',
         '${sd.coverUrlSource == "web" || sd.coverUrlSource == "Web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
-        width: width,
-        height: height,
+        width: 60,
+        height: 60, fit: BoxFit.cover,
       );
       break;
     case "Video":
       return Image.network(
         '${sd.coverUrlSource == "web" || sd.coverUrlSource == "Web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
-        width: width,
-        height: height,
+        width: 60,
+        height: 60,
+        fit: BoxFit.cover,
       );
       break;
     default:
@@ -1420,4 +1460,12 @@ Widget getTitle(
 
       break;
   }
+}
+
+String getVideoDuration(dur) {
+  final duration = Duration(milliseconds: dur * 1000);
+
+  return [duration.inMinutes, duration.inSeconds]
+      .map((seg) => seg.remainder(60).toString().padLeft(2, '0'))
+      .join(':');
 }

@@ -488,14 +488,55 @@ class Item extends StatelessWidget {
           child: Column(
             children: [
               Row(children: [
-                getImage(
-                  item,
-                  cubit.sessionHeader.isFree,
-                  cubit.sessionHeader.isPurchaseCompleted,
-                  align,
-                  60.0,
-                  60.0,
-                ),
+                item.type == "Video" || item.type == "Promo"
+                    ? Stack(
+                        children: [
+                          getImage(
+                            item,
+                            cubit.sessionHeader.isFree,
+                            cubit.sessionHeader.isPurchaseCompleted,
+                            align,
+                            60.0,
+                            60.0,
+                          ),
+                          Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.black26,
+                          ),
+                          Container(
+                            width: 60,
+                            height: 60,
+                            child: Center(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/play.png",
+                                      width: 25,
+                                      height: 25,
+                                    ),
+                                    SizedBox(
+                                      height: 3,
+                                    ),
+                                    Text(
+                                      getVideoDuration(item.duration),
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                  ]),
+                            ),
+                          ),
+                        ],
+                      )
+                    : getImage(
+                        item,
+                        cubit.sessionHeader.isFree,
+                        cubit.sessionHeader.isPurchaseCompleted,
+                        align,
+                        60.0,
+                        60.0,
+                      ),
                 SizedBox(
                   width: 8,
                 ),
@@ -514,9 +555,12 @@ class Item extends StatelessWidget {
                   ),
                 ),
               ]),
+              SizedBox(
+                height: 3,
+              ),
               item.videoProgress > 0 || item.quizProgress > 0
                   ? Container(
-                      height: 3,
+                      height: 4.5,
                       child: Stack(
                         alignment: Alignment.centerLeft,
                         children: [
@@ -572,15 +616,16 @@ Widget getImage(SessionDetails sd, bool isFree, bool isPurchased, String align,
       return Image.network(
         //'assets/images/${sd.type}_left.png',
         '${sd.coverUrlSource == "web" || sd.coverUrlSource == "Web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
-        width: width,
-        height: height,
+        width: 60,
+        height: 60, fit: BoxFit.cover,
       );
       break;
     case "Video":
       return Image.network(
         '${sd.coverUrlSource == "web" || sd.coverUrlSource == "Web" ? webUrl : baseUrl0}Sessions/VideoCovers/${sd.videoCover}',
-        width: width,
-        height: height,
+        width: 60,
+        height: 60,
+        fit: BoxFit.cover,
       );
       break;
     default:
@@ -631,4 +676,12 @@ Widget getTitle(String dir, String LessonName, SessionDetails sd, bool isFree,
       }
       break;
   }
+}
+
+String getVideoDuration(dur) {
+  final duration = Duration(milliseconds: dur * 1000);
+
+  return [duration.inMinutes, duration.inSeconds]
+      .map((seg) => seg.remainder(60).toString().padLeft(2, '0'))
+      .join(':');
 }
