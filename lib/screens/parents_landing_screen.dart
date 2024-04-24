@@ -9,6 +9,7 @@ import 'package:my_school/screens/studentDashboard_screen.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/routes.dart';
 import 'package:my_school/shared/styles/colors.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class ParentsLandingScreen extends StatelessWidget {
   const ParentsLandingScreen({Key key}) : super(key: key);

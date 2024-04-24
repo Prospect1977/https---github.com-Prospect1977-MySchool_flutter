@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/models/student_progress_model.dart';
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/functions.dart';
@@ -107,9 +108,20 @@ class _StudentFollowupListScreenState extends State<StudentFollowupListScreen> {
     });
   }
 
+  void _checkAppVersion() async {
+    await checkAppVersion();
+    bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
+    if (isUpdated == false) {
+      navigateTo(context, RequireUpdateScreen());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
+    _checkAppVersion();
+
     date_thisWeekFirstDay =
         today.subtract(Duration(days: weekDaySundayBased(today.weekday)));
     date_lastWeekFirstDay = date_thisWeekFirstDay.subtract(Duration(days: 7));

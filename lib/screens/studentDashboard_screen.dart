@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_school/cubits/StudentDashboard_cubit.dart';
 import 'package:my_school/cubits/StudentDashboard_states.dart';
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/screens/studentDailySchedule_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentLearnBySubjectScreen1.dart';
@@ -15,6 +16,8 @@ import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/dashboard_button.dart';
+
+import '../shared/components/functions.dart';
 
 class StudentDashboardScreen extends StatefulWidget {
   int Id;
@@ -37,6 +40,21 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   String lang = CacheHelper.getData(key: "lang");
   bool isStudentHasParent = CacheHelper.getData(key: "studentHasParent");
   String roles = CacheHelper.getData(key: "roles");
+  void _checkAppVersion() async {
+    await checkAppVersion();
+    bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
+    if (isUpdated == false) {
+      navigateTo(context, RequireUpdateScreen());
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _checkAppVersion();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.Id > 0) {

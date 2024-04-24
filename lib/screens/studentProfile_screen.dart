@@ -10,6 +10,7 @@ import 'package:my_school/cubits/StudentYearOfStudy_states.dart';
 import 'package:my_school/models/SchoolTypeYearOfStudy.dart' as sc;
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/screens/studentSelectedSubjects_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
@@ -494,18 +495,22 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                                           widget.YearOfStudyId);
                                                   setState(() {
                                                     dirty = false;
-                                                    navigateAndFinish(
+                                                    Navigator.of(context).pop();
+                                                    navigateTo(
                                                         context,
-                                                        StudentDashboardScreen(
-                                                          Id: widget.Id,
-                                                          FullName:
-                                                              widget.FullName,
-                                                          Gender: widget.Gender,
-                                                          SchoolTypeId: widget
-                                                              .SchoolTypeId,
-                                                          YearOfStudyId: widget
-                                                              .YearOfStudyId,
-                                                        ));
+                                                        StudentSelectedSubjectsScreen(
+                                                            widget.Id)
+                                                        // StudentDashboardScreen(
+                                                        //   Id: widget.Id,
+                                                        //   FullName:
+                                                        //       widget.FullName,
+                                                        //   Gender: widget.Gender,
+                                                        //   SchoolTypeId: widget
+                                                        //       .SchoolTypeId,
+                                                        //   YearOfStudyId: widget
+                                                        //       .YearOfStudyId,
+                                                        // )
+                                                        );
                                                   });
                                                 }
                                               },

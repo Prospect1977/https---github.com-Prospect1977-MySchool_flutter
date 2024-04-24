@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-const defaultColor = Color.fromARGB(255, 164, 53, 240);
-const secondaryColor = Color.fromARGB(255, 181, 111, 193);
-const lightColor = Color.fromARGB(255, 220, 185, 226);
-var interfaceColor = Color.fromARGB(255, 164, 53, 240);
+const defaultColor = Colors.purple;
+var secondaryColor = Colors.purple.shade300;
+const lightColor = Color.fromARGB(255, 190, 138, 199);
+var interfaceColor = Colors.purple.shade400;
 
 
 

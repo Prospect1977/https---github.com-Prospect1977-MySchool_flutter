@@ -26,6 +26,8 @@ class StudentYearOfStudyCubit extends Cubit<StudentYearOfStudyStates> {
       print(value.data["schoolTypes"]);
       SchoolTypes =
           SchoolTypesAndYearsOfStudies.fromJson(value.data).SchoolTypes;
+      SchoolTypes =
+          SchoolTypes.where((element) => element.SortIndex < 3).toList();
       YearsOfStudies =
           SchoolTypesAndYearsOfStudies.fromJson(value.data).YearsOfStudies;
 

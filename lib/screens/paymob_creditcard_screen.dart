@@ -39,6 +39,7 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
   var fullName = CacheHelper.getData(key: "fullName");
   String phoneNumber = CacheHelper.getData(key: "phoneNumber");
   var email = CacheHelper.getData(key: "email");
+  // var email = "langara5000@hotmail.com";
   bool isLoaded = false;
   var token = CacheHelper.getData(key: "token");
   int OrderId = 0;

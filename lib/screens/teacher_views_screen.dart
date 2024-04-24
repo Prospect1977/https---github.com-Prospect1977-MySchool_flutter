@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/models/teachers_views_model.dart';
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/functions.dart';
@@ -119,6 +120,7 @@ class _TeacherViewsScreenState extends State<TeacherViewsScreen> {
   @override
   void initState() {
     super.initState();
+
     date_thisWeekFirstDay =
         today.subtract(Duration(days: weekDaySundayBased(today.weekday)));
     date_lastWeekFirstDay = date_thisWeekFirstDay.subtract(Duration(days: 7));

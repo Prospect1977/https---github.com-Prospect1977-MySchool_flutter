@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +10,7 @@ import 'package:my_school/providers/StudentLessonSessions_provider.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/on_boarding_screen.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
+import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
 import 'package:my_school/screens/teacher_dashboard_screen.dart';
 import 'package:my_school/screens/test_screen.dart';
@@ -16,13 +19,17 @@ import 'package:my_school/shared/bloc_observer.dart';
 import 'package:my_school/cubits/main_cubit.dart';
 import 'package:my_school/cubits/main_states.dart';
 import 'package:my_school/shared/cache_helper.dart';
+import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/themes.dart';
-import 'package:my_school/screens/landing_screen.dart';
+
 import 'package:provider/provider.dart';
+
+import 'shared/components/functions.dart';
 
 void main() async {
   // بيتأكد ان كل حاجه هنا في الميثود خلصت و بعدين يتفح الابلكيشن
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
   Bloc.observer = MyBlocObserver();
@@ -44,32 +51,31 @@ void main() async {
   // bool onBoarding = false;
   String token = CacheHelper.getData(key: 'token');
   String roles = CacheHelper.getData(key: 'roles');
-  if (onBoarding == true) {
-    if (token != null) {
-      print('Current Role:$roles');
-
-      if (roles.contains("Teacher")) {
-        widget = TeacherDashboardScreen();
-      }
-      if (roles.contains("Parent")) {
-        widget = ParentsLandingScreen();
-      }
-      if (roles.contains("Student")) {
-        widget = StudentDashboardScreen();
-      }
-      // widget = LandingScreen(); //the page after signing in
-    } else {
-      widget = LoginScreen();
-      // widget = VideoScreen(
-      //   StudentId: 1013,
-      //   Title: 'dsff0',
-      //   VideoId: 1,
-      //   VideoUrl: "dsfsf",
-      // );
-    }
+  await checkAppVersion();
+  bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
+  if (isUpdated == false) {
+    widget = RequireUpdateScreen();
   } else {
-    widget = OnBoardingScreen();
+    if (onBoarding == true) {
+      if (token != null) {
+        print('Current Role:$roles');
+
+        widget = getHomeScreen();
+        // widget = LandingScreen(); //the page after signing in
+      } else {
+        widget = LoginScreen();
+        // widget = VideoScreen(
+        //   StudentId: 1013,
+        //   Title: 'dsff0',
+        //   VideoId: 1,
+        //   VideoUrl: "dsfsf",
+        // );
+      }
+    } else {
+      widget = OnBoardingScreen();
+    }
   }
+
   // widget = TestScreen();
   runApp(MyApp(
     isDark: isDark,
@@ -107,5 +113,14 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.light,
           home: startWidget,
         ));
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

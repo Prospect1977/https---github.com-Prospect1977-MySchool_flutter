@@ -2,11 +2,13 @@ class SchoolType {
   int Id;
   String NameEng;
   String NameAra;
+  int SortIndex;
   SchoolType({this.Id, this.NameAra, this.NameEng});
   SchoolType.fromJson(Map<String, dynamic> js) {
     this.Id = js["id"];
     this.NameEng = js["nameEng"];
     this.NameAra = js["nameAra"];
+    this.SortIndex = js["sortIndex"];
   }
 }
 

@@ -10,6 +10,7 @@ import 'package:my_school/cubits/StudentLessonSessions_states.dart';
 import 'package:my_school/models/StudentLessonSessions_model.dart';
 import 'package:my_school/models/StudentLessonsByYearSubjectId_model.dart';
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
 import 'package:my_school/screens/teacher_profile_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
@@ -119,6 +120,14 @@ class _StudentLessonSessionsScreenState
     });
   }
 
+  void _checkAppVersion() async {
+    await checkAppVersion();
+    bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
+    if (isUpdated == false) {
+      navigateTo(context, RequireUpdateScreen());
+    }
+  }
+
   final ItemScrollController _itemScrollController = ItemScrollController();
   @override
   Widget build(BuildContext context) {
@@ -163,15 +172,20 @@ class _StudentLessonSessionsScreenState
                                                 .items.length ==
                                             0
                                         ? Center(
+                                            child: Directionality(
+                                            textDirection: widget.dir == "ltr"
+                                                ? TextDirection.ltr
+                                                : TextDirection.rtl,
                                             child: Text(
                                               widget.dir == "ltr"
                                                   ? 'No Content Available!'
                                                   : 'لا يوجد محتوى!',
                                               style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.black54),
+                                                fontSize: 20,
+                                                color: Colors.black54,
+                                              ),
                                             ),
-                                          )
+                                          ))
                                         : Column(
                                             children: [
                                               Expanded(

@@ -1,3 +1,63 @@
+import 'package:my_school/shared/cache_helper.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../screens/login_screen.dart';
+import '../../screens/parents_landing_screen.dart';
+import '../../screens/studentDashboard_screen.dart';
+import '../../screens/teacher_dashboard_screen.dart';
+import '../dio_helper.dart';
+
+void checkAppVersion() async {
+  String appVersion;
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  appVersion = packageInfo.version;
+  var currentRoles = CacheHelper.getData(key: 'roles');
+  await DioHelper.getData(url: 'General/GetLatestVersion', query: {})
+      .then((value) {
+    var requiredForRoles = value.data["roles"];
+
+    if (requiredForRoles == "All" || currentRoles == null) {
+      if (value.data['androidVersion'] == appVersion ||
+          value.data['macVersion'] == appVersion) {
+        CacheHelper.saveData(key: 'isLatestVersion', value: true);
+      } else {
+        CacheHelper.saveData(key: 'isLatestVersion', value: false);
+      }
+    } else {
+      //المكتوب في السطور التالية من المفترض بناءاً على ان اليوسر له اكثر من رول ولكن نظراً لانه لا توجد وسيلة للخروج من الفانكشن في المنتصف أو الذهاب لسطر كود محدد، فأن المكتوب يفترض أن اليوسر له رول واحد
+      requiredForRoles.split(",").forEach((m) {
+        if (currentRoles.contains(m)) {
+          if (value.data['androidVersion'] == appVersion ||
+              value.data['macVersion'] == appVersion) {
+            CacheHelper.saveData(key: 'isLatestVersion', value: true);
+          } else {
+            CacheHelper.saveData(key: 'isLatestVersion', value: false);
+          }
+        } else {
+          CacheHelper.saveData(key: 'isLatestVersion', value: true);
+        }
+      });
+    }
+  });
+}
+
+getHomeScreen() {
+  var roles = CacheHelper.getData(key: "roles");
+  if (roles.contains("Teacher")) {
+    return TeacherDashboardScreen();
+  }
+  if (roles.contains("Parent")) {
+    return ParentsLandingScreen();
+  }
+  if (roles.contains("Student")) {
+    return StudentDashboardScreen();
+  }
+  if (roles.contains("Owner")) {
+    return LoginScreen();
+  }
+}
+
 int getMonthDays(int month, int year) {
   switch (month) {
     case 1:
@@ -124,7 +184,7 @@ String formatDate(DateTime dataDate, lang) {
 
 String QuestionType({String type, String dir}) {
   String out = "";
- 
+
   switch (type) {
     case "MultipleChoice":
       out = dir == "ltr" ? "Multiple Choice" : "إختيار من متعدد";

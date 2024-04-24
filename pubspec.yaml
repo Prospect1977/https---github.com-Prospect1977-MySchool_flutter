@@ -17,7 +17,7 @@ description: A new Flutter project.
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.12+13
+version: 1.0.15+16
 
 environment:
   sdk: '>=2.7.0 <3.0.0'
@@ -63,6 +63,8 @@ dependencies:
   file_picker: ^4.0.0
   open_file_safe: ^3.2.1
   url_launcher: ^6.1.7
+  package_info_plus: ^1.4.2
+  restart_app: ^1.1.0+1
   
 dev_dependencies:
   flutter_test:

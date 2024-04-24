@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_school/cubits/StudentDailySchedule_states.dart';
 import 'package:my_school/models/StudentDailySchedule_model.dart' as m;
+import 'package:my_school/screens/studentSelectedSubjects_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
+import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 class StudentDailyScheduleCubit extends Cubit<StudentDailyScheduleStates> {
@@ -14,7 +16,7 @@ class StudentDailyScheduleCubit extends Cubit<StudentDailyScheduleStates> {
   var token = CacheHelper.getData(key: "token");
   int TodaysDateIndex = 0;
 
-  void getData(int Id) {
+  void getData(context, int Id) {
     emit(LoadingState());
     DioHelper.getData(
             url: 'StudentDailySchedule',
@@ -25,7 +27,12 @@ class StudentDailyScheduleCubit extends Cubit<StudentDailyScheduleStates> {
       print(value.data["data"]);
 
       if (value.data["status"] == false) {
-        emit(UnAuthendicatedState());
+        if (value.data["message"] == "No Subjects Selected") {
+          navigateTo(context, StudentSelectedSubjectsScreen(Id));
+        } else {
+          emit(UnAuthendicatedState());
+        }
+
         return;
       }
       var tempDailySchedule = m.DailySchedule.fromJson(value.data['data']);

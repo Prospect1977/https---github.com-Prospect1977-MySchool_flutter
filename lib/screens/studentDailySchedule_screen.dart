@@ -7,12 +7,15 @@ import 'package:intl/intl.dart' as intl;
 import 'package:my_school/cubits/StudentDailySchedule_cubit.dart';
 import 'package:my_school/cubits/StudentDailySchedule_states.dart';
 import 'package:my_school/models/StudentDailySchedule_model.dart';
+import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/screens/studentLessonSessions_screen.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+import '../shared/components/functions.dart';
 
 class StudentDailyScheduleScreen extends StatefulWidget {
   final int Id;
@@ -27,6 +30,21 @@ class StudentDailyScheduleScreen extends StatefulWidget {
 
 class _StudentDailyScheduleScreenState
     extends State<StudentDailyScheduleScreen> {
+  void _checkAppVersion() async {
+    await checkAppVersion();
+    bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
+    if (isUpdated == false) {
+      navigateTo(context, RequireUpdateScreen());
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //   _checkAppVersion();
+  }
+
   @override
   Widget build(BuildContext context) {
     var lang = CacheHelper.getData(key: "lang").toString().toLowerCase();
@@ -48,10 +66,11 @@ class _StudentDailyScheduleScreenState
         appBar: appBarComponent(context, AppBarTitle()),
         body: BlocProvider(
             create: (context) =>
-                StudentDailyScheduleCubit()..getData(widget.Id),
+                StudentDailyScheduleCubit()..getData(context, widget.Id),
             child: BlocConsumer<StudentDailyScheduleCubit,
                 StudentDailyScheduleStates>(listener: (context, state) {
               if (state is UnAuthendicatedState) {
+                Navigator.of(context).pop();
                 navigateTo(context, LoginScreen());
               }
             }, builder: (context, state) {

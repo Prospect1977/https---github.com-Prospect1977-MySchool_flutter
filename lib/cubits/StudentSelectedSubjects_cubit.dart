@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_school/cubits/StudentSelectedSubject_states.dart';
 import 'package:my_school/models/StudentSubject.dart';
 import 'package:my_school/models/user/student.dart';
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/studentDailySchedule_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/dio_helper.dart';
@@ -74,6 +76,14 @@ class StudentSelectedSubjectsCubit
               ? "Selected subjects saved successfully!"
               : "تم حفظ المواد المختارة بنجاح!",
           state: ToastStates.SUCCESS);
+      Navigator.of(context).pop();
+      navigateTo(
+          context,
+          StudentDailyScheduleScreen(
+              Id,
+              CacheHelper.getData(key: 'lang') == "ar"
+                  ? 'الجدول اليومي'
+                  : 'Schedule Daily'));
     }).catchError((error) {
       print(error.toString());
       showToast(

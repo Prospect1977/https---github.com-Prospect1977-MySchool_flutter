@@ -6,12 +6,15 @@ import 'package:my_school/models/SchoolTypeYearOfStudy.dart';
 import 'package:my_school/models/StudentSubject.dart';
 import 'package:my_school/models/recentTeacherSessions.dart';
 import 'package:my_school/screens/login_screen.dart';
+import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/screens/teacher_session_screen.dart';
 import 'package:my_school/screens/teacher_subject_allLessons.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
+
+import '../shared/components/functions.dart';
 
 class TeacherContentManagementScreen extends StatefulWidget {
   int TeacherId;
@@ -183,10 +186,19 @@ class _TeacherContentManagementScreenState
     ];
   }
 
+  void _checkAppVersion() async {
+    await checkAppVersion();
+    bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
+    if (isUpdated == false) {
+      navigateTo(context, RequireUpdateScreen());
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _checkAppVersion();
     getData();
     getTermsIndecies();
   }

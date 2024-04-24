@@ -14,6 +14,7 @@ import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/paymob_options_screen.dart';
 import 'package:my_school/screens/paymob_creditcard_screen.dart';
 import 'package:my_school/screens/quiz_screen.dart';
+import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/screens/studentLessonSessions_screen.dart';
 import 'package:my_school/screens/video_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
@@ -23,6 +24,8 @@ import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:open_file_safe/open_file_safe.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../shared/components/functions.dart';
 
 class StudentSessionDetailsScreen extends StatefulWidget {
   final int SessionHeaderId;
@@ -55,6 +58,14 @@ class _StudentSessionDetailsScreenState
   String lang = CacheHelper.getData(key: "lang");
   String token = CacheHelper.getData(key: "token");
   String roles = CacheHelper.getData(key: "roles");
+  void _checkAppVersion() async {
+    await checkAppVersion();
+    bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
+    if (isUpdated == false) {
+      navigateTo(context, RequireUpdateScreen());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
