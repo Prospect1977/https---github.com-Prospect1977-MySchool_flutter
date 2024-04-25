@@ -77,13 +77,6 @@ class StudentSelectedSubjectsCubit
               : "تم حفظ المواد المختارة بنجاح!",
           state: ToastStates.SUCCESS);
       Navigator.of(context).pop();
-      navigateTo(
-          context,
-          StudentDailyScheduleScreen(
-              Id,
-              CacheHelper.getData(key: 'lang') == "ar"
-                  ? 'الجدول اليومي'
-                  : 'Schedule Daily'));
     }).catchError((error) {
       print(error.toString());
       showToast(

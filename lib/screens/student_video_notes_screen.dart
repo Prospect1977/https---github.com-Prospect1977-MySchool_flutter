@@ -95,61 +95,74 @@ class _StudentVideoNotesScreenState extends State<StudentVideoNotesScreen> {
                       : TextDirection.rtl,
                   child: Padding(
                     padding: EdgeInsets.all(8),
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) =>
-                          Divider(thickness: 0.5),
-                      itemCount: model.Notes.length,
-                      itemBuilder: (context, index) {
-                        var item = model.Notes[index];
-                        return InkWell(
-                            onTap: () {
-                              navigateTo(
-                                  context,
-                                  VideoScreen(
-                                    StudentId: widget.studentId,
-                                    VideoId: item.videoId,
-                                    VideoUrl: item.videoUrl,
-                                    aspectRatio: item.aspectRatio,
-                                    UrlSource: item.urlSource,
-                                    Title: item.title,
-                                    LessonName: item.lessonName,
-                                    LessonDescription: item.lessonName,
-                                    CoverUrl: item.coverUrlSource == "web" ||
-                                            item.coverUrlSource == "Web"
-                                        ? "${webUrl}Sessions/VideoCovers/${item.coverUrl}"
-                                        : "${baseUrl0}Sessions/VideoCovers/${item.coverUrl}",
-                                    dir: widget.dir,
-                                    TeacherName: item.teacherName,
-                                    VideoName: item.videoName,
-                                    GoToSecond: item.goToSecond,
+                    child: model.Notes.length == 0
+                        ? Center(
+                            child: Text(
+                              lang == 'ar'
+                                  ? "انت لم تقم بإضافة أي ملاحظات تتعلق بهذه المادة"
+                                  : "You have not added any comments related to that subject",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.black54, fontSize: 22),
+                            ),
+                          )
+                        : ListView.separated(
+                            separatorBuilder: (context, index) =>
+                                Divider(thickness: 0.5),
+                            itemCount: model.Notes.length,
+                            itemBuilder: (context, index) {
+                              var item = model.Notes[index];
+                              return InkWell(
+                                  onTap: () {
+                                    navigateTo(
+                                        context,
+                                        VideoScreen(
+                                          StudentId: widget.studentId,
+                                          VideoId: item.videoId,
+                                          VideoUrl: item.videoUrl,
+                                          aspectRatio: item.aspectRatio,
+                                          UrlSource: item.urlSource,
+                                          Title: item.title,
+                                          LessonName: item.lessonName,
+                                          LessonDescription: item.lessonName,
+                                          CoverUrl: item.coverUrlSource ==
+                                                      "web" ||
+                                                  item.coverUrlSource == "Web"
+                                              ? "${webUrl}Sessions/VideoCovers/${item.coverUrl}"
+                                              : "${baseUrl0}Sessions/VideoCovers/${item.coverUrl}",
+                                          dir: widget.dir,
+                                          TeacherName: item.teacherName,
+                                          VideoName: item.videoName,
+                                          GoToSecond: item.goToSecond,
+                                        ));
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.lessonName,
+                                        style: TextStyle(
+                                            color: defaultColor, fontSize: 18),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          Text(item.note,
+                                              style: TextStyle(
+                                                  fontStyle: FontStyle.italic,
+                                                  color: Colors.black54,
+                                                  fontSize: 17)),
+                                        ],
+                                      )
+                                    ],
                                   ));
                             },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.lessonName,
-                                  style: TextStyle(
-                                      color: defaultColor, fontSize: 18),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    Text(item.note,
-                                        style: TextStyle(
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.black54,
-                                            fontSize: 17)),
-                                  ],
-                                )
-                              ],
-                            ));
-                      },
-                    ),
+                          ),
                   ),
                 ),
         ));

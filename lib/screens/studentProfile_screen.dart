@@ -496,21 +496,22 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                                   setState(() {
                                                     dirty = false;
                                                     Navigator.of(context).pop();
+                                                    // navigateTo(
+                                                    //     context,
+                                                    //     StudentSelectedSubjectsScreen(
+                                                    //         widget.Id)
                                                     navigateTo(
                                                         context,
-                                                        StudentSelectedSubjectsScreen(
-                                                            widget.Id)
-                                                        // StudentDashboardScreen(
-                                                        //   Id: widget.Id,
-                                                        //   FullName:
-                                                        //       widget.FullName,
-                                                        //   Gender: widget.Gender,
-                                                        //   SchoolTypeId: widget
-                                                        //       .SchoolTypeId,
-                                                        //   YearOfStudyId: widget
-                                                        //       .YearOfStudyId,
-                                                        // )
-                                                        );
+                                                        StudentDashboardScreen(
+                                                          Id: widget.Id,
+                                                          FullName:
+                                                              widget.FullName,
+                                                          Gender: widget.Gender,
+                                                          SchoolTypeId: widget
+                                                              .SchoolTypeId,
+                                                          YearOfStudyId: widget
+                                                              .YearOfStudyId,
+                                                        ));
                                                   });
                                                 }
                                               },

@@ -179,7 +179,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           },
                     'StudyBySubject.png',
                     lang.toString().toLowerCase() == "ar"
-                        ? "مذاكرة حسب المادة"
+                        ? "دراسة حسب المادة"
                         : "Study by Subject",
                     false,
                   ),
