@@ -135,20 +135,16 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     context,
                     (widget.SchoolTypeId == null ||
                                 widget.YearOfStudyId == null) ||
-                            (isStudentHasParent && roles == "Student")
+                            (isStudentHasParent && roles.contains("Student"))
                         ? null
                         : () {
                             navigateTo(context,
                                 StudentSelectedSubjectsScreen(widget.Id));
                           },
-                    // isStudentHasParent && roles == "Student"
-                    //     ? 'SelectSubjects_disabled.png'
-                    //     :
                     'SelectSubjects.png',
                     lang.toString().toLowerCase() == "ar"
                         ? "إختر المواد الدراسية"
                         : "Select Learning Subjects",
-                    // isStudentHasParent && roles == "Student" ? true : false,
                     false,
                   ),
                   dashboardButton(

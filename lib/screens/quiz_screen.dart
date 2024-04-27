@@ -50,7 +50,7 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    if (roles == "teacher") {
+    if (roles.contains("teacher")) {
       readOnly = false;
     }
     getQuiz();
@@ -108,7 +108,7 @@ class _QuizScreenState extends State<QuizScreen> {
   void saveQuiz() {
     //SaveQuiz(int StudentId,int QuizId,DateTime DataDate,[FromBody]IEnumerable<StudentQuestionAnswer> QuizAnswers)
     print(jsonEncode(StudentAnswers(studentAnswers).toJson()));
-    if (roles == "Teacher") {
+    if (roles.contains("Teacher")) {
       return;
     }
     DioHelper.postData(
@@ -136,8 +136,10 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void getQuiz() {
     DioHelper.getData(
-            url: roles == "Teacher" ? "Quiz/getQuizDataForTeacher" : "Quiz",
-            query: roles == "Teacher"
+            url: roles.contains("Teacher")
+                ? "Quiz/getQuizDataForTeacher"
+                : "Quiz",
+            query: roles.contains("Teacher")
                 ? {"QuizId": widget.QuizId}
                 : {"QuizId": widget.QuizId, "StudentId": widget.StudentId},
             lang: dir == "ltr" ? "en" : "ar",

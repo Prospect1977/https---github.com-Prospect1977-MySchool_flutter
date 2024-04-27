@@ -46,10 +46,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       CacheHelper.saveData(key: "roles", value: userData.roles);
       CacheHelper.saveData(key: "fullName", value: userData.fullName);
       CacheHelper.saveData(key: "email", value: userData.email);
-      if (userData.roles == "Parent") {
+      if (userData.roles.contains("Parent")) {
         navigateAndFinish(context, ParentsLandingScreen());
       }
-      if (userData.roles == "Student") {
+      if (userData.roles.contains("Student")) {
         CacheHelper.putBoolean(key: "studentHasParent", value: false);
 
         navigateAndFinish(
@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Id: userData.teacherId,
             )); //teacherid is not a mistake
       }
-      if (userData.roles == "Teacher") {
+      if (userData.roles.contains("Teacher")) {
         CacheHelper.saveData(key: "teacherId", value: userData.teacherId);
         navigateAndFinish(
             context,

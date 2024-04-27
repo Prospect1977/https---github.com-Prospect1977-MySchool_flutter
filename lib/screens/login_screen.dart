@@ -59,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       CacheHelper.saveData(key: "teacherId", value: userData.teacherId);
       CacheHelper.saveData(key: "fullName", value: userData.fullName);
       CacheHelper.saveData(key: "phoneNumber", value: userData.phoneNumber);
+      CacheHelper.saveData(key: "userId", value: userData.userId);
 
       CacheHelper.saveData(key: "token", value: userData.token);
       CacheHelper.saveData(key: "roles", value: userData.roles);

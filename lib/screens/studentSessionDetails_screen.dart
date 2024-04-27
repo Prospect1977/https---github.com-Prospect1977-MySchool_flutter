@@ -441,7 +441,7 @@ class Item extends StatelessWidget {
               if (item.type == "Quiz") {
                 bool readOnly;
                 bool allowRetry;
-                if (roles == "Student") {
+                if (roles.contains("Student")) {
                   if (item.quizProgress > 0) {
                     readOnly = true;
                     allowRetry = true;
@@ -580,7 +580,7 @@ class Item extends StatelessWidget {
                           ),
                           FractionallySizedBox(
                             widthFactor: (item.type == "Video"
-                                        ? (roles == "Student"
+                                        ? (roles.contains("Student")
                                             ? item.videoStoppedAt > 100
                                                 ? 100
                                                 : item.videoStoppedAt
@@ -591,7 +591,7 @@ class Item extends StatelessWidget {
                                     100
                                 ? 100
                                 : (item.type == "Video"
-                                        ? (roles == "Student"
+                                        ? (roles.contains("Student")
                                             ? item.videoStoppedAt
                                             : item.videoProgress > 100
                                                 ? 100

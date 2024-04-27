@@ -195,10 +195,10 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void GetVideoNotes() {
     DioHelper.getData(
-      url: roles == "Student" || roles == "Parent"
+      url: roles.contains("Student") || roles.contains("Parent")
           ? 'StudentVideoNote'
           : 'TeacherVideoNote',
-      query: roles == "Student" || roles == "Parent"
+      query: roles.contains("Student") || roles.contains("Parent")
           ? {
               "StudentId": widget.StudentId,
               "VideoId": widget.VideoId,
@@ -220,10 +220,10 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void DeleteVideoNote(int NoteId) {
     DioHelper.deleteData(
-      url: roles == "Student" || roles == "Parent"
+      url: roles.contains("Student") || roles.contains("Parent")
           ? 'StudentVideoNote'
           : 'TeacherVideoNote',
-      query: roles == "Student" || roles == "Parent"
+      query: roles.contains("Student") || roles.contains("Parent")
           ? {
               "StudentId": widget.StudentId,
               "NoteId": NoteId,
@@ -337,13 +337,13 @@ class _VideoScreenState extends State<VideoScreen> {
       }
       if (commentMode == "create") {
         DioHelper.postData(
-                url: roles == "Student" || roles == "Parent"
+                url: roles.contains("Student") || roles.contains("Parent")
                     ? "StudentVideoNote"
                     : "TeacherVideoNote",
                 lang: lang,
                 token: token,
                 data: {},
-                query: roles == "Student" || roles == "Parent"
+                query: roles.contains("Student") || roles.contains("Parent")
                     ? {
                         "StudentId": widget.StudentId,
                         "VideoId": widget.VideoId,
@@ -373,13 +373,13 @@ class _VideoScreenState extends State<VideoScreen> {
         });
       } else if (commentMode == "update") {
         DioHelper.updateData(
-                url: roles == "Student" || roles == "Parent"
+                url: roles.contains("Student") || roles.contains("Parent")
                     ? "StudentVideoNote"
                     : "TeacherVideoNote",
                 lang: lang,
                 token: token,
                 data: {},
-                query: roles == "Student" || roles == "Parent"
+                query: roles.contains("Student") || roles.contains("Parent")
                     ? {
                         "StudentNoteId": editCommentId,
                         "Note": commentController.text
