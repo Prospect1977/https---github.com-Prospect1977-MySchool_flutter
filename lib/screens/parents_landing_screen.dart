@@ -17,7 +17,7 @@ class ParentsLandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ParentStudentCubit()..getStudents(),
+      create: (context) => ParentStudentCubit()..getStudents(context),
       child: BlocConsumer<ParentStudentCubit, ParentStudentStates>(
           listener: (context, state) {
         if (state is UnAuthendicatedState) {

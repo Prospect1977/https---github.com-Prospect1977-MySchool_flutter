@@ -147,8 +147,12 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
             token: token)
         .then((value) {
       print(value.data);
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       setState(() {
@@ -160,9 +164,7 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
       });
     }).catchError((error) {
       print(error.toString());
-      showToast(
-          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
-          state: ToastStates.ERROR);
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 

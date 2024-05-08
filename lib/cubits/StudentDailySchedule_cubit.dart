@@ -4,6 +4,7 @@ import 'package:my_school/models/StudentDailySchedule_model.dart' as m;
 import 'package:my_school/screens/studentSelectedSubjects_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 class StudentDailyScheduleCubit extends Cubit<StudentDailyScheduleStates> {
@@ -25,7 +26,10 @@ class StudentDailyScheduleCubit extends Cubit<StudentDailyScheduleStates> {
             token: token)
         .then((value) {
       print(value.data["data"]);
-
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+      }
       if (value.data["status"] == false) {
         if (value.data["message"] == "No Subjects Selected") {
           navigateTo(context, StudentSelectedSubjectsScreen(Id));
@@ -49,8 +53,7 @@ class StudentDailyScheduleCubit extends Cubit<StudentDailyScheduleStates> {
       DailySchedule = tempDailySchedule;
       emit(SuccessState());
     }).catchError((error) {
-      print(error.toString());
-      emit(ErrorState(error.toString()));
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 }

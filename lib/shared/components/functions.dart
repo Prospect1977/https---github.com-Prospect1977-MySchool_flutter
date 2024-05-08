@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:my_school/shared/cache_helper.dart';
+import 'package:my_school/shared/components/components.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,6 +9,16 @@ import '../../screens/parents_landing_screen.dart';
 import '../../screens/studentDashboard_screen.dart';
 import '../../screens/teacher_dashboard_screen.dart';
 import '../dio_helper.dart';
+
+void handleSessionExpired(context) {
+  var lang = CacheHelper.getData(key: 'lang');
+  var message = lang.ToLower() == "en"
+      ? "Session Expired, please sign in again"
+      : "من فضلك قم بتسجيل الدخول";
+  showToast(text: message, state: ToastStates.WARNING);
+  Navigator.of(context).pop();
+  navigateAndFinish(context, LoginScreen());
+}
 
 void checkAppVersion() async {
   String appVersion;
@@ -24,6 +36,8 @@ void checkAppVersion() async {
       } else {
         CacheHelper.saveData(key: 'isLatestVersion', value: false);
       }
+    } else if (requiredForRoles.toString().toLowerCase() == "none") {
+      CacheHelper.saveData(key: 'isLatestVersion', value: true);
     } else {
       //المكتوب في السطور التالية من المفترض بناءاً على ان اليوسر له اكثر من رول ولكن نظراً لانه لا توجد وسيلة للخروج من الفانكشن في المنتصف أو الذهاب لسطر كود محدد، فأن المكتوب يفترض أن اليوسر له رول واحد
       requiredForRoles.split(",").forEach((m) {

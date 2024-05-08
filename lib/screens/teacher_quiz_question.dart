@@ -102,13 +102,13 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
             "QuizId": widget.QuizId,
             "QuestionId": widget.question.id
           }).then((value) {
-        if (value.data["status"] == false) {
-          showToast(
-              text: widget.dir == "ltr"
-                  ? "Unkown error has occured!"
-                  : "حدث خطأ ما!",
-              state: ToastStates.ERROR);
-          navigateAndFinish(context, LoginScreen());
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
+          return;
         } else {
           showToast(text: value.data["message"], state: ToastStates.SUCCESS);
           navigateTo(context,
@@ -117,8 +117,8 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
 
         navigateTo(
             context, TeacherQuizScreen(QuizId: widget.QuizId, dir: widget.dir));
-      }).onError((error, stackTrace) {
-        print(error.toString());
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
     }
   }
@@ -137,13 +137,13 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
             data: {},
             query: {"TeacherId": widget.TeacherId, 'QuestionsList': ids})
         .then((value) {
-      if (value.data["status"] == false) {
-        showToast(
-            text: widget.dir == "ltr"
-                ? "Unkown error has occured!"
-                : "حدث خطأ ما!",
-            state: ToastStates.ERROR);
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
       } else {
         showToast(text: value.data["message"], state: ToastStates.SUCCESS);
         // getData();

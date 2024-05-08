@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 class StudentVideoProvider with ChangeNotifier {}
@@ -26,6 +27,14 @@ void saveProgress(
         "DataDate": DateTime.now(),
       }).then((value) {
     print(value.data);
+    if (value.data["status"] == false &&
+        value.data["message"] == "SessionExpired") {
+      handleSessionExpired(context);
+      return;
+    } else if (value.data["status"] == false) {
+      showToast(text: value.data["message"], state: ToastStates.ERROR);
+      return;
+    }
     if (value.data["status"] == true) {
       showToast(
           text: lang == "en" ? "Saved Successfully!" : "تم حفظ الإعدادات بنجاح",
@@ -34,9 +43,8 @@ void saveProgress(
       showToast(
           text: lang == "en" ? "Something went wrong!" : "حدث خطأ ما!",
           state: ToastStates.ERROR);
-      navigateAndFinish(context, LoginScreen());
     }
   }).catchError((error) {
-    print(error.toString());
+    showToast(text: error.toString(), state: ToastStates.ERROR);
   });
 }

@@ -9,6 +9,7 @@ import 'package:my_school/models/SchoolTypeYearOfStudy.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 class StudentYearOfStudyCubit extends Cubit<StudentYearOfStudyStates> {
@@ -18,12 +19,17 @@ class StudentYearOfStudyCubit extends Cubit<StudentYearOfStudyStates> {
   List<YearOfStudy> YearsOfStudies;
   var lang = CacheHelper.getData(key: "lang");
   var token = CacheHelper.getData(key: "token");
-  void getData() {
+  void getData(context) {
     emit(LoadingState());
     DioHelper.getData(
             url: 'SchoolTypeYearOfStudy', query: {}, lang: lang, token: token)
         .then((value) {
       print(value.data["schoolTypes"]);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      }
       SchoolTypes =
           SchoolTypesAndYearsOfStudies.fromJson(value.data).SchoolTypes;
       SchoolTypes =
@@ -33,7 +39,8 @@ class StudentYearOfStudyCubit extends Cubit<StudentYearOfStudyStates> {
 
       emit(SuccessState());
     }).catchError((error) {
-      print(error.toString());
+      showToast(text: error.toString(), state: ToastStates.ERROR);
+
       emit(ErrorState(error.toString()));
     });
   }
@@ -54,6 +61,11 @@ class StudentYearOfStudyCubit extends Cubit<StudentYearOfStudyStates> {
           "yearOfStudyId": YearOfStudyId
         }).then((value) {
       print(value.data);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      }
       if (value.data["status"] == true) {
         showToast(
             text:
@@ -67,8 +79,7 @@ class StudentYearOfStudyCubit extends Cubit<StudentYearOfStudyStates> {
       }
       emit(SuccessState());
     }).catchError((error) {
-      print(error.toString());
-      emit(ErrorState(error.toString()));
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 }

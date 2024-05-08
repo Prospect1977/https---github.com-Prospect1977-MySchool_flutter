@@ -86,8 +86,12 @@ class _TeacherViewsScreenState extends State<TeacherViewsScreen> {
             lang: lang,
             token: token)
         .then((value) {
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       setState(() {
@@ -112,8 +116,8 @@ class _TeacherViewsScreenState extends State<TeacherViewsScreen> {
         maxCount = maxViews >= maxQzCount ? maxViews : maxQzCount;
         print(maxCount);
       });
-    }).catchError((e) {
-      print(e.toString());
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 

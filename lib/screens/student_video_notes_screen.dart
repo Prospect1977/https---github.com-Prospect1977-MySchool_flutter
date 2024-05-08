@@ -7,6 +7,7 @@ import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/video_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/studentStudyBySubject_navigation_bar.dart';
@@ -52,8 +53,12 @@ class _StudentVideoNotesScreenState extends State<StudentVideoNotesScreen> {
         .then((value) {
       print(
           "--------------------------------------------------------------${value.data["data"]}");
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       setState(() {
@@ -61,9 +66,7 @@ class _StudentVideoNotesScreenState extends State<StudentVideoNotesScreen> {
       });
     }).catchError((error) {
       print(error.toString());
-      showToast(
-          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
-          state: ToastStates.ERROR);
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 

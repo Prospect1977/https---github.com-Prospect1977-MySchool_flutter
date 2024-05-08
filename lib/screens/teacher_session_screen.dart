@@ -71,10 +71,20 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
             lang: lang)
         .then((value) {
       print(value.data);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
+      }
       setState(() {
         sessionData = TeacherSession.fromJson(value.data['data']);
         isSessionActive = sessionData.active;
       });
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -89,18 +99,19 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
             lang: lang,
             token: token)
         .then((value) {
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       setState(() {
         lessonsData = TeacherLessons.fromJson(value.data["data"]);
       });
     }).catchError((error) {
-      print(error.toString());
-      showToast(
-          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
-          state: ToastStates.ERROR);
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -118,17 +129,18 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
             lang: lang,
             token: token)
         .then((value) {
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       Navigator.pop(context);
       getData();
     }).catchError((error) {
-      print(error.toString());
-      showToast(
-          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
-          state: ToastStates.ERROR);
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -142,8 +154,12 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
             lang: lang,
             token: token)
         .then((value) {
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       showToast(
@@ -151,10 +167,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
           state: ToastStates.SUCCESS);
       getData();
     }).catchError((error) {
-      print(error.toString());
-      showToast(
-          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
-          state: ToastStates.ERROR);
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -168,8 +181,12 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
             lang: lang,
             token: token)
         .then((value) {
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       showToast(
@@ -177,10 +194,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
           state: ToastStates.SUCCESS);
       getData();
     }).catchError((error) {
-      print(error.toString());
-      showToast(
-          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
-          state: ToastStates.ERROR);
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -299,14 +313,13 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
           "SessionDetailId": sessionDetailId,
           "Title": titleController.text,
         }).then((value) {
-      if (value.data["status"] == false) {
-        showToast(
-            text: widget.dir == "ltr"
-                ? "Unkown error has occured!"
-                : "حدث خطأ ما!",
-            state: ToastStates.ERROR);
-        navigateAndFinish(context, LoginScreen());
-        Navigator.pop(context);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
       } else {
         Navigator.of(context).pop();
         showToast(text: value.data["message"], state: ToastStates.SUCCESS);
@@ -329,16 +342,18 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
             data: {},
             query: {"TeacherId": widget.TeacherId, 'SessionDetailsList': ids})
         .then((value) {
-      if (value.data["status"] == false) {
-        showToast(
-            text: widget.dir == "ltr"
-                ? "Unkown error has occured!"
-                : "حدث خطأ ما!",
-            state: ToastStates.ERROR);
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
       } else {
         showToast(text: value.data["message"], state: ToastStates.SUCCESS);
       }
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -701,13 +716,15 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                                 width: 5,
                                                               ),
                                                               Text(
-                                                                  formatDate(
-                                                                      DateTime.parse(item
-                                                                          .dataDate),
-                                                                      widget.dir ==
-                                                                              "ltr"
-                                                                          ? "en"
-                                                                          : "ar"),
+                                                                  item.dataDate !=
+                                                                          null
+                                                                      ? formatDate(
+                                                                          DateTime.parse(item
+                                                                              .dataDate),
+                                                                          widget.dir == "ltr"
+                                                                              ? "en"
+                                                                              : "ar")
+                                                                      : "",
                                                                   style: TextStyle(
                                                                       fontStyle:
                                                                           FontStyle
@@ -972,6 +989,18 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                         }).then(
                                       (value) {
                                         print(value.data["data"]);
+                                        if (value.data["status"] == false &&
+                                            value.data["message"] ==
+                                                "SessionExpired") {
+                                          handleSessionExpired(context);
+                                          return;
+                                        } else if (value.data["status"] ==
+                                            false) {
+                                          showToast(
+                                              text: value.data["message"],
+                                              state: ToastStates.ERROR);
+                                          return;
+                                        }
                                         if (value.data["status"] == true) {
                                           Navigator.pop(context);
                                           navigateTo(
@@ -981,14 +1010,13 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                   // TeacherId: widget.TeacherId,
                                                   // LessonId: widget.LessonId,
                                                   dir: widget.dir));
-                                        } else {
-                                          showToast(
-                                              text: "An Error Occured!",
-                                              state: ToastStates.ERROR);
-                                          // navigateTo(context, LoginScreen());
                                         }
                                       },
-                                    );
+                                    ).catchError((error) {
+                                      showToast(
+                                          text: error.toString(),
+                                          state: ToastStates.ERROR);
+                                    });
                                   },
                                   child: Row(
                                       mainAxisAlignment:

@@ -53,6 +53,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     // TODO: implement initState
     super.initState();
     _checkAppVersion();
+    print(isStudentHasParent);
   }
 
   @override
@@ -68,7 +69,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       );
     } else {
       return BlocProvider(
-        create: (context) => StudentDashboardCubit()..getStudent(),
+        create: (context) => StudentDashboardCubit()..getStudent(context),
         child: BlocConsumer<StudentDashboardCubit, StudentDashboardStates>(
             listener: (context, state) {},
             builder: (context, state) {
@@ -134,9 +135,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   dashboardButton(
                     context,
                     (widget.SchoolTypeId == null ||
-                                widget.YearOfStudyId == null) ||
-                            (isStudentHasParent && roles.contains("Student"))
+                            widget.YearOfStudyId == null)
                         ? null
+                        // : isStudentHasParent && roles.contains("Student")
+                        //     ? () {
+                        //         showToast(
+                        //             text: lang == "ar"
+                        //                 ? "من حق ولي الأمر فقط إختيار المواد الدراسية"
+                        //                 : "Only your parent is allowed to select subjects!",
+                        //             state: ToastStates.ERROR);
+                        //         return;
+                        //       }
                         : () {
                             navigateTo(context,
                                 StudentSelectedSubjectsScreen(widget.Id));

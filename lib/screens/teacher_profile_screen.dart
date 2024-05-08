@@ -3,12 +3,14 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:my_school/models/teacher-payment-type-model.dart';
 import 'package:my_school/models/teacher_profile_model.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/teacher_dashboard_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/widgets/teacher_image_input.dart';
 
@@ -44,6 +46,9 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
   TextEditingController fullNameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   TextEditingController nationalIdController = TextEditingController();
+  TextEditingController accountNumberController = TextEditingController();
+  int teacherTransferAccountId = 0;
+  List<TeacherPaymentTransferType> TransferTypes = null;
   void getData() async {
     DioHelper.getData(
             url: "TeacherProfile",
@@ -52,10 +57,19 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
             lang: lang)
         .then((value) {
       print(value.data);
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
       }
       setState(() {
+        TransferTypes = (value.data["additionalData"] as List)
+            .map((item) => TeacherPaymentTransferType.fromJson(item))
+            .toList();
+
         model = TeacherProfileModel.fromJson(value.data["data"]);
         bioDirection == null ? "rtl" : model.biographyDir;
         fullNameController.text = model.fullName;
@@ -63,9 +77,18 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
         nationalIdController.text =
             model.nationalId == null ? "" : model.nationalId;
         bioDirection = model.biographyDir == null ? "rtl" : model.biographyDir;
+        teacherTransferAccountId = model.accountTypeId;
+        accountNumberController.text = model.accountNumber;
       });
     }).catchError((err) {
-      print(err.toString());
+      showToast(text: err.toString(), state: ToastStates.ERROR);
+    });
+  }
+
+  void _onAccountTransferTypeChanged(int id) {
+    setState(() {
+      teacherTransferAccountId = id;
+      isDirty = true;
     });
   }
 
@@ -73,6 +96,7 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
     setState(() {
       savingState = true;
     });
+
     DioHelper.postData(
         url: "TeacherProfile",
         query: {"TeacherId": widget.teacherId},
@@ -84,15 +108,24 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
           "biography": bioController.text,
           "biographyDir": bioDirection,
           "nationalId": nationalIdController.text,
+          "accountTypeId": teacherTransferAccountId,
+          "accountNumber": accountNumberController.text,
         }).then((value) {
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
       }
       setState(() {
         savingState = false;
         isDirty = false;
         navigateAndFinish(context, TeacherDashboardScreen());
       });
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -430,6 +463,45 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                                 )
                               ]),
                         //------------------------------------------------end of Bio
+                        if (widget.readOnly == false)
+                          SizedBox(
+                            height: 10,
+                          ),
+                        if (widget.readOnly == false)
+                          dropDownTransferAccountType(
+                              lang: lang,
+                              TransferTypes: TransferTypes,
+                              onChanged: _onAccountTransferTypeChanged,
+                              selectedItem: model.accountTypeId),
+                        if (widget.readOnly == false)
+                          SizedBox(
+                            height: 10,
+                          ),
+                        if (widget.readOnly == false)
+                          Directionality(
+                            textDirection: lang == "en"
+                                ? TextDirection.ltr
+                                : TextDirection.rtl,
+                            child: defaultFormField(
+                              controller: accountNumberController,
+                              type: TextInputType.text,
+                              onChange: (value) {
+                                setState(() {
+                                  isDirty = true;
+                                });
+                              },
+                              validate: (String value) {
+                                if (value.isEmpty) {
+                                  return lang == "en"
+                                      ? 'please enter your account number'
+                                      : "من فضلك أدخل رقم الحساب";
+                                }
+                              },
+                              label: lang == "en"
+                                  ? 'Account Number'
+                                  : "رقم الحساب",
+                            ),
+                          ),
                         SizedBox(
                           height: 10,
                         ),

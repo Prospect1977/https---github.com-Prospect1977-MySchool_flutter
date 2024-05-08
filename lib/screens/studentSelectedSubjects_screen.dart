@@ -55,7 +55,7 @@ class _SubjectsListState extends State<SubjectsList> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          StudentSelectedSubjectsCubit(widget.Id)..getSubjectsList(),
+          StudentSelectedSubjectsCubit(widget.Id)..getSubjectsList(context),
       child: BlocConsumer<StudentSelectedSubjectsCubit,
           StudentSelectedSubjectsStates>(listener: (context, state) {
         if (state is UnAuthendicatedState) {
@@ -90,12 +90,59 @@ class _SubjectsListState extends State<SubjectsList> {
                                   setState(() {
                                     _selectedItems.add(item.SubjectId);
                                     _isChanged = true;
+                                    if (item.ParentId != null) {
+                                      if (!_selectedItems
+                                          .contains(item.ParentId)) {
+                                        _selectedItems.add(item.ParentId);
+                                      }
+                                    } else {
+                                      if (cubit.StudentSubjectsList.where((m) =>
+                                                  m.ParentId == item.SubjectId)
+                                              .length >
+                                          0) {
+                                        cubit.StudentSubjectsList.where((m) =>
+                                                m.ParentId == item.SubjectId)
+                                            .forEach((item) {
+                                          _selectedItems.add(item.SubjectId);
+                                        });
+                                      }
+                                    }
                                   });
                                 } else {
                                   setState(() {
                                     _selectedItems.removeWhere(
                                         (SId) => SId == item.SubjectId);
                                     _isChanged = true;
+                                    var itemsBelongToSameParent =
+                                        cubit.StudentSubjectsList.where(
+                                            (element) =>
+                                                element.ParentId ==
+                                                item.ParentId).toList();
+                                    int CountSelectedItemsToTheSameParent = 0;
+                                    itemsBelongToSameParent.forEach((m) {
+                                      if (_selectedItems
+                                              .where((element) =>
+                                                  element == m.SubjectId)
+                                              .length ==
+                                          1) {
+                                        CountSelectedItemsToTheSameParent += 1;
+                                      }
+                                    });
+                                    if (item.ParentId != null &&
+                                        CountSelectedItemsToTheSameParent ==
+                                            0) {
+                                      _selectedItems.remove(item.ParentId);
+                                    }
+                                    if (item.ParentId == null) {
+                                      cubit.StudentSubjectsList.where(
+                                              (element) =>
+                                                  element.ParentId ==
+                                                  item.SubjectId)
+                                          .forEach((element) {
+                                        _selectedItems
+                                            .remove(element.SubjectId);
+                                      });
+                                    }
                                   });
                                 }
                                 print(_selectedItems);

@@ -6,6 +6,7 @@ import 'package:my_school/models/teacher_session.dart';
 import 'package:my_school/screens/teacher_session_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/widgets/teacher_session_navigation_bar.dart';
 
@@ -53,6 +54,14 @@ class _TeacherSessionSettingsScreenState
             lang: lang)
         .then((value) {
       print(value.data);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
+      }
       setState(() {
         sessionData = TeacherSession.fromJson(value.data['data']);
         isFree = sessionData.isFree;
@@ -60,6 +69,8 @@ class _TeacherSessionSettingsScreenState
         priceController.text =
             sessionData.price == null ? "" : sessionData.price.toString();
       });
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -92,6 +103,14 @@ class _TeacherSessionSettingsScreenState
             lang: lang)
         .then((value) {
       print(value.data);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
+      }
       showToast(
           text: lang == "en"
               ? "Changes saved successfuly!"
@@ -106,6 +125,8 @@ class _TeacherSessionSettingsScreenState
               LessonId: widget.LessonId,
               LessonName: widget.LessonName,
               dir: widget.dir));
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 

@@ -4,6 +4,7 @@ import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_school/cubits/main_cubit.dart';
+import 'package:my_school/models/teacher-payment-type-model.dart';
 import 'package:my_school/screens/changeLanguageScreen.dart';
 
 import 'package:my_school/screens/login_screen.dart';
@@ -364,4 +365,97 @@ Color chooseToastColor(ToastStates state) {
   }
 
   return color;
+}
+
+class dropDownTransferAccountType extends StatelessWidget {
+  dropDownTransferAccountType({
+    @required this.lang,
+    @required this.TransferTypes,
+    @required this.onChanged,
+    @required this.selectedItem,
+  });
+  final List<TeacherPaymentTransferType> TransferTypes;
+  final String lang;
+  final Function onChanged;
+  final int selectedItem;
+
+  List<DropdownMenuItem> menuItems = [];
+
+  @override
+  Widget build(BuildContext context) {
+    TransferTypes.forEach(
+      (sc) {
+        menuItems.add(
+          DropdownMenuItem(
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white))),
+              alignment:
+                  lang == "en" ? Alignment.centerLeft : Alignment.centerRight,
+              child: Text(
+                lang == "en" ? sc.nameEng : sc.nameAra,
+              ),
+            ),
+            value: sc.id,
+          ),
+        );
+      },
+    );
+
+    return Directionality(
+      textDirection: lang == "ar" ? TextDirection.rtl : TextDirection.ltr,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black45),
+            borderRadius: BorderRadius.circular(5)),
+        child: DropdownButtonFormField(
+          // key: ValueKey(1),
+
+          value: selectedItem == null ? 0 : selectedItem,
+          validator: (value) => value == 0
+              ? (lang == "ar" ? 'هذا الحقل مطلوب' : 'This field is required')
+              : null,
+          items: [
+            //add items in the dropdown
+            DropdownMenuItem(
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Colors.white))),
+                alignment:
+                    lang == "en" ? Alignment.centerLeft : Alignment.centerRight,
+                child: Text(
+                  lang == "en"
+                      ? "Select a method to transfer profit"
+                      : "إختر طريقة تحويل الأرباح",
+                ),
+              ),
+              value: 0,
+            ),
+            ...menuItems,
+          ],
+
+          onChanged: (value) {
+            onChanged(value);
+          },
+
+          icon: Padding(
+              //Icon at tail, arrow bottom is default icon
+              padding: EdgeInsets.all(0),
+              child: Icon(Icons.keyboard_arrow_down)),
+          iconEnabledColor: Colors.black54, //Icon color
+          style: TextStyle(
+              //te
+              color: Colors.black87, //Font color
+              fontSize: 16 //font size on dropdown button
+              ),
+          decoration: InputDecoration(border: InputBorder.none),
+
+          dropdownColor: Colors.white, //dropdown background color
+          //remove underline
+          isExpanded: true, //make true to make width 100%
+        ),
+      ),
+    );
+  }
 }

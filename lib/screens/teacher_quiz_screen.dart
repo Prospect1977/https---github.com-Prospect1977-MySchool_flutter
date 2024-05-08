@@ -48,9 +48,19 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
             lang: lang)
         .then((value) {
       print(value.data);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
+      }
       setState(() {
         quiz = QuizModel.fromJson(value.data['data']);
       });
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -67,17 +77,19 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
         token: token,
         data: {},
         query: {"TeacherId": TeacherId, 'QuestionsList': ids}).then((value) {
-      if (value.data["status"] == false) {
-        showToast(
-            text: widget.dir == "ltr"
-                ? "Unkown error has occured!"
-                : "حدث خطأ ما!",
-            state: ToastStates.ERROR);
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
       } else {
         showToast(text: value.data["message"], state: ToastStates.SUCCESS);
         // getData();
       }
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -89,18 +101,20 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
             data: {},
             query: {"TeacherId": TeacherId, 'QuestionId': QuestionId})
         .then((value) {
-      if (value.data["status"] == false) {
-        showToast(
-            text: widget.dir == "ltr"
-                ? "Unkown error has occured!"
-                : "حدث خطأ ما!",
-            state: ToastStates.ERROR);
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
       } else {
         showToast(text: value.data["message"], state: ToastStates.SUCCESS);
         getData();
         Navigator.pop(context);
       }
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 

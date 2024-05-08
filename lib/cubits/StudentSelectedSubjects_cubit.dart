@@ -10,6 +10,7 @@ import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentDailySchedule_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 class StudentSelectedSubjectsCubit
@@ -22,7 +23,7 @@ class StudentSelectedSubjectsCubit
   var StudentSubjectsList;
 
   String FullName;
-  void getSubjectsList() async {
+  void getSubjectsList(context) async {
     emit(LoadingState());
 
     var token = CacheHelper.getData(key: 'token');
@@ -33,6 +34,10 @@ class StudentSelectedSubjectsCubit
       token: token,
       url: "StudentSelectedSubjects",
     ).then((value) {
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+      }
       if (value.data["status"] == false) {
         emit(UnAuthendicatedState());
         CacheHelper.removeData(key: "userId");
@@ -46,7 +51,8 @@ class StudentSelectedSubjectsCubit
           .toList();
       emit(SuccessState(StudentSubjectsList));
     }).catchError((error) {
-      print(error.toString());
+      showToast(text: error.toString(), state: ToastStates.ERROR);
+
       emit(ErrorState(error.toString()));
     });
   }
@@ -63,6 +69,10 @@ class StudentSelectedSubjectsCubit
       token: token,
       url: "StudentSelectedSubjects",
     ).then((value) {
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+      }
       if (value.data["status"] == false) {
         emit(UnAuthendicatedState());
         CacheHelper.removeData(key: "userId");
@@ -78,10 +88,7 @@ class StudentSelectedSubjectsCubit
           state: ToastStates.SUCCESS);
       Navigator.of(context).pop();
     }).catchError((error) {
-      print(error.toString());
-      showToast(
-          text: lang == "en" ? "Something went Wrong!" : "حدث خطأ ما!",
-          state: ToastStates.ERROR);
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 }

@@ -10,6 +10,8 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as syspaths;
 import 'package:http/http.dart' as http;
 
+import '../components/components.dart';
+
 class ImageInput extends StatefulWidget {
   final Function onSelectImage;
   File existImage;
@@ -52,6 +54,8 @@ class _ImageInputState extends State<ImageInput> {
               token: "")
           .then((value) {
         print(value.data);
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
       setState(() {
         //_storedImage = File(imageFile.path);

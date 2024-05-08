@@ -58,6 +58,7 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
             token: token)
         .then((value) {
       print(value.data["data"]);
+
       if (value.data["status"] == false) {}
     }).catchError((error) {
       print(error.toString());

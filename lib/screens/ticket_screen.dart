@@ -12,6 +12,8 @@ import 'dart:io' as i;
 
 import 'package:my_school/shared/widgets/image_input_ticket.dart';
 
+import '../shared/components/functions.dart';
+
 class TicketScreen extends StatefulWidget {
   TicketScreen({this.StudentId, Key key}) : super(key: key);
   int StudentId;
@@ -42,16 +44,21 @@ class _TicketScreenState extends State<TicketScreen> {
             token: token)
         .then((value) {
       print(value.data["data"]);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
+      }
       setState(() {
         isUserDataLoaded = true;
         var phone = value.data["data"]["phoneNumber"];
         phoneNumberController.text = phone == null ? "" : phone;
       });
-    }).catchError((e) {
-      print(e.toString());
-      setState(() {
-        isUserDataLoaded = true;
-      });
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -81,17 +88,18 @@ class _TicketScreenState extends State<TicketScreen> {
             lang: "ar",
             token: token)
         .then((value) {
-      if (value.data["status"] == true) {
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
+      } else {
         setState(() {
           isSavedSuccess = true;
           isSendingData = false;
         });
-      } else {
-        showToast(
-            text: lang == "en"
-                ? "An unkown error occured!"
-                : "حدث خطأ غير معروف!",
-            state: ToastStates.ERROR);
       }
 //
       Timer(Duration(seconds: 3), () {

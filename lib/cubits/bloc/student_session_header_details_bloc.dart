@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:my_school/models/StudentSessionHeaderDetail.dart';
 import 'package:my_school/shared/cache_helper.dart';
+import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 part 'student_session_header_details_event.dart';
@@ -29,6 +31,7 @@ class StudentSessionHeaderDetailsBloc extends Bloc<
                 token: token)
             .then((value) {
           print(value.data["data"]);
+
           if (value.data["status"] == false) {
             emit(UnAuthendicatedState());
             return;
@@ -38,7 +41,8 @@ class StudentSessionHeaderDetailsBloc extends Bloc<
 
           emit(SuccessState(allData: StudentSessionHeaderDetailsCollection));
         }).catchError((error) {
-          print(error.toString());
+          showToast(text: error.toString(), state: ToastStates.ERROR);
+
           emit(ErrorState(error.toString()));
         });
       }
@@ -61,8 +65,7 @@ class StudentSessionHeaderDetailsBloc extends Bloc<
 
         // emit(RatingSavedState());
       }).catchError((error) {
-        print(error.toString());
-        //emit(ErrorState(error.toString()));
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
     }
 
@@ -83,8 +86,7 @@ class StudentSessionHeaderDetailsBloc extends Bloc<
 
         // emit(PurchaseDoneState());
       }).catchError((error) {
-        print(error.toString());
-        //emit(ErrorState(error.toString()));
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
     }
 
@@ -102,7 +104,7 @@ class StudentSessionHeaderDetailsBloc extends Bloc<
           .then((value) {
         print(value.data["data"]);
       }).catchError((error) {
-        print(error.toString());
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
     }
   }

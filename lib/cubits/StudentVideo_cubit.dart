@@ -7,6 +7,7 @@ import 'package:my_school/cubits/StudentVideo_states.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 class StudentVideoCubit extends Cubit<StudentVideoStates> {
@@ -52,6 +53,11 @@ class StudentVideoCubit extends Cubit<StudentVideoStates> {
           "DataDate": DateTime.now(),
         }).then((value) {
       print(value.data);
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      }
       if (value.data["status"] == true) {
         showToast(
             text:
@@ -65,8 +71,7 @@ class StudentVideoCubit extends Cubit<StudentVideoStates> {
       }
       emit(SuccessState());
     }).catchError((error) {
-      print(error.toString());
-      emit(ErrorState(error.toString()));
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 }

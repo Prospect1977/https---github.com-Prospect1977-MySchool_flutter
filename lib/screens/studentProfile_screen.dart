@@ -79,7 +79,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
             YearOfStudyId: widget.YearOfStudyId,
           )),
       body: BlocProvider(
-          create: (context) => StudentYearOfStudyCubit()..getData(),
+          create: (context) => StudentYearOfStudyCubit()..getData(context),
           child:
               BlocConsumer<StudentYearOfStudyCubit, StudentYearOfStudyStates>(
             listener: (context, state) {

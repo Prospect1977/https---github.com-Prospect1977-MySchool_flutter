@@ -5,6 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_school/shared/cache_helper.dart';
+import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:path/path.dart' as path;
@@ -54,6 +55,8 @@ class _ImageInputTicketState extends State<ImageInputTicket> {
           .then((value) {
         print(value.data);
         widget.onSelectImage(value.data);
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
       setState(() {
         _storedImage = File(imageFile.path);

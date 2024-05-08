@@ -6,6 +6,7 @@ import 'package:my_school/models/StudentLessonsByYearSubjectId_model.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 class StudentLessonSessionsProvider with ChangeNotifier {
@@ -24,8 +25,12 @@ class StudentLessonSessionsProvider with ChangeNotifier {
             token: token)
         .then((value) {
       print(value.data["data"]);
-      if (value.data["data"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       StudentLessonSessionCollection =
@@ -33,7 +38,7 @@ class StudentLessonSessionsProvider with ChangeNotifier {
 
       notifyListeners();
     }).catchError((error) {
-      print(error.toString());
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -45,8 +50,12 @@ class StudentLessonSessionsProvider with ChangeNotifier {
             token: token)
         .then((value) {
       print(value.data["data"]);
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       StudentLessonsByYearSubjectIdCollection =
@@ -60,7 +69,7 @@ class StudentLessonSessionsProvider with ChangeNotifier {
       }
       notifyListeners();
     }).catchError((error) {
-      print(error.toString());
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 }

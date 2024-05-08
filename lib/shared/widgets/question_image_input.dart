@@ -12,6 +12,8 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as syspaths;
 import 'package:http/http.dart' as http;
 
+import '../components/components.dart';
+
 class QuestionImageInput extends StatefulWidget {
   final Function onSelectImage;
   final bool isDisabled;
@@ -81,8 +83,8 @@ class _QuestionImageInputState extends State<QuestionImageInput> {
           .then((value) {
         print(value.data["data"]);
         widget.onSelectImage(value.data["data"]);
-      }).onError((error, stackTrace) {
-        print(error.toString());
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
     }
 

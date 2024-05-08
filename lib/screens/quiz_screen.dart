@@ -11,6 +11,7 @@ import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 
@@ -123,6 +124,14 @@ class _QuizScreenState extends State<QuizScreen> {
             token: token)
         .then(
       (value) {
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
+          return;
+        }
         print(value.data);
         if (value.data["status"] == false) {
           navigateAndFinish(context, LoginScreen());
@@ -131,7 +140,9 @@ class _QuizScreenState extends State<QuizScreen> {
             text: widget.dir == "ltr" ? "Saved Successfully" : "تم الحفظ بنجاح",
             state: ToastStates.SUCCESS);
       },
-    );
+    ).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
+    });
   }
 
   void getQuiz() {
@@ -146,9 +157,13 @@ class _QuizScreenState extends State<QuizScreen> {
             token: token)
         .then(
       (value) {
-        //   print(value.data);
-        if (value.data["status"] == false) {
-          navigateAndFinish(context, LoginScreen());
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
+          return;
         }
         setState(() {
           print(
@@ -184,8 +199,13 @@ class _QuizScreenState extends State<QuizScreen> {
         .then(
       (value) {
         print(value.data);
-        if (value.data["status"] == false) {
-          navigateAndFinish(context, LoginScreen());
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
+          return;
         }
         setState(() {
           MyQuiz = QuizModel.fromJson(value.data["data"]["questions"]);

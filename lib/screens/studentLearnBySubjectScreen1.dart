@@ -54,7 +54,7 @@ class _SubjectsListState extends State<SubjectsList> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          StudentSelectedSubjectsCubit(widget.Id)..getSubjectsList(),
+          StudentSelectedSubjectsCubit(widget.Id)..getSubjectsList(context),
       child: BlocConsumer<StudentSelectedSubjectsCubit,
           StudentSelectedSubjectsStates>(listener: (context, state) {
         if (state is UnAuthendicatedState) {

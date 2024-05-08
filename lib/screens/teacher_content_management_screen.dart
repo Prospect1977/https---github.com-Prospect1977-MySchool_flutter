@@ -77,8 +77,12 @@ class _TeacherContentManagementScreenState
             "YearOfStudyId": Form_YearOfStudyId
           }).then((value) {
         print(value.data["data"]);
-        if (value.data["status"] == false) {
-          navigateAndFinish(context, LoginScreen());
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
           return;
         }
         var SubjectsList = TeacherSubjects.fromJson(value.data["data"]);
@@ -114,6 +118,8 @@ class _TeacherContentManagementScreenState
                 value: y.YearSubjectId,
               )).toList();
         });
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
     }
   }
@@ -126,8 +132,12 @@ class _TeacherContentManagementScreenState
             token: token)
         .then((value) {
       print(value.data["data"]);
-      if (value.data["status"] == false) {
-        navigateAndFinish(context, LoginScreen());
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
       setState(() {
@@ -151,9 +161,7 @@ class _TeacherContentManagementScreenState
       });
     }).catchError((error) {
       print(error.toString());
-      showToast(
-          text: lang == "en" ? "Unkown error occured!" : "حدث خطأ ما!",
-          state: ToastStates.ERROR);
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 

@@ -15,6 +15,8 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as syspaths;
 import 'package:http/http.dart' as http;
 
+import '../components/functions.dart';
+
 class TeacherImageInput extends StatefulWidget {
   final Function onSelectImage;
   bool isThereAnImage;
@@ -101,8 +103,15 @@ class _TeacherImageInputState extends State<TeacherImageInput> {
                                 token: token)
                             .then((value) {
                           print(value.data["data"]);
-                          if (value.data["status"] == false) {
-                            navigateAndFinish(context, LoginScreen());
+                          if (value.data["status"] == false &&
+                              value.data["message"] == "SessionExpired") {
+                            handleSessionExpired(context);
+                            return;
+                          } else if (value.data["status"] == false) {
+                            showToast(
+                                text: value.data["message"],
+                                state: ToastStates.ERROR);
+                            return;
                           }
                           widget.onSelectImage(value.data["data"]);
                           Navigator.of(ctx).pop();
@@ -110,9 +119,9 @@ class _TeacherImageInputState extends State<TeacherImageInput> {
                             widget.isThereAnImage = false;
                           });
                           return;
-                        }).onError((error, stackTrace) {
-                          print(error.toString());
-                          return;
+                        }).catchError((error) {
+                          showToast(
+                              text: error.toString(), state: ToastStates.ERROR);
                         });
                       },
                     ),
@@ -145,15 +154,20 @@ class _TeacherImageInputState extends State<TeacherImageInput> {
               token: token)
           .then((value) {
         print(value.data["data"]);
-        if (value.data["status"] == false) {
-          navigateAndFinish(context, LoginScreen());
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
+          return;
         }
         widget.onSelectImage(value.data["data"]);
         setState(() {
           widget.isThereAnImage = true;
         });
-      }).onError((error, stackTrace) {
-        print(error.toString());
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
       });
     }
 

@@ -5,6 +5,8 @@ import 'package:my_school/models/StudentLessonSessions_model.dart';
 import 'package:my_school/models/StudentLessonsByYearSubjectId_model.dart';
 import 'package:my_school/models/StudentSessionHeaderDetail.dart';
 import 'package:my_school/shared/cache_helper.dart';
+import 'package:my_school/shared/components/components.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 
 class StudentSessionHeaderDetailCubit
@@ -40,7 +42,7 @@ class StudentSessionHeaderDetailCubit
   //   });
   // }
 
-  void postRate(StudentId, SessionHeaderId, Rate) {
+  void postRate(context, StudentId, SessionHeaderId, Rate) {
     emit(SavingRateState());
     DioHelper.postData(
             url: 'StudentSessionRate',
@@ -54,16 +56,18 @@ class StudentSessionHeaderDetailCubit
             token: token)
         .then((value) {
       print(value.data["data"]);
-      if (value.data["status"] == false) {}
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+      }
 
       emit(RatingSavedState());
     }).catchError((error) {
-      print(error.toString());
-      //emit(ErrorState(error.toString()));
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
-  void postPurchase(StudentId, SessionHeaderId) {
+  void postPurchase(context, StudentId, SessionHeaderId) {
     DioHelper.postData(
             url: 'StudentPurchaseSession',
             data: {},
@@ -80,8 +84,7 @@ class StudentSessionHeaderDetailCubit
 
       emit(PurchaseDoneState());
     }).catchError((error) {
-      print(error.toString());
-      //emit(ErrorState(error.toString()));
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 
@@ -99,7 +102,7 @@ class StudentSessionHeaderDetailCubit
         .then((value) {
       print(value.data["data"]);
     }).catchError((error) {
-      print(error.toString());
+      showToast(text: error.toString(), state: ToastStates.ERROR);
     });
   }
 }
