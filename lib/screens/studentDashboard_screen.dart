@@ -16,8 +16,10 @@ import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/dashboard_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../shared/components/functions.dart';
+import '../shared/dio_helper.dart';
 
 class StudentDashboardScreen extends StatefulWidget {
   int Id;
@@ -48,12 +50,44 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
   }
 
+  bool isLoading = false;
+  void getStudent() async {
+    CacheHelper.getData(key: 'token');
+
+    var q = {'UserId': CacheHelper.getData(key: 'userId')};
+    print(q);
+    isLoading = true;
+    DioHelper.getData(
+      query: q,
+      // token: token,
+      url: "StudentMainDataByUserId",
+    ).then((value) {
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+      }
+      setState(() {
+        widget.Id = value.data["studentId"];
+        widget.FullName = value.data["fullName"];
+        widget.Gender = value.data["gender"];
+        widget.YearOfStudyId = value.data["yearOfStudyId"];
+        widget.SchoolTypeId = value.data["schoolTypeId"];
+        isLoading = false;
+      });
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _checkAppVersion();
     print(isStudentHasParent);
+    if (widget.Id == 0) {
+      getStudent();
+    }
   }
 
   @override
@@ -68,29 +102,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         body: pageBody(context),
       );
     } else {
-      return BlocProvider(
-        create: (context) => StudentDashboardCubit()..getStudent(context),
-        child: BlocConsumer<StudentDashboardCubit, StudentDashboardStates>(
-            listener: (context, state) {},
-            builder: (context, state) {
-              var cubit = StudentDashboardCubit.get(context);
-              widget.FullName = cubit.FullName;
-              widget.Id = cubit.Id;
-              widget.Gender = cubit.Gender;
-              widget.SchoolTypeId = cubit.SchoolTypeId;
-              widget.YearOfStudyId = cubit.YearOfStudyId;
-              if (state is UnAuthendicatedState) {
-                navigateAndFinish(context, LoginScreen());
-              }
-              return (state is SuccessState)
-                  ? Scaffold(
-                      appBar: appBarComponent(context, cubit.FullName),
-                      body: pageBody(context),
-                    )
-                  : Center(
-                      child: CircularProgressIndicator(),
-                    );
-            }),
+      return Scaffold(
+        appBar: appBarComponent(context, CacheHelper.getData(key: 'fullName')),
+        body: isLoading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : pageBody(context),
       );
     }
   }

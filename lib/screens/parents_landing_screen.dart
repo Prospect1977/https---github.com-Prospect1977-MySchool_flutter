@@ -1,149 +1,242 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_school/cubits/parentStudent_cubit.dart';
-import 'package:my_school/cubits/parentStudent_states.dart';
+import 'package:my_school/models/user/student.dart';
 import 'package:my_school/screens/add_student_screen.dart';
-
-import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
-import 'package:my_school/shared/routes.dart';
-import 'package:my_school/shared/styles/colors.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:my_school/shared/components/functions.dart';
+import 'package:my_school/shared/dio_helper.dart';
 
-class ParentsLandingScreen extends StatelessWidget {
+import '../shared/styles/colors.dart';
+
+class ParentsLandingScreen extends StatefulWidget {
   const ParentsLandingScreen({Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ParentStudentCubit()..getStudents(context),
-      child: BlocConsumer<ParentStudentCubit, ParentStudentStates>(
-          listener: (context, state) {
-        if (state is UnAuthendicatedState) {
-          navigateAndFinish(context, LoginScreen());
-        }
-      }, builder: (context, state) {
-        var cubit = ParentStudentCubit.get(context);
-        return Scaffold(
-          appBar: (state is SuccessState)
-              ? appBarComponent(context, "الأبناء")
-              : appBarComponent(context, "الأبناء"),
-          body: (state is SuccessState)
-              ? ChildrenList(cubit: cubit)
-              : Center(
-                  child: CircularProgressIndicator(),
-                ),
-        );
-      }),
-    );
-  }
+  State<ParentsLandingScreen> createState() => _ParentsLandingScreenState();
 }
 
-class ChildrenList extends StatelessWidget {
-  const ChildrenList({
-    Key key,
-    @required this.cubit,
-  }) : super(key: key);
+class _ParentsLandingScreenState extends State<ParentsLandingScreen> {
+  var students;
+  String lang = CacheHelper.getData(key: 'lang');
+  var token = CacheHelper.getData(key: 'token');
+  void getStudents() async {
+    DioHelper.getData(
+      query: {},
+      token: token,
+      url: "ParentStudents",
+    ).then((value) {
+      print('Value: ${value.data["data"]}');
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
+      }
+      setState(() {
+        students = jsonDecode(value.data["data"])
+            .map((s) => Student.fromJson(s))
+            .toList();
+      });
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
+    });
+  }
 
-  final ParentStudentCubit cubit;
+  void DeleteChild(Id) {
+    DioHelper.postData(
+      query: {"StudentId": Id},
+      token: token,
+      url: "ParentStudents/DeleteChild",
+    ).then((value) {
+      print('Value: ${value.data["data"]}');
+      if (value.data["status"] == false &&
+          value.data["message"] == "SessionExpired") {
+        handleSessionExpired(context);
+        return;
+      } else if (value.data["status"] == false) {
+        showToast(text: value.data["message"], state: ToastStates.ERROR);
+        return;
+      }
+      setState(() {
+        students = jsonDecode(value.data["data"])
+            .map((s) => Student.fromJson(s))
+            .toList();
+      });
+    }).catchError((error) {
+      showToast(text: error.toString(), state: ToastStates.ERROR);
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getStudents();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: cubit.lang == "ar" ? TextDirection.rtl : TextDirection.ltr,
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 8.0,
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: cubit.students.length,
-                itemBuilder: (context, index) {
-                  // cubit.students[index].fullName;
-                  return Card(
-                    elevation: 0,
-                    margin: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.grey.shade400, width: 1),
-                          borderRadius: BorderRadius.circular(5)),
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: InkWell(
-                        onTap: () {
-                          navigateTo(
-                              context,
-                              StudentDashboardScreen(
-                                Id: cubit.students[index].Id,
-                                FullName: cubit.students[index].FullName,
-                                Gender: cubit.students[index].Gender,
-                                SchoolTypeId:
-                                    cubit.students[index].SchoolTypeId,
-                                YearOfStudyId:
-                                    cubit.students[index].YearOfStudyId,
-                              ));
-                        },
-                        child: ListTile(
-                            leading: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(65),
-                                  border: Border.all(
-                                      color: Colors.black45, width: 2)),
-                              child: cubit.students[index].Gender == null
-                                  ? ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(55)),
-                                      child: Icon(
-                                        Icons.account_circle,
-                                        size: 50,
-                                        color: Colors.black38,
+    return Scaffold(
+        appBar: appBarComponent(context, lang == "ar" ? "الأبناء" : "Students"),
+        body: students == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Directionality(
+                textDirection:
+                    lang == "ar" ? TextDirection.rtl : TextDirection.ltr,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 8.0,
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: students.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              elevation: 0,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 5),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.grey.shade400, width: 1),
+                                    borderRadius: BorderRadius.circular(5)),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    navigateTo(
+                                        context,
+                                        StudentDashboardScreen(
+                                          Id: students[index].Id,
+                                          FullName: students[index].FullName,
+                                          Gender: students[index].Gender,
+                                          SchoolTypeId:
+                                              students[index].SchoolTypeId,
+                                          YearOfStudyId:
+                                              students[index].YearOfStudyId,
+                                        ));
+                                  },
+                                  child: ListTile(
+                                    leading: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(65),
+                                          border: Border.all(
+                                              color: Colors.black45, width: 2)),
+                                      child: students[index].Gender == null
+                                          ? ClipRRect(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(55)),
+                                              child: Icon(
+                                                Icons.account_circle,
+                                                size: 50,
+                                                color: Colors.black38,
+                                              ),
+                                            )
+                                          : (students[index].Gender == "Female"
+                                              ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(55)),
+                                                  child: Image.asset(
+                                                    "assets/images/girlAvatar.jpg",
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                )
+                                              : ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(55)),
+                                                  child: Image.asset(
+                                                    "assets/images/boyAvatar.jpg",
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                )),
+                                    ),
+                                    title: Text(
+                                      students[index].FullName,
+                                      style: TextStyle(
+                                          fontSize: 22, color: Colors.black54),
+                                    ),
+                                    trailing: IconButton(
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.black45,
                                       ),
-                                    )
-                                  : (cubit.students[index].Gender == "Female"
-                                      ? ClipRRect(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(55)),
-                                          child: Image.asset(
-                                            "assets/images/girlAvatar.jpg",
-                                            fit: BoxFit.cover,
-                                          ),
-                                        )
-                                      : ClipRRect(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(55)),
-                                          child: Image.asset(
-                                            "assets/images/boyAvatar.jpg",
-                                            fit: BoxFit.cover,
-                                          ),
-                                        )),
-                            ),
-                            title: Text(
-                              cubit.students[index].FullName,
-                              style: TextStyle(
-                                  fontSize: 22, color: Colors.black54),
-                            )),
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (ctx) => Directionality(
+                                                textDirection: lang == "en"
+                                                    ? TextDirection.ltr
+                                                    : TextDirection.rtl,
+                                                child: AlertDialog(
+                                                    titleTextStyle: TextStyle(
+                                                        color: defaultColor,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                    title: Text(lang == "en"
+                                                        ? 'Are you sure?'
+                                                        : "هل انت متأكد؟"),
+                                                    content: Text(
+                                                      lang == "en"
+                                                          ? 'Are you sure that you want to remove this student?'
+                                                          : "هل تريد حذف الطالب؟",
+                                                    ),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: Text(lang == "en"
+                                                            ? "No"
+                                                            : "لا"),
+                                                        onPressed: () {
+                                                          Navigator.of(ctx)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                          child: Text(
+                                                              lang == "en"
+                                                                  ? 'Yes'
+                                                                  : "نعم"),
+                                                          onPressed: () {
+                                                            DeleteChild(
+                                                                students[index]
+                                                                    .Id);
+                                                            Navigator.pop(
+                                                                context);
+                                                          }),
+                                                    ])));
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            // ElevatedButton(onPressed: (){}), child: child)
-            defaultButton(
-                function: () {
-                  navigateTo(context, AddStudentScreen());
-                },
-                text: cubit.lang == "en" ? 'Add a Student' : 'إضافة طالب',
-                isUpperCase: false,
-                borderRadius: 0,
-                fontWeight: FontWeight.bold,
-                background: Colors.green.shade700)
-          ],
-        ),
-      ),
-    );
+                      // ElevatedButton(onPressed: (){}), child: child)
+                      defaultButton(
+                          function: () {
+                            navigateTo(context, AddStudentScreen());
+                          },
+                          text: lang == "en" ? 'Add a Student' : 'إضافة طالب',
+                          isUpperCase: false,
+                          borderRadius: 0,
+                          fontWeight: FontWeight.bold,
+                          background: Colors.green.shade700)
+                    ],
+                  ),
+                ),
+              ));
   }
 }

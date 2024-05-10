@@ -6,6 +6,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/models/Quiz_model.dart';
+import 'package:my_school/providers/QuizProvider.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/teacher_quiz_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
@@ -15,6 +16,7 @@ import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/question_image_input.dart';
+import 'package:provider/provider.dart';
 
 class TeacherQuizQuestionScreen extends StatefulWidget {
   TeacherQuizQuestionScreen(
@@ -92,34 +94,40 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
       widget.question.questionType = SelectedQuestionType;
       // var formdata =
       //     FormData.fromMap({"Question": json.encode(widget.question.toJson())});
-      DioHelper.postData(
-          url: "TeacherQuiz/SaveQuestion",
-          lang: lang,
-          token: token,
-          data: widget.question.toJson(),
-          query: {
-            "TeacherId": widget.TeacherId,
-            "QuizId": widget.QuizId,
-            "QuestionId": widget.question.id
-          }).then((value) {
-        if (value.data["status"] == false &&
-            value.data["message"] == "SessionExpired") {
-          handleSessionExpired(context);
-          return;
-        } else if (value.data["status"] == false) {
-          showToast(text: value.data["message"], state: ToastStates.ERROR);
-          return;
-        } else {
-          showToast(text: value.data["message"], state: ToastStates.SUCCESS);
-          navigateTo(context,
-              TeacherQuizScreen(QuizId: widget.QuizId, dir: widget.dir));
-        }
+      await Provider.of<QuizProvider>(context, listen: false).saveQuestion(
+          context: context,
+          QuizId: widget.QuizId,
+          TeacherId: widget.TeacherId,
+          question: widget.question);
 
-        navigateTo(
-            context, TeacherQuizScreen(QuizId: widget.QuizId, dir: widget.dir));
-      }).catchError((error) {
-        showToast(text: error.toString(), state: ToastStates.ERROR);
-      });
+      // DioHelper.postData(
+      //     url: "TeacherQuiz/SaveQuestion",
+      //     lang: lang,
+      //     token: token,
+      //     data: widget.question.toJson(),
+      //     query: {
+      //       "TeacherId": widget.TeacherId,
+      //       "QuizId": widget.QuizId,
+      //       "QuestionId": widget.question.id
+      //     }).then((value) {
+      //   if (value.data["status"] == false &&
+      //       value.data["message"] == "SessionExpired") {
+      //     handleSessionExpired(context);
+      //     return;
+      //   } else if (value.data["status"] == false) {
+      //     showToast(text: value.data["message"], state: ToastStates.ERROR);
+      //     return;
+      //   } else {
+      //     showToast(text: value.data["message"], state: ToastStates.SUCCESS);
+      //     navigateTo(context,
+      //         TeacherQuizScreen(QuizId: widget.QuizId, dir: widget.dir));
+      //   }
+
+      //   navigateTo(
+      //       context, TeacherQuizScreen(QuizId: widget.QuizId, dir: widget.dir));
+      // }).catchError((error) {
+      //   showToast(text: error.toString(), state: ToastStates.ERROR);
+      // });
     }
   }
 
@@ -476,139 +484,187 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                               SizedBox(
                                 width: 5,
                               ),
-                              SelectedQuestionType != "YesNo"
-                                  ? InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          TextEditingController ctrl1 =
-                                              new TextEditingController();
-
-                                          AnswersControllers.add(ctrl1);
-
-                                          Answer MyAnswer1 = Answer.fromJson({
-                                            "id": 0,
-                                            "title": "",
-                                            "isRightAnswer":
-                                                widget.question.questionType ==
-                                                        "Example"
-                                                    ? true
-                                                    : false
-                                          });
-
-                                          Answers.add(MyAnswer1);
-                                          if (widget.question == null) {
-                                            widget.question =
-                                                new Question.fromJson(
-                                                    {"id": 0});
-                                            widget.question.answers = [];
-                                          }
-                                          if (widget.question.answers == null) {
-                                            widget.question.answers = [];
-                                          }
-                                          widget.question.answers
-                                              .add(MyAnswer1);
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(3),
-                                        child: Text(
-                                          widget.dir == "ltr"
-                                              ? "+ Add an Answer"
-                                              : "+ إضافة إجابة",
-                                          style: TextStyle(
-                                              color: Colors.purple,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(.9),
-                                            borderRadius:
-                                                BorderRadius.circular(3)),
-                                      ),
-                                    )
-                                  : Container()
                             ],
                           ))
                       : Container(),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  ReorderableListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      var item = Answers[index];
-                      return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          key: ValueKey(item),
-                          children: [
-                            Row(children: [
-                              Column(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        if (SelectedQuestionType != "Example") {
-                                          Answers.forEach((element) {
-                                            element.isRightAnswer = false;
-                                          });
-                                          item.isRightAnswer = true;
-                                        } else {
-                                          item.isRightAnswer = true;
-                                        }
-                                      });
-                                    },
-                                    child: Icon(Icons.check_circle,
-                                        color: item.isRightAnswer
-                                            ? Colors.green
-                                            : Colors.black12),
-                                  ),
-                                  (SelectedQuestionType != "YesNo" &&
-                                          item.id == 0)
-                                      ? InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              widget.question.answers
-                                                  .removeAt(index);
-                                              Answers = [
-                                                ...widget.question.answers
-                                              ];
+                  SelectedQuestionType == "0"
+                      ? Container()
+                      : Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: defaultColor)),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ReorderableListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    var item = Answers[index];
+                                    return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        key: ValueKey(item),
+                                        children: [
+                                          Row(children: [
+                                            Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      if (SelectedQuestionType !=
+                                                          "Example") {
+                                                        Answers.forEach(
+                                                            (element) {
+                                                          element.isRightAnswer =
+                                                              false;
+                                                        });
+                                                        item.isRightAnswer =
+                                                            true;
+                                                      } else {
+                                                        item.isRightAnswer =
+                                                            true;
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Icon(
+                                                      Icons.check_circle,
+                                                      color: item.isRightAnswer
+                                                          ? Colors.green
+                                                          : Colors.black12),
+                                                ),
+                                                (SelectedQuestionType !=
+                                                            "YesNo" &&
+                                                        item.id == 0)
+                                                    ? InkWell(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            widget.question
+                                                                .answers
+                                                                .removeAt(
+                                                                    index);
+                                                            Answers = [
+                                                              ...widget.question
+                                                                  .answers
+                                                            ];
+                                                          });
+                                                        },
+                                                        child: Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red
+                                                                .withOpacity(
+                                                                    0.4)),
+                                                      )
+                                                    : Container(),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Expanded(
+                                                child: defaultFormField(
+                                                    controller:
+                                                        AnswersControllers[
+                                                            index],
+                                                    onChange: (value) {
+                                                      item.title = value;
+                                                    },
+                                                    type: TextInputType.text,
+                                                    label: ""))
+                                          ]),
+                                          SizedBox(
+                                            height: 8,
+                                          )
+                                        ]);
+                                  },
+                                  itemCount: Answers.length,
+                                  onReorder: (oldIndex, newIndex) {
+                                    setState(() {
+                                      if (oldIndex < newIndex) {
+                                        newIndex--;
+                                      }
+                                      final tile = Answers.removeAt(oldIndex);
+                                      Answers.insert(newIndex, tile);
+                                    });
+                                    ReorderAnswers();
+                                  },
+                                ),
+                                SelectedQuestionType != "YesNo"
+                                    ? InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            TextEditingController ctrl1 =
+                                                new TextEditingController();
+
+                                            AnswersControllers.add(ctrl1);
+
+                                            Answer MyAnswer1 = Answer.fromJson({
+                                              "id": 0,
+                                              "title": "",
+                                              "isRightAnswer": widget.question
+                                                          .questionType ==
+                                                      "Example"
+                                                  ? true
+                                                  : false
                                             });
-                                          },
-                                          child: Icon(Icons.delete,
+
+                                            Answers.add(MyAnswer1);
+                                            if (widget.question == null) {
+                                              widget.question =
+                                                  new Question.fromJson(
+                                                      {"id": 0});
+                                              widget.question.answers = [];
+                                            }
+                                            if (widget.question.answers ==
+                                                null) {
+                                              widget.question.answers = [];
+                                            }
+                                            widget.question.answers
+                                                .add(MyAnswer1);
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(3),
+                                          child: Directionality(
+                                            textDirection: widget.dir == "rtl"
+                                                ? TextDirection.rtl
+                                                : TextDirection.ltr,
+                                            child: Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 28,
+                                                ),
+                                                Icon(
+                                                  Icons.add_circle_sharp,
+                                                  color: Colors.green.shade600,
+                                                ),
+                                                Text(
+                                                  widget.dir == "ltr"
+                                                      ? " Add an Answer"
+                                                      : " إضافة إجابة",
+                                                  style: TextStyle(
+                                                      color:
+                                                          Colors.green.shade700,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          decoration: BoxDecoration(
                                               color:
-                                                  Colors.red.withOpacity(0.4)),
-                                        )
-                                      : Container(),
-                                ],
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                  child: defaultFormField(
-                                      controller: AnswersControllers[index],
-                                      onChange: (value) {
-                                        item.title = value;
-                                      },
-                                      type: TextInputType.text,
-                                      label: ""))
-                            ]),
-                            SizedBox(
-                              height: 8,
-                            )
-                          ]);
-                    },
-                    itemCount: Answers.length,
-                    onReorder: (oldIndex, newIndex) {
-                      setState(() {
-                        if (oldIndex < newIndex) {
-                          newIndex--;
-                        }
-                        final tile = Answers.removeAt(oldIndex);
-                        Answers.insert(newIndex, tile);
-                      });
-                      ReorderAnswers();
-                    },
+                                                  Colors.white.withOpacity(.9),
+                                              borderRadius:
+                                                  BorderRadius.circular(3)),
+                                        ),
+                                      )
+                                    : Container(),
+                              ]),
+                        ),
+                  SizedBox(
+                    height: 5,
                   ),
                   defaultButton(
                       function: SaveChanges,

@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:my_school/cubits/StudentLessonSessions_cubit.dart';
-import 'package:my_school/cubits/StudentLessonSessions_states.dart';
+
 import 'package:my_school/models/StudentLessonSessions_model.dart';
 import 'package:my_school/models/StudentLessonsByYearSubjectId_model.dart';
-import 'package:my_school/screens/login_screen.dart';
+
 import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
 import 'package:my_school/screens/teacher_profile_screen.dart';

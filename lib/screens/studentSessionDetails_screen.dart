@@ -1,28 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:my_school/cubits/StudentSessionHeaderDetail_cubit.dart';
-import 'package:my_school/cubits/StudentSessionHeaderDetail_states.dart';
 import 'package:my_school/models/StudentSessionHeaderDetail.dart';
-import 'package:my_school/screens/document_screen.dart';
-
-import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/paymob_options_screen.dart';
 import 'package:my_school/screens/paymob_creditcard_screen.dart';
 import 'package:my_school/screens/quiz_screen.dart';
 import 'package:my_school/screens/require_update_screen.dart';
-import 'package:my_school/screens/studentLessonSessions_screen.dart';
+
 import 'package:my_school/screens/video_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
-import 'package:open_file_safe/open_file_safe.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '../shared/components/functions.dart';
@@ -239,7 +229,7 @@ class _StudentSessionDetailsScreenState
                                 var item = allData.sessionDetails[index];
                                 return Item(
                                   item: item,
-                                  cubit: allData,
+                                  data: allData,
                                   widget: widget,
                                   align: align,
                                   roles: roles,
@@ -422,7 +412,7 @@ class Item extends StatelessWidget {
       @required this.item,
       @required this.widget,
       @required this.align,
-      @required this.cubit,
+      @required this.data,
       @required this.roles})
       : super(key: key);
 
@@ -430,13 +420,13 @@ class Item extends StatelessWidget {
 
   final StudentSessionDetailsScreen widget;
   final String align;
-  final AllData cubit;
+  final AllData data;
   final roles;
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (cubit.sessionHeader.isFree ||
-              cubit.sessionHeader.isPurchaseCompleted ||
+      onTap: (data.sessionHeader.isFree ||
+              data.sessionHeader.isPurchaseCompleted ||
               item.type == "Promo")
           ? () async {
               if (item.type == "Video" || item.type == "Promo") {
@@ -504,8 +494,8 @@ class Item extends StatelessWidget {
           : null,
       child: Card(
         //----------------------------------------------Card
-        elevation: (cubit.sessionHeader.isFree ||
-                cubit.sessionHeader.isPurchaseCompleted ||
+        elevation: (data.sessionHeader.isFree ||
+                data.sessionHeader.isPurchaseCompleted ||
                 item.type == "Promo")
             ? 1
             : 1,
@@ -513,8 +503,8 @@ class Item extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           decoration: BoxDecoration(
               border: Border.all(
-                  color: (cubit.sessionHeader.isFree ||
-                          cubit.sessionHeader.isPurchaseCompleted ||
+                  color: (data.sessionHeader.isFree ||
+                          data.sessionHeader.isPurchaseCompleted ||
                           item.type == "Promo")
                       ? defaultColor.withOpacity(0.5)
                       : Colors.black26),
@@ -527,8 +517,8 @@ class Item extends StatelessWidget {
                         children: [
                           getImage(
                             item,
-                            cubit.sessionHeader.isFree,
-                            cubit.sessionHeader.isPurchaseCompleted,
+                            data.sessionHeader.isFree,
+                            data.sessionHeader.isPurchaseCompleted,
                             align,
                             60.0,
                             60.0,
@@ -565,8 +555,8 @@ class Item extends StatelessWidget {
                       )
                     : getImage(
                         item,
-                        cubit.sessionHeader.isFree,
-                        cubit.sessionHeader.isPurchaseCompleted,
+                        data.sessionHeader.isFree,
+                        data.sessionHeader.isPurchaseCompleted,
                         align,
                         60.0,
                         60.0,
@@ -582,8 +572,8 @@ class Item extends StatelessWidget {
                           widget.dir,
                           widget.LessonName,
                           item,
-                          cubit.sessionHeader.isFree,
-                          cubit.sessionHeader.isPurchaseCompleted,
+                          data.sessionHeader.isFree,
+                          data.sessionHeader.isPurchaseCompleted,
                           16.1)
                     ],
                   ),

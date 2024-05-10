@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:my_school/providers/QuizProvider.dart';
 import 'package:my_school/providers/StudentLessonSessions_provider.dart';
 
 import 'package:my_school/screens/login_screen.dart';
@@ -28,11 +29,11 @@ import 'package:provider/provider.dart';
 import 'shared/components/functions.dart';
 
 void main() async {
-  // بيتأكد ان كل حاجه هنا في الميثود خلصت و بعدين يتفح الابلكيشن
   HttpOverrides.global = MyHttpOverrides();
+  // بيتأكد ان كل حاجه هنا في الميثود خلصت و بعدين يتفح الابلكيشن
   WidgetsFlutterBinding.ensureInitialized();
 
-  Bloc.observer = MyBlocObserver();
+  //Bloc.observer = MyBlocObserver();
   DioHelper.init();
   await CacheHelper.init();
 
@@ -103,8 +104,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          // ChangeNotifierProvider.value()
+          //  ChangeNotifierProvider.value()
           ChangeNotifierProvider.value(value: StudentLessonSessionsProvider()),
+          ChangeNotifierProvider.value(value: QuizProvider()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
