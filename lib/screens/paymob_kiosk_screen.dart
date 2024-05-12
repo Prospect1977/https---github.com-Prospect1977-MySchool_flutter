@@ -10,17 +10,21 @@ import 'package:my_school/shared/components/paymob.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../shared/components/functions.dart';
+
 class PaymobKioskScreen extends StatefulWidget {
   PaymobKioskScreen(
-      {@required this.StudentId,
-      @required this.SessionHeaderId,
-      @required this.Payment,
-      @required this.LessonName,
-      @required this.LessonDescription,
-      @required this.dir,
-      @required this.TeacherName,
+      {@required this.ChargeWalletMode,
+      this.StudentId,
+      this.SessionHeaderId,
+      this.Payment,
+      this.LessonName,
+      this.LessonDescription,
+      this.dir,
+      this.TeacherName,
       Key key})
       : super(key: key);
+  final bool ChargeWalletMode;
   final int StudentId;
   final int SessionHeaderId;
   final dynamic Payment;
@@ -45,25 +49,54 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
   var token = CacheHelper.getData(key: "token");
   int OrderId = 0;
   void postPurchase(StudentId, SessionHeaderId) {
-    DioHelper.postData(
-            url: 'StudentPurchaseSession',
-            data: {},
-            query: {
-              'StudentId': StudentId,
-              'SessionHeaderId': SessionHeaderId,
-              'OrderId': OrderId,
-              'DataDate': DateTime.now(),
-              'Source': "kiosk",
-            },
-            lang: lang,
-            token: token)
-        .then((value) {
-      print(value.data["data"]);
-      if (value.data["status"] == false) {}
-    }).catchError((error) {
-      print(error.toString());
-      //emit(ErrorState(error.toString()));
-    });
+    if (widget.ChargeWalletMode) {
+      DioHelper.postData(
+              url: 'wallet/RechargeWallet',
+              data: {},
+              query: {
+                'Amount': widget.Payment,
+                'OrderId': OrderId,
+                'Source': "kiosk",
+                'DataDate': DateTime.now(),
+              },
+              lang: lang,
+              token: token)
+          .then((value) {
+        print(value.data["data"]);
+
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
+          return;
+        }
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
+        //emit(ErrorState(error.toString()));
+      });
+    } else {
+      DioHelper.postData(
+              url: 'StudentPurchaseSession',
+              data: {},
+              query: {
+                'StudentId': StudentId,
+                'SessionHeaderId': SessionHeaderId,
+                'OrderId': OrderId,
+                'DataDate': DateTime.now(),
+                'Source': "kiosk",
+              },
+              lang: lang,
+              token: token)
+          .then((value) {
+        print(value.data["data"]);
+        if (value.data["status"] == false) {}
+      }).catchError((error) {
+        print(error.toString());
+        //emit(ErrorState(error.toString()));
+      });
+    }
   }
 
   Future<void> Request1() async {
@@ -213,7 +246,9 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: Text(
-                        "إذهب بالكود إلى المتجر واخبرهم بأنك ترغب في الدفع عن طريق: امان أو مصاري أو ممكن، وسوف يتم تفعيل الدرس فور إتمام عملية الدفع",
+                        widget.ChargeWalletMode
+                            ? "إذهب بالكود إلى المتجر واخبرهم بأنك ترغب في الدفع عن طريق: امان أو مصاري أو ممكن، وسوف يتم إضافة الرصيد إلى المحفظة فور إتمام عملية الدفع"
+                            : "إذهب بالكود إلى المتجر واخبرهم بأنك ترغب في الدفع عن طريق: امان أو مصاري أو ممكن، وسوف يتم تفعيل الدرس فور إتمام عملية الدفع",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 20, color: Colors.black54),
                       ),
@@ -229,20 +264,28 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
                         child: defaultButton(
                             function: () {
                               Navigator.of(context).pop();
-                              navigateTo(
-                                  context,
-                                  StudentSessionDetailsScreen(
-                                      SessionHeaderId: widget.SessionHeaderId,
-                                      LessonName: widget.LessonName,
-                                      LessonDescription:
-                                          widget.LessonDescription,
-                                      dir: widget.dir,
-                                      StudentId: widget.StudentId,
-                                      TeacherName: widget.TeacherName));
+                              if (widget.ChargeWalletMode) {
+                                Navigator.of(context).pop();
+                              } else {
+                                navigateTo(
+                                    context,
+                                    StudentSessionDetailsScreen(
+                                        SessionHeaderId: widget.SessionHeaderId,
+                                        LessonName: widget.LessonName,
+                                        LessonDescription:
+                                            widget.LessonDescription,
+                                        dir: widget.dir,
+                                        StudentId: widget.StudentId,
+                                        TeacherName: widget.TeacherName));
+                              }
                             },
-                            text: lang == "en"
-                                ? "Back to Lesson"
-                                : "العودة إلى الدرس",
+                            text: widget.ChargeWalletMode
+                                ? lang == "en"
+                                    ? "<<Back"
+                                    : "<<رجوع"
+                                : lang == "en"
+                                    ? "Back to Lesson"
+                                    : "العودة إلى الدرس",
                             background: Colors.green,
                             foregroundColor: Colors.white),
                       ),

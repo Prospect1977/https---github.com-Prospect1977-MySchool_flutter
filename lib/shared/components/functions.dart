@@ -10,6 +10,25 @@ import '../../screens/studentDashboard_screen.dart';
 import '../../screens/teacher_dashboard_screen.dart';
 import '../dio_helper.dart';
 
+String ConvertNumberToHindi(String number) {
+  Map numbers = {
+    '0': '۰',
+    '1': '۱',
+    '2': '۲',
+    '3': '۳',
+    '4': '٤',
+    '5': '۵',
+    '6': '٦',
+    '7': '۷',
+    '8': '۸',
+    '9': '۹',
+  };
+
+  numbers.forEach((key, value) => number = number.replaceAll(key, value));
+
+  return number;
+}
+
 void handleSessionExpired(context) {
   var lang = CacheHelper.getData(key: 'lang');
   var message = lang.ToLower() == "en"

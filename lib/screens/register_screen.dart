@@ -4,6 +4,7 @@ import 'package:my_school/cubits/login_cubit.dart';
 import 'package:my_school/models/login_model.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/screens/studentProfile_screen.dart';
 import 'package:my_school/screens/teacher_dashboard_screen.dart';
 import 'package:my_school/screens/teacher_profile_screen.dart';
 
@@ -46,17 +47,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
       CacheHelper.saveData(key: "roles", value: userData.roles);
       CacheHelper.saveData(key: "fullName", value: userData.fullName);
       CacheHelper.saveData(key: "email", value: userData.email);
+      CacheHelper.saveData(key: "userId", value: userData.userId);
       if (userData.roles.contains("Parent")) {
         navigateAndFinish(context, ParentsLandingScreen());
       }
       if (userData.roles.contains("Student")) {
-        CacheHelper.putBoolean(key: "studentHasParent", value: false);
+        CacheHelper.putBoolean(
+            key: "isStudentHasParent", value: userData.isStudentHasParent);
+        CacheHelper.saveData(key: "studentId", value: userData.studentId);
 
         navigateAndFinish(
             context,
-            StudentDashboardScreen(
-              Id: userData.teacherId,
-            )); //teacherid is not a mistake
+            StudentProfileScreen(userData.studentId,
+                FullName: userData.fullName)); //teacherid is not a mistake
       }
       if (userData.roles.contains("Teacher")) {
         CacheHelper.saveData(key: "teacherId", value: userData.teacherId);
@@ -116,6 +119,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
+                                accountType = "Student";
+                              });
+                            },
+                            child: AccountTypeItem(
+                              accountType: "Student",
+                              currentAccountType: accountType,
+                              imageName: "student3d.png",
+                              imageNameDisabled: "student3d-bw.png",
+                              title: lang == "en" ? "Student" : "طالب",
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
                                 accountType = "Teacher";
                               });
                             },
@@ -127,20 +144,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               title: lang == "en" ? "Teacher" : "مُعلم",
                             ),
                           ),
-                          // GestureDetector(
-                          //   onTap: () {
-                          //     setState(() {
-                          //       accountType = "Student";
-                          //     });
-                          //   },
-                          //   child: AccountTypeItem(
-                          //     accountType: "Student",
-                          //     currentAccountType: accountType,
-                          //     imageName: "student.png",
-                          //     imageNameDisabled: "student-bw.png",
-                          //     title: lang == "en" ? "Student" : "طالب",
-                          //   ),
-                          // ),
                         ],
                       )),
                   SizedBox(

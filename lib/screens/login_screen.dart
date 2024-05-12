@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
       CacheHelper.saveData(
-          key: "studentHasParent", value: userData.studentHasParent);
+          key: "isStudentHasParent", value: userData.isStudentHasParent);
       CacheHelper.saveData(key: "teacherId", value: userData.teacherId);
       CacheHelper.saveData(key: "fullName", value: userData.fullName);
       CacheHelper.saveData(key: "phoneNumber", value: userData.phoneNumber);
@@ -64,8 +66,13 @@ class _LoginScreenState extends State<LoginScreen> {
       CacheHelper.saveData(key: "token", value: userData.token);
       CacheHelper.saveData(key: "roles", value: userData.roles);
       CacheHelper.saveData(key: "email", value: userData.email);
+      if (userData.roles.toLowerCase().contains('student')) {
+        CacheHelper.putBoolean(
+            key: "isStudentHasParent",
+            value: value.data["additionalData"]["isStudentHasParent"]);
+      }
       print(
-          "_____________________________________________IsStudentHasParent=${CacheHelper.getData(key: "studentHasParent")}");
+          "_____________________________________________IsStudentHasParent=${CacheHelper.getData(key: "isStudentHasParent")}");
 
       setState(() {
         isSuccess = true;
@@ -92,6 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
+  var lang = CacheHelper.getData(key: 'lang');
   @override
   void initState() {
     // TODO: implement initState
@@ -111,35 +119,46 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Login',
-                    style: TextStyle(
-                        fontSize: 32,
-                        color: Colors.black87.withOpacity(0.7),
-                        fontWeight: FontWeight.bold),
+                  Container(
+                    alignment: lang == "ar"
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Text(
+                      lang == "en" ? 'Login' : "تسجيل دخول",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.black87.withOpacity(0.7),
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Don\'t have an account?',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      defaultTextButton(
-                        underline: true,
-                        function: () {
-                          navigateTo(
-                            context,
-                            RegisterScreen(),
-                          );
-                        },
-                        fontSize: 16,
-                        text: 'Register',
-                      ),
-                    ],
+                  Container(
+                    alignment: lang == "ar"
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Directionality(
+                      textDirection:
+                          lang == "ar" ? TextDirection.rtl : TextDirection.ltr,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              lang == "ar" ? "أو " : "Or ",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            defaultTextButton(
+                              underline: false,
+                              function: () {
+                                navigateTo(
+                                  context,
+                                  RegisterScreen(),
+                                );
+                              },
+                              fontSize: 20,
+                              text:
+                                  lang == "en" ? 'Register' : 'إنشاء حساب جديد',
+                            ),
+                          ]),
+                    ),
                   ),
                   SizedBox(
                     height: 5.0,
@@ -149,10 +168,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     type: TextInputType.emailAddress,
                     validate: (String value) {
                       if (value.isEmpty) {
-                        return 'please enter your email address';
+                        return lang == "en"
+                            ? 'please enter your email address'
+                            : 'من فضلك أدخل البريد الإلكتروني';
+                      }
+                      if (!value.trim().contains('@')) {
+                        return lang == "ar"
+                            ? "البريد الإلكتروني ليس مكتوباً بشكل صحيح"
+                            : "Email format is incorrect!";
                       }
                     },
-                    label: 'Email Address',
+                    onChange: (value) {
+                      setState(() {
+                        isLoading = false;
+                      });
+                    },
+                    label: lang == "en" ? 'Email Address' : "البريد الإلكتروني",
                     prefix: Icons.email_outlined,
                   ),
                   SizedBox(
@@ -172,18 +203,26 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       }
                     },
-                    isPassword: showPassword,
+                    isPassword: !showPassword,
                     suffixPressed: () {
                       setState(() {
                         showPassword = !showPassword;
+                        isLoading = false;
+                      });
+                    },
+                    onChange: (value) {
+                      setState(() {
+                        isLoading = false;
                       });
                     },
                     validate: (String value) {
                       if (value.isEmpty) {
-                        return 'password is too short';
+                        return lang == "en"
+                            ? 'password is too short'
+                            : 'كلمة المرور قصيرة جداً';
                       }
                     },
-                    label: 'Password',
+                    label: lang == "en" ? 'Password' : "كلمة المرور",
                     prefix: Icons.lock_outline,
                   ),
                   Container(
@@ -198,8 +237,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ForgotPasswordScreen(),
                         );
                       },
-                      fontSize: 16,
-                      text: 'Forgot Password?',
+                      fontSize: 18,
+                      text: lang == "en"
+                          ? 'Forgot Password?'
+                          : "نسيت كلمة المرور؟",
                     ),
                   ),
                   SizedBox(
@@ -217,29 +258,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                           borderRadius: 5,
-                          text: 'Login',
+                          text: lang == "en" ? 'Login' : "دخول",
                           isUpperCase: false,
                         ),
                   SizedBox(
                     height: 15.0,
                   ),
-
-                  // FutureBuilder(
-                  //   future: PackageInfo.fromPlatform(),
-                  //   builder: (BuildContext context,
-                  //       AsyncSnapshot<PackageInfo> snapshot) {
-                  //     if (snapshot.hasData)
-                  //       return Column(
-                  //         children: [
-                  //           Text(snapshot.data.appName),
-                  //           Text(snapshot.data.packageName),
-                  //           Text(snapshot.data.buildNumber),
-                  //           Text(snapshot.data.version),
-                  //         ],
-                  //       ); // Column
-                  //     return Container();
-                  //   },
-                  // )
                 ],
               ),
             ),

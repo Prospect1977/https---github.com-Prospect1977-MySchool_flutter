@@ -40,7 +40,7 @@ class StudentDashboardScreen extends StatefulWidget {
 
 class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   String lang = CacheHelper.getData(key: "lang");
-  bool isStudentHasParent = CacheHelper.getData(key: "studentHasParent");
+  bool isStudentHasParent = CacheHelper.getData(key: "isStudentHasParent");
   String roles = CacheHelper.getData(key: "roles");
   void _checkAppVersion() async {
     await checkAppVersion();
@@ -102,6 +102,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         body: pageBody(context),
       );
     } else {
+      print(CacheHelper.getData(key: 'fullName'));
       return Scaffold(
         appBar: appBarComponent(context, CacheHelper.getData(key: 'fullName')),
         body: isLoading
@@ -155,19 +156,19 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     (widget.SchoolTypeId == null ||
                             widget.YearOfStudyId == null)
                         ? null
-                        // : isStudentHasParent && roles.contains("Student")
-                        //     ? () {
-                        //         showToast(
-                        //             text: lang == "ar"
-                        //                 ? "من حق ولي الأمر فقط إختيار المواد الدراسية"
-                        //                 : "Only your parent is allowed to select subjects!",
-                        //             state: ToastStates.ERROR);
-                        //         return;
-                        //       }
-                        : () {
-                            navigateTo(context,
-                                StudentSelectedSubjectsScreen(widget.Id));
-                          },
+                        : isStudentHasParent && roles.contains("Student")
+                            ? () {
+                                showToast(
+                                    text: lang == "ar"
+                                        ? "من حق ولي الأمر فقط إختيار المواد الدراسية"
+                                        : "Only your parent is allowed to select subjects!",
+                                    state: ToastStates.ERROR);
+                                return;
+                              }
+                            : () {
+                                navigateTo(context,
+                                    StudentSelectedSubjectsScreen(widget.Id));
+                              },
                     'SelectSubjects.png',
                     lang.toString().toLowerCase() == "ar"
                         ? "إختر المواد الدراسية"

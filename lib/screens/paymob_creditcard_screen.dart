@@ -2,31 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:my_school/providers/WalletProvider.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/paymob.dart';
 import 'package:my_school/shared/dio_helper.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import '../shared/components/functions.dart';
 
 class PaymobCreditCardScreen extends StatefulWidget {
   PaymobCreditCardScreen(
-      {@required this.StudentId,
-      @required this.SessionHeaderId,
-      @required this.Payment,
-      @required this.LessonName,
-      @required this.LessonDescription,
-      @required this.dir,
-      @required this.TeacherName,
+      {@required this.ChargeWalletMode,
+      this.StudentId,
+      this.SessionHeaderId,
+      this.Payment,
+      this.LessonName,
+      this.LessonDescription,
+      this.dir,
+      this.TeacherName,
       Key key})
       : super(key: key);
-  final int StudentId;
-  final int SessionHeaderId;
-  final dynamic Payment;
-  final String LessonName;
-  final String LessonDescription;
-  final String dir;
-  final String TeacherName;
+  final bool ChargeWalletMode;
+
+  int StudentId;
+  int SessionHeaderId;
+  dynamic Payment;
+  String LessonName;
+  String LessonDescription;
+  String dir;
+  String TeacherName;
 
   @override
   State<PaymobCreditCardScreen> createState() => _PaymobCreditCardScreenState();
@@ -44,26 +51,62 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
   var token = CacheHelper.getData(key: "token");
   int OrderId = 0;
   void postPurchase(StudentId, SessionHeaderId) {
-    DioHelper.postData(
-            url: 'StudentPurchaseSession',
-            data: {},
-            query: {
-              'StudentId': StudentId,
-              'SessionHeaderId': SessionHeaderId,
-              'OrderId': OrderId,
-              'DataDate': DateTime.now(),
-              'Source': "iframe",
-            },
-            lang: lang,
-            token: token)
-        .then((value) {
-      print(value.data["data"]);
+    if (widget.ChargeWalletMode) {
+      DioHelper.postData(
+              url: 'wallet/RechargeWallet',
+              data: {},
+              query: {
+                'Amount': widget.Payment,
+                'OrderId': OrderId,
+                'Source': "iframe",
+                'DataDate': DateTime.now(),
+              },
+              lang: lang,
+              token: token)
+          .then((value) {
+        print(value.data["data"]);
 
-      if (value.data["status"] == false) {}
-    }).catchError((error) {
-      print(error.toString());
-      //emit(ErrorState(error.toString()));
-    });
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
+          return;
+        }
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
+        //emit(ErrorState(error.toString()));
+      });
+    } else {
+      DioHelper.postData(
+              url: 'StudentPurchaseSession',
+              data: {},
+              query: {
+                'StudentId': StudentId,
+                'SessionHeaderId': SessionHeaderId,
+                'OrderId': OrderId,
+                'DataDate': DateTime.now(),
+                'Source': "iframe",
+              },
+              lang: lang,
+              token: token)
+          .then((value) {
+        print(value.data["data"]);
+
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+          return;
+        } else if (value.data["status"] == false) {
+          showToast(text: value.data["message"], state: ToastStates.ERROR);
+          return;
+        }
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
+        //emit(ErrorState(error.toString()));
+      });
+    }
   }
 
   Future<void> Request1() async {
@@ -147,6 +190,7 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // if (isResponseRecieved && widget.ChargeWalletMode) {}
     return Scaffold(
       appBar: appBarComponent(
           context, lang == "en" ? "Complete Payment" : "إستكمال الدفع"),
@@ -156,17 +200,23 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
             )
           : Stack(children: [
               WebView(
-                onPageStarted: (url) {
+                onPageStarted: (url) async {
                   print(
                       '------------------------------------------------------------url:' +
                           url);
                   if (url.contains('PaymobResponse.html')) {
-                    setState(() {
-                      isResponseRecieved = true;
-                    });
-                    print(
-                        '---------------------------------isResponseRecieved:' +
-                            isResponseRecieved.toString());
+                    if (widget.ChargeWalletMode) {
+                      await Provider.of<WalletProvider>(context, listen: false)
+                          .getData(context);
+                      Navigator.of(context).pop();
+                    } else {
+                      setState(() {
+                        isResponseRecieved = true;
+                      });
+                      print(
+                          '---------------------------------isResponseRecieved:' +
+                              isResponseRecieved.toString());
+                    }
                   }
                 },
                 onWebViewCreated: (controller) {
