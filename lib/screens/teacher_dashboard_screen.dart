@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/screens/teacher_content_management_screen.dart';
 import 'package:my_school/screens/teacher_profile_screen.dart';
 import 'package:my_school/screens/teacher_purchases_screen.dart';
+import 'package:my_school/screens/teacher_quiz_analysis_screen.dart';
 import 'package:my_school/screens/teacher_viewsPerLesson_screen.dart';
 import 'package:my_school/screens/teacher_views_screen.dart';
 import 'package:my_school/screens/test_fileUpload.dart';
@@ -104,6 +105,17 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                         lang.toString().toLowerCase() == "ar"
                             ? "تحليل الدخل"
                             : "Income Analysis",
+                        false,
+                      ),
+                      dashboardButton(
+                        context,
+                        () {
+                          navigateTo(context, TeacherQuizAnalysisScreen());
+                        },
+                        'quiz-analysis.png',
+                        lang.toString().toLowerCase() == "ar"
+                            ? "تحليل نتائج الإختبارات"
+                            : "Quizzes Analysis",
                         false,
                       ),
                       dashboardButton(

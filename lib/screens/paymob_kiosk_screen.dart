@@ -265,7 +265,7 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
                             function: () {
                               Navigator.of(context).pop();
                               if (widget.ChargeWalletMode) {
-                                Navigator.of(context).pop();
+                                // Navigator.of(context).pop();
                               } else {
                                 navigateTo(
                                     context,

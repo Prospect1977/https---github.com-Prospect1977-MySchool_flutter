@@ -265,8 +265,8 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
                                                                           style: TextStyle(
                                                                               height: 1.5,
                                                                               fontSize: widget.dir == "ltr" ? 13 : 14,
-                                                                              backgroundColor: widget.dir == "ltr" ? Colors.black38 : Colors.white,
-                                                                              color: widget.dir == "ltr" ? Colors.white : Colors.black54)),
+                                                                              backgroundColor: Colors.white,
+                                                                              color: Colors.black54)),
                                                                     ],
                                                                   ),
                                                                 ),

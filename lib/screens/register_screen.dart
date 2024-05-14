@@ -113,7 +113,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               currentAccountType: accountType,
                               imageName: "parent.png",
                               imageNameDisabled: "parent-bw.png",
-                              title: lang == "en" ? "Parent" : "ولي أمر",
+                              title: lang == "en"
+                                  ? "Parent + Students"
+                                  : "ولي أمر + أبناء",
                             ),
                           ),
                           GestureDetector(

@@ -47,15 +47,15 @@ class _LoginScreenState extends State<LoginScreen> {
         'password': password,
       },
     ).then((value) {
-      print(value.data);
-      userData = UserData.fromJson(value.data["data"]);
-      if (value.data["message"] != null) {
+      if (value.data["status"] == false) {
         showToast(text: value.data["message"], state: ToastStates.ERROR);
         setState(() {
           isLoading = false;
         });
         return;
       }
+      print(value.data['data']);
+      userData = UserData.fromJson(value.data['data']);
       CacheHelper.saveData(
           key: "isStudentHasParent", value: userData.isStudentHasParent);
       CacheHelper.saveData(key: "teacherId", value: userData.teacherId);

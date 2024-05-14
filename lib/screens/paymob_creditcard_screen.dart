@@ -205,17 +205,14 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
                       '------------------------------------------------------------url:' +
                           url);
                   if (url.contains('PaymobResponse.html')) {
+                    setState(() {
+                      isResponseRecieved = true;
+                    });
                     if (widget.ChargeWalletMode) {
+                      // showToast(text: lang=="en"?"Wallet charged successfully!":"تم شحن المحفظة بنجاح!", state: ToastStates.SUCCESS)
                       await Provider.of<WalletProvider>(context, listen: false)
                           .getData(context);
-                      Navigator.of(context).pop();
-                    } else {
-                      setState(() {
-                        isResponseRecieved = true;
-                      });
-                      print(
-                          '---------------------------------isResponseRecieved:' +
-                              isResponseRecieved.toString());
+                      // Navigator.of(context).pop();
                     }
                   }
                 },
@@ -234,20 +231,26 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
                         child: defaultButton(
                             function: () {
                               Navigator.of(context).pop();
-                              navigateTo(
-                                  context,
-                                  StudentSessionDetailsScreen(
-                                      SessionHeaderId: widget.SessionHeaderId,
-                                      LessonName: widget.LessonName,
-                                      LessonDescription:
-                                          widget.LessonDescription,
-                                      dir: widget.dir,
-                                      StudentId: widget.StudentId,
-                                      TeacherName: widget.TeacherName));
+                              if (!widget.ChargeWalletMode) {
+                                navigateTo(
+                                    context,
+                                    StudentSessionDetailsScreen(
+                                        SessionHeaderId: widget.SessionHeaderId,
+                                        LessonName: widget.LessonName,
+                                        LessonDescription:
+                                            widget.LessonDescription,
+                                        dir: widget.dir,
+                                        StudentId: widget.StudentId,
+                                        TeacherName: widget.TeacherName));
+                              }
                             },
-                            text: lang == "en"
-                                ? "Back to Lesson"
-                                : "العودة إلى الدرس",
+                            text: widget.ChargeWalletMode
+                                ? lang == "en"
+                                    ? "<<Back"
+                                    : "<<رجوع"
+                                : lang == "en"
+                                    ? "Back to Lesson"
+                                    : "العودة إلى الدرس",
                             background: Colors.green,
                             foregroundColor: Colors.white),
                       ),

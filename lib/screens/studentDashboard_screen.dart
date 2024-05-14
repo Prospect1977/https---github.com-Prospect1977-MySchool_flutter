@@ -12,6 +12,7 @@ import 'package:my_school/screens/studentSelectedSubjects_screen.dart';
 import 'package:my_school/screens/student_followup_list_screen.dart';
 import 'package:my_school/screens/ticket_screen.dart';
 import 'package:my_school/screens/under_construction_screen.dart';
+import 'package:my_school/screens/wallet_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
@@ -95,6 +96,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (widget.Id > 0) {
       //pageCode(Id, FullName);
       return Scaffold(
+        floatingActionButton: roles.contains("Student")
+            ? FloatingActionButton(
+                backgroundColor: defaultColor,
+                child: Image.asset(
+                  'assets/images/wallet.png',
+                  width: 30,
+                ),
+                onPressed: () {
+                  navigateTo(context, WalletScreen());
+                })
+            : Container(),
         appBar: appBarComponent(context, widget.FullName,
             backButtonPage: CacheHelper.getData(key: "roles") == "Student"
                 ? null

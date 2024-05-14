@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_school/models/user/student.dart';
 import 'package:my_school/screens/add_student_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
+import 'package:my_school/screens/wallet_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/functions.dart';
@@ -81,6 +82,15 @@ class _ParentsLandingScreenState extends State<ParentsLandingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: defaultColor,
+            child: Image.asset(
+              'assets/images/wallet.png',
+              width: 30,
+            ),
+            onPressed: () {
+              navigateTo(context, WalletScreen());
+            }),
         appBar: appBarComponent(context, lang == "ar" ? "الأبناء" : "Students"),
         body: students == null
             ? Center(
