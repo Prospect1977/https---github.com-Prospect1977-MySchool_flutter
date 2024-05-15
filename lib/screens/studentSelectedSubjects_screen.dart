@@ -34,7 +34,7 @@ class _StudentSelectedSubjectsScreenState
     return Scaffold(
       appBar: appBarComponent(
         context,
-        lang == "En" ? "Available Subjects" : "المواد المتاحة",
+        lang == "en" ? "Available Subjects" : "المواد المتاحة",
         /*backButtonPage: CacheHelper.getData(key: "roles") == "Student"
               ? StudentDashboardScreen()
               : StudentDashboardScreen(Id: widget.Id)*/

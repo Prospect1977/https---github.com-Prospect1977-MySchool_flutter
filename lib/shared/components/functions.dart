@@ -55,8 +55,6 @@ void checkAppVersion() async {
       } else {
         CacheHelper.saveData(key: 'isLatestVersion', value: false);
       }
-    } else if (requiredForRoles.toString().toLowerCase() == "none") {
-      CacheHelper.saveData(key: 'isLatestVersion', value: true);
     } else {
       //المكتوب في السطور التالية من المفترض بناءاً على ان اليوسر له اكثر من رول ولكن نظراً لانه لا توجد وسيلة للخروج من الفانكشن في المنتصف أو الذهاب لسطر كود محدد، فأن المكتوب يفترض أن اليوسر له رول واحد
       requiredForRoles.split(",").forEach((m) {
@@ -71,6 +69,9 @@ void checkAppVersion() async {
           CacheHelper.saveData(key: 'isLatestVersion', value: true);
         }
       });
+    }
+    if (requiredForRoles.toString().toLowerCase() == "none") {
+      CacheHelper.saveData(key: 'isLatestVersion', value: true);
     }
   });
 }
