@@ -206,35 +206,37 @@ class _TeacherSubjectAllLessonsState extends State<TeacherSubjectAllLessons> {
                                                     padding:
                                                         const EdgeInsets.only(
                                                             top: 8),
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(
-                                                          Icons.calendar_month,
-                                                          size: 15,
-                                                          color: Colors.black54,
-                                                        ),
-                                                        if (item.dataDate !=
-                                                            null)
-                                                          SizedBox(
-                                                            width: 5,
+                                                    child: item.dataDate == null
+                                                        ? Container()
+                                                        : Row(
+                                                            children: [
+                                                              Icon(
+                                                                Icons
+                                                                    .calendar_month,
+                                                                size: 15,
+                                                                color: Colors
+                                                                    .black54,
+                                                              ),
+                                                              if (item.dataDate !=
+                                                                  null)
+                                                                SizedBox(
+                                                                  width: 5,
+                                                                ),
+                                                              Text(
+                                                                  formatDate(
+                                                                      DateTime.parse(item
+                                                                          .dataDate),
+                                                                      dir == "ltr"
+                                                                          ? "en"
+                                                                          : "ar"),
+                                                                  style: TextStyle(
+                                                                      fontStyle:
+                                                                          FontStyle
+                                                                              .italic,
+                                                                      color: Colors
+                                                                          .black54)),
+                                                            ],
                                                           ),
-                                                        if (item.dataDate !=
-                                                            null)
-                                                          Text(
-                                                              formatDate(
-                                                                  DateTime.parse(item
-                                                                      .dataDate),
-                                                                  dir == "ltr"
-                                                                      ? "en"
-                                                                      : "ar"),
-                                                              style: TextStyle(
-                                                                  fontStyle:
-                                                                      FontStyle
-                                                                          .italic,
-                                                                  color: Colors
-                                                                      .black54)),
-                                                      ],
-                                                    ),
                                                   )
                                           ],
                                         ),

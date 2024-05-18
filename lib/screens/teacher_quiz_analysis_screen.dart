@@ -45,7 +45,7 @@ class _TeacherQuizAnalysisScreenState extends State<TeacherQuizAnalysisScreen> {
                       : "لا يوجد طالب خاض أي من إختباراتك حتى الأن!",
                   style: TextStyle(
                       color: Colors.black54,
-                      fontSize: lang == "en" ? 24 : 24,
+                      fontSize: lang == "en" ? 22 : 20,
                       fontStyle: FontStyle.italic),
                   textAlign: TextAlign.center,
                   textDirection:

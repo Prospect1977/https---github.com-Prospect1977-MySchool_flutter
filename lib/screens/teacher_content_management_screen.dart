@@ -287,6 +287,7 @@ class _TeacherContentManagementScreenState
                                         Form_SchoolTypeId = value;
                                         Form_YearOfStudyId = 0;
                                         StudyYearsBySchoolTypeId(value);
+                                        Form_YearSubjectId = 0;
                                         // dirty = true;
                                         // widget.SchoolTypeName
                                       });
@@ -348,6 +349,7 @@ class _TeacherContentManagementScreenState
                                     onChanged: (value) {
                                       setState(() {
                                         Form_YearOfStudyId = value;
+                                        Form_YearSubjectId = 0;
                                         GetYearSubjects();
                                       });
                                     },

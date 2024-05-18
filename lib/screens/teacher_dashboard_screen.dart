@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:my_school/screens/curriculum_landing_screen.dart';
 import 'package:my_school/screens/teacher_content_management_screen.dart';
 import 'package:my_school/screens/teacher_profile_screen.dart';
 import 'package:my_school/screens/teacher_purchases_screen.dart';
@@ -46,93 +47,95 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
               : TextDirection.ltr,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height - 150,
-                  child: GridView(
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 5),
-                    children: [
-                      dashboardButton(
-                        context,
-                        () {
-                          navigateTo(
-                              context,
-                              TeacherProfileScreen(
-                                  teacherId: Id, readOnly: false));
-                        },
-                        'MainData.png',
-                        lang.toString().toLowerCase() == "ar"
-                            ? "البيانات الرئيسية"
-                            : "Main Profile Data",
-                        false,
-                      ),
-                      dashboardButton(
-                        context,
-                        () {
-                          navigateTo(
-                              context, TeacherContentManagementScreen(Id));
-                        },
-                        'sessions.png',
-                        lang.toString().toLowerCase() == "ar"
-                            ? "إدارة المحتوى"
-                            : "Content Management",
-                        false,
-                      ),
-                      dashboardButton(
-                        context,
-                        () {
-                          navigateTo(context, TeacherViewsPerLessonScreen());
-                        },
-                        'Chart.png',
-                        lang.toString().toLowerCase() == "ar"
-                            ? "المشاهدات والتفاعلات"
-                            : "Views & Interactivity",
-                        false,
-                      ),
-                      dashboardButton(
-                        context,
-                        () {
-                          navigateTo(context, TeacherPurchasesScreen());
-                        },
-                        'money.png',
-                        lang.toString().toLowerCase() == "ar"
-                            ? "تحليل الدخل"
-                            : "Income Analysis",
-                        false,
-                      ),
-                      dashboardButton(
-                        context,
-                        () {
-                          navigateTo(context, TeacherQuizAnalysisScreen());
-                        },
-                        'quiz-analysis.png',
-                        lang.toString().toLowerCase() == "ar"
-                            ? "تحليل نتائج الإختبارات"
-                            : "Quizzes Analysis",
-                        false,
-                      ),
-                      dashboardButton(
-                        context,
-                        () {
-                          navigateTo(context, TicketScreen());
-                        },
-                        'Chat.png',
-                        lang.toString().toLowerCase() == "ar"
-                            ? "تواصل معنا"
-                            : "Contact us",
-                        false,
-                      ),
-                    ],
+            child: Container(
+              height: double.infinity,
+              child: GridView(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 200,
+                    childAspectRatio: 1,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5),
+                children: [
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context,
+                          TeacherProfileScreen(teacherId: Id, readOnly: false));
+                    },
+                    'MainData.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "البيانات الرئيسية"
+                        : "Main Profile Data",
+                    false,
                   ),
-                ),
-              ],
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context, TeacherContentManagementScreen(Id));
+                    },
+                    'sessions.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "إدارة المحتوى"
+                        : "Content Management",
+                    false,
+                  ),
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context, TeacherViewsPerLessonScreen());
+                    },
+                    'Chart.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "المشاهدات والتفاعلات"
+                        : "Views & Interactivity",
+                    false,
+                  ),
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context, TeacherPurchasesScreen());
+                    },
+                    'money.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "تحليل الدخل"
+                        : "Income Analysis",
+                    false,
+                  ),
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context, TeacherQuizAnalysisScreen());
+                    },
+                    'quiz-analysis.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "تحليل نتائج الإختبارات"
+                        : "Quizzes Analysis",
+                    false,
+                  ),
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context, TicketScreen());
+                    },
+                    'Chat.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "تواصل معنا"
+                        : "Contact us",
+                    false,
+                  ),
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context, CurriculumLandingScreen());
+                    },
+                    'lessons.png',
+                    lang.toString().toLowerCase() == "ar"
+                        ? "إدارة دروس المنهج"
+                        : "Manage Curriculum",
+                    false,
+                  ),
+                ],
+              ),
             ),
           ),
         ));

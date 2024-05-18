@@ -133,7 +133,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       textDirection:
           lang.toLowerCase() == "ar" ? TextDirection.rtl : TextDirection.ltr,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+        padding: EdgeInsets.only(
+            top: CacheHelper.getData(key: "roles") == "Student" ? 8 : 0,
+            left: 8,
+            right: 8,
+            bottom: 0),
         child: Container(
           height: double.infinity,
           child: GridView(

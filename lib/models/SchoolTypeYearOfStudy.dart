@@ -25,6 +25,26 @@ class SchoolTypesAndYearsOfStudies {
   }
 }
 
+class SchoolTypes {
+  List<SchoolType> Items = [];
+
+  SchoolTypes.fromJson(List<dynamic> js) {
+    js.forEach((j) {
+      Items.add(SchoolType.fromJson(j));
+    });
+  }
+}
+
+class YearsOfStudies {
+  List<YearOfStudy> Items = [];
+
+  YearsOfStudies.fromJson(List<dynamic> js) {
+    js.forEach((j) {
+      Items.add(YearOfStudy.fromJson(j));
+    });
+  }
+}
+
 class YearOfStudy {
   int SchoolTypeId;
   int YearOfStudyId;

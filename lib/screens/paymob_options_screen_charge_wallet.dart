@@ -117,11 +117,14 @@ class option extends StatelessWidget {
                 SizedBox(
                   width: 10,
                 ),
-                Text(
-                  title,
-                  style: TextStyle(
-                      fontSize: lang == "ar" ? 22 : 19,
-                      color: Colors.black.withOpacity(0.60)),
+                Expanded(
+                  child: Text(
+                    title,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: lang == "ar" ? 22 : 19,
+                        color: Colors.black.withOpacity(0.60)),
+                  ),
                 ),
               ],
             ),

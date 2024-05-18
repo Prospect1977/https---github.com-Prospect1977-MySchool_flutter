@@ -24,6 +24,7 @@ class TeacherSubject {
   int SortIndex;
   String dir;
   int ParentId;
+  bool Active;
   TeacherSubject.fromJson(Map<String, dynamic> js) {
     SubjectId = js['subjectId'];
     YearSubjectId = js['yearSubjectId'];
@@ -31,6 +32,7 @@ class TeacherSubject {
     SortIndex = js['sortIndex'];
     dir = js['dir'];
     ParentId = js['parentId'];
+    Active = js['active'];
   }
 }
 
