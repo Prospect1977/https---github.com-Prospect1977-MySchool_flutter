@@ -14,6 +14,8 @@ import 'package:path_provider/path_provider.dart' as syspaths;
 import 'package:http/http.dart' as http;
 import 'package:video_compress/video_compress.dart';
 
+import '../cache_helper.dart';
+
 //----------------------------------------------------------------------
 Future<String> compressVideo(XFile f, int VideoId, var ctx) async {
   //not used at the moment
@@ -128,6 +130,7 @@ class _UploadProgressDialogState extends State<UploadProgressDialog> {
       Height = info.width;
       Width = info.height;
     });
+    print(CacheHelper.getData(key: 'userId'));
     DioHelper.postVideo(
             url: 'TeacherSession/TeacherUploadVideo',
             data: formData,
@@ -138,7 +141,8 @@ class _UploadProgressDialogState extends State<UploadProgressDialog> {
               "Height": Height,
               "Width": Width,
               "Duration": Duration / 1000,
-              "DataDate": DateTime.now()
+              "DataDate": DateTime.now(),
+              "UserId": CacheHelper.getData(key: 'userId')
             },
             lang: "en",
             updateProgress: updateProgress,
@@ -147,7 +151,7 @@ class _UploadProgressDialogState extends State<UploadProgressDialog> {
       print(value.data["data"]);
 
       generateThumbnail(value.data["data"], context, getData, fileVideo);
-      //getData();
+      getData();
     }).onError((error, stackTrace) {
       print(error.toString());
     });

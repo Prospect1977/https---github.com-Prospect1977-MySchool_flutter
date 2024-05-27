@@ -30,6 +30,8 @@ class StudentDailyScheduleScreen extends StatefulWidget {
       _StudentDailyScheduleScreenState();
 }
 
+bool isScheduleExist = true;
+
 class _StudentDailyScheduleScreenState
     extends State<StudentDailyScheduleScreen> {
   var lang = CacheHelper.getData(key: "lang");
@@ -65,7 +67,16 @@ class _StudentDailyScheduleScreenState
         showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
       }
-
+      if (value.data["data"] == null) {
+        setState(() {
+          isScheduleExist = false;
+        });
+        return;
+      } else {
+        setState(() {
+          isScheduleExist = true;
+        });
+      }
       var tempDailySchedule = m.DailySchedule.fromJson(value.data['data']);
       var now = new DateTime.now();
       var i = 0;
@@ -112,237 +123,257 @@ class _StudentDailyScheduleScreenState
 
     return Scaffold(
         appBar: appBarComponent(context, AppBarTitle()),
-        body: DailySchedule == null
-            ? Center(child: CircularProgressIndicator())
-            : Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                child: Row(
-                  children: [
-                    Padding(
-                      /*----------------------------------------------------------Left Column*/
-                      padding: const EdgeInsets.only(right: 3),
-                      child: Container(
-                          width: 55,
-                          child: ScrollablePositionedList.builder(
-                            initialAlignment: 0.5,
-                            itemScrollController: _itemScrollControllerLeft,
-                            initialScrollIndex: widget.SelectedDateIndex,
-                            itemCount: DailySchedule.items.length,
-                            itemBuilder: (context, index) {
-                              var item = DailySchedule.items[index];
-                              return InkWell(
-                                onTap: () {
-                                  _scrollToIndex(index, _itemScrollController);
-                                  setState(() {
-                                    TodaysDateIndex = index;
-                                    widget.SelectedDateIndex = index;
-                                  });
-                                },
-                                child: Container(
-                                  key: dKeys[index],
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left: BorderSide(
-                                              color: item.isHoliday
-                                                  ? Colors.black38
-                                                  : Colors.black54),
-                                          top: BorderSide(
-                                              color: item.isHoliday
-                                                  ? Colors.black38
-                                                  : Colors.black54),
-                                          right: BorderSide(
-                                              color: item.isHoliday
-                                                  ? Colors.black38
-                                                  : Colors.black54)),
-                                      color: index == widget.SelectedDateIndex
-                                          ? Colors.deepPurple
-                                          : item.isHoliday
-                                              ? Colors.black26
-                                              : Colors.white),
-                                  child: Column(children: [
-                                    Text(
-                                      intl.DateFormat("EEE")
-                                          .format(item.dataDate),
-                                      style: TextStyle(
-                                        color: index == widget.SelectedDateIndex
-                                            ? Colors.white
-                                            : item.isHoliday
-                                                ? Colors.white70
-                                                : Colors.black87,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    Text(
-                                      intl.DateFormat("d MMM")
-                                          .format(item.dataDate),
-                                      style: TextStyle(
+        body: !isScheduleExist
+            ? EmptyWidget()
+            : DailySchedule == null
+                ? Center(child: CircularProgressIndicator())
+                : Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: Row(
+                      children: [
+                        Padding(
+                          /*----------------------------------------------------------Left Column*/
+                          padding: const EdgeInsets.only(right: 3),
+                          child: Container(
+                              width: 55,
+                              child: ScrollablePositionedList.builder(
+                                initialAlignment: 0.5,
+                                itemScrollController: _itemScrollControllerLeft,
+                                initialScrollIndex: widget.SelectedDateIndex,
+                                itemCount: DailySchedule.items.length,
+                                itemBuilder: (context, index) {
+                                  var item = DailySchedule.items[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      _scrollToIndex(
+                                          index, _itemScrollController);
+                                      setState(() {
+                                        TodaysDateIndex = index;
+                                        widget.SelectedDateIndex = index;
+                                      });
+                                    },
+                                    child: Container(
+                                      key: dKeys[index],
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              left: BorderSide(
+                                                  color: item.isHoliday
+                                                      ? Colors.black38
+                                                      : Colors.black54),
+                                              top: BorderSide(
+                                                  color: item.isHoliday
+                                                      ? Colors.black38
+                                                      : Colors.black54),
+                                              right: BorderSide(
+                                                  color: item.isHoliday
+                                                      ? Colors.black38
+                                                      : Colors.black54)),
                                           color:
                                               index == widget.SelectedDateIndex
+                                                  ? Colors.deepPurple
+                                                  : item.isHoliday
+                                                      ? Colors.black26
+                                                      : Colors.white),
+                                      child: Column(children: [
+                                        Text(
+                                          intl.DateFormat("EEE")
+                                              .format(item.dataDate),
+                                          style: TextStyle(
+                                            color: index ==
+                                                    widget.SelectedDateIndex
+                                                ? Colors.white
+                                                : item.isHoliday
+                                                    ? Colors.white70
+                                                    : Colors.black87,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        Text(
+                                          intl.DateFormat("d MMM")
+                                              .format(item.dataDate),
+                                          style: TextStyle(
+                                              color: index ==
+                                                      widget.SelectedDateIndex
                                                   ? Colors.white
                                                   : item.isHoliday
                                                       ? Colors.white70
                                                       : Colors.black87,
-                                          fontSize: 12),
-                                    )
-                                  ]),
-                                ),
-                              );
-                            },
-                          )),
-                    ),
-                    Expanded(
-                        /*----------------------------------------------------------Right Column*/
-                        child: ScrollablePositionedList.builder(
-                            itemScrollController: _itemScrollController,
-                            initialScrollIndex: widget.SelectedDateIndex,
-                            itemCount: DailySchedule.items.length,
-                            itemBuilder: ((context, index) {
-                              var item = DailySchedule.items[index];
+                                              fontSize: 12),
+                                        )
+                                      ]),
+                                    ),
+                                  );
+                                },
+                              )),
+                        ),
+                        Expanded(
+                            /*----------------------------------------------------------Right Column*/
+                            child: ScrollablePositionedList.builder(
+                                itemScrollController: _itemScrollController,
+                                initialScrollIndex: widget.SelectedDateIndex,
+                                itemCount: DailySchedule.items.length,
+                                itemBuilder: ((context, index) {
+                                  var item = DailySchedule.items[index];
 
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                        minHeight:
-                                            MediaQuery.of(context).size.height -
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                            minHeight: MediaQuery.of(context)
+                                                    .size
+                                                    .height -
                                                 100),
-                                    child: Container(
-                                      //Main Container block
-                                      width: double.infinity,
-                                      margin: EdgeInsets.only(bottom: 5),
-                                      decoration: BoxDecoration(
-                                        // borderRadius: BorderRadius.circular(7),
-                                        border: Border.all(
-                                            color: index ==
-                                                    widget.SelectedDateIndex
-                                                ? Colors.deepPurple
-                                                : defaultColor),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            //Date title
-                                            width: double.infinity,
-                                            padding: EdgeInsets.all(5),
-                                            decoration: BoxDecoration(
+                                        child: Container(
+                                          //Main Container block
+                                          width: double.infinity,
+                                          margin: EdgeInsets.only(bottom: 5),
+                                          decoration: BoxDecoration(
+                                            // borderRadius: BorderRadius.circular(7),
+                                            border: Border.all(
                                                 color: index ==
                                                         widget.SelectedDateIndex
                                                     ? Colors.deepPurple
-                                                    : Colors.deepPurple,
-                                                border: Border.all(
+                                                    : defaultColor),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                //Date title
+                                                width: double.infinity,
+                                                padding: EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
                                                     color: index ==
                                                             widget
                                                                 .SelectedDateIndex
                                                         ? Colors.deepPurple
-                                                        : Colors.deepPurple),
-                                                borderRadius: BorderRadius.only(
-                                                    /*topLeft: Radius.circular(7),
+                                                        : Colors.deepPurple,
+                                                    border: Border.all(
+                                                        color: index ==
+                                                                widget
+                                                                    .SelectedDateIndex
+                                                            ? Colors.deepPurple
+                                                            : Colors
+                                                                .deepPurple),
+                                                    borderRadius: BorderRadius.only(
+                                                        /*topLeft: Radius.circular(7),
                               topRight: Radius.circular(7)*/
-                                                    )),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.calendar_month,
-                                                    color: Colors.white),
-                                                SizedBox(
-                                                  width: 5,
+                                                        )),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.calendar_month,
+                                                        color: Colors.white),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      intl.DateFormat(
+                                                              "EEEE d MMM")
+                                                          .format(
+                                                              item.dataDate),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 16),
+                                                    ),
+                                                  ],
                                                 ),
-                                                Text(
-                                                  intl.DateFormat("EEEE d MMM")
-                                                      .format(item.dataDate),
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 16),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          item.isHoliday
-                                              ? Container(
-                                                  decoration: BoxDecoration(
-                                                      color:
-                                                          Colors.blue.shade100,
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                              bottomLeft: Radius
-                                                                  .circular(5),
-                                                              bottomRight:
-                                                                  Radius
+                                              ),
+                                              SizedBox(
+                                                height: 5,
+                                              ),
+                                              item.isHoliday
+                                                  ? Container(
+                                                      decoration: BoxDecoration(
+                                                          color: Colors
+                                                              .blue.shade100,
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                                  bottomLeft: Radius
+                                                                      .circular(
+                                                                          5),
+                                                                  bottomRight: Radius
                                                                       .circular(
                                                                           5))),
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height -
-                                                      135,
-                                                  width: double.infinity,
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Image.asset(
-                                                        "assets/images/Holiday.png",
-                                                        width: 150,
-                                                        height: 150,
-                                                      ),
-                                                      Text(
-                                                        item.holidayName,
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 24,
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    228,
-                                                                    100,
-                                                                    100),
-                                                            shadows: <Shadow>[
-                                                              Shadow(
-                                                                offset: Offset(
-                                                                    0, 0),
-                                                                blurRadius: 3,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height -
+                                                              135,
+                                                      width: double.infinity,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Image.asset(
+                                                            "assets/images/Holiday.png",
+                                                            width: 150,
+                                                            height: 150,
+                                                          ),
+                                                          Text(
+                                                            item.holidayName,
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 24,
                                                                 color: Color
                                                                     .fromARGB(
                                                                         255,
-                                                                        255,
-                                                                        255,
-                                                                        255),
-                                                              ),
-                                                            ]),
+                                                                        228,
+                                                                        100,
+                                                                        100),
+                                                                shadows: <
+                                                                    Shadow>[
+                                                                  Shadow(
+                                                                    offset:
+                                                                        Offset(
+                                                                            0,
+                                                                            0),
+                                                                    blurRadius:
+                                                                        3,
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            255,
+                                                                            255,
+                                                                            255),
+                                                                  ),
+                                                                ]),
+                                                          ),
+                                                        ],
                                                       ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : ListView.builder(
-                                                  physics:
-                                                      NeverScrollableScrollPhysics(),
-                                                  shrinkWrap: true,
-                                                  itemCount:
-                                                      item.lessons.length,
-                                                  itemBuilder: (context,
-                                                          index) =>
-                                                      mainSubListItem(
-                                                          context,
-                                                          item.lessons[index],
-                                                          widget.Id),
-                                                )
-                                        ],
+                                                    )
+                                                  : ListView.builder(
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(),
+                                                      shrinkWrap: true,
+                                                      itemCount:
+                                                          item.lessons.length,
+                                                      itemBuilder:
+                                                          (context, index) =>
+                                                              mainSubListItem(
+                                                                  context,
+                                                                  item.lessons[
+                                                                      index],
+                                                                  widget.Id),
+                                                    )
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            })))
-                  ],
-                ),
-              ));
+                                    ],
+                                  );
+                                })))
+                      ],
+                    ),
+                  ));
   }
 
   Widget mainSubListItem(context, Lesson l, studentId) {
@@ -452,5 +483,38 @@ class _StudentDailyScheduleScreenState
         index: index,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOutCubic);
+  }
+}
+
+class EmptyWidget extends StatelessWidget {
+  EmptyWidget({Key key}) : super(key: key);
+  String lang = CacheHelper.getData(key: 'lang');
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/empty-curriculum.jpg',
+              height: 175,
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              lang == "en"
+                  ? 'Your schedule has not been set so far by DIGISCHOOL!'
+                  : 'لم يتم وضع الجدول بعد من قبل إدارة التطبيق',
+              textAlign: lang == "en" ? TextAlign.left : TextAlign.right,
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black38,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w600),
+            ),
+          ]),
+    );
   }
 }

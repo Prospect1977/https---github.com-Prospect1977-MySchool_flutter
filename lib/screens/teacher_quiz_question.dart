@@ -44,6 +44,7 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
 
   var lang = CacheHelper.getData(key: 'lang');
   var token = CacheHelper.getData(key: 'token');
+  bool isSaving = false;
   void _selectImage(String pickedImage) {
     setState(() {
       widget.question.questionImageUrl = pickedImage;
@@ -52,6 +53,7 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
   }
 
   void SaveChanges() async {
+    print(token.toString());
     if (QuestionTitleController.text == "" &&
         widget.question.questionImageUrl == null) {
       showToast(
@@ -92,42 +94,17 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
       print(json.encode(widget.question.toJson()));
       widget.question.answers = Answers;
       widget.question.questionType = SelectedQuestionType;
-      // var formdata =
-      //     FormData.fromMap({"Question": json.encode(widget.question.toJson())});
+      setState(() {
+        isSaving = true;
+      });
       await Provider.of<QuizProvider>(context, listen: false).saveQuestion(
           context: context,
           QuizId: widget.QuizId,
           TeacherId: widget.TeacherId,
           question: widget.question);
-
-      // DioHelper.postData(
-      //     url: "TeacherQuiz/SaveQuestion",
-      //     lang: lang,
-      //     token: token,
-      //     data: widget.question.toJson(),
-      //     query: {
-      //       "TeacherId": widget.TeacherId,
-      //       "QuizId": widget.QuizId,
-      //       "QuestionId": widget.question.id
-      //     }).then((value) {
-      //   if (value.data["status"] == false &&
-      //       value.data["message"] == "SessionExpired") {
-      //     handleSessionExpired(context);
-      //     return;
-      //   } else if (value.data["status"] == false) {
-      //     showToast(text: value.data["message"], state: ToastStates.ERROR);
-      //     return;
-      //   } else {
-      //     showToast(text: value.data["message"], state: ToastStates.SUCCESS);
-      //     navigateTo(context,
-      //         TeacherQuizScreen(QuizId: widget.QuizId, dir: widget.dir));
-      //   }
-
-      //   navigateTo(
-      //       context, TeacherQuizScreen(QuizId: widget.QuizId, dir: widget.dir));
-      // }).catchError((error) {
-      //   showToast(text: error.toString(), state: ToastStates.ERROR);
-      // });
+      setState(() {
+        isSaving = false;
+      });
     }
   }
 
@@ -224,7 +201,8 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
     try {
       print(widget.question.toJson());
     } catch (ex) {}
-
+    token = CacheHelper.getData(key: 'token');
+    print(token);
     if (widget.question != null) {
       Answers = [...widget.question.answers];
       SelectedQuestionType = widget.question.questionType;
@@ -666,11 +644,15 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                   SizedBox(
                     height: 5,
                   ),
-                  defaultButton(
-                      function: SaveChanges,
-                      text: widget.dir == "ltr" ? "Save" : "حفظ",
-                      foregroundColor: Colors.white,
-                      background: Colors.green)
+                  isSaving
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : defaultButton(
+                          function: SaveChanges,
+                          text: widget.dir == "ltr" ? "Save" : "حفظ",
+                          foregroundColor: Colors.white,
+                          background: Colors.green)
                 ],
               ),
             )),

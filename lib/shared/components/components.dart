@@ -82,6 +82,7 @@ var AppBarActions = [
                 await prefs.remove("roles");
                 await prefs.remove("userId");
 
+                print("token : ${CacheHelper.getData(key: 'token')}");
                 navigateAndFinish(ctx, LoginScreen());
               },
             ),

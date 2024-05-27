@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_school/models/teacher_lesson.dart';
 //import 'package:my_school/models/StudentSessionHeaderDetail.dart';
 import 'package:my_school/models/teacher_session.dart';
+import 'package:my_school/providers/TeacherSessionProvider.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/teacher_quiz_screen.dart';
 import 'package:my_school/screens/video_screen.dart';
@@ -21,6 +22,7 @@ import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/teacher_file_input.dart';
 import 'package:my_school/shared/widgets/teacher_session_navigation_bar.dart';
 import 'package:my_school/shared/widgets/video_input.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:dio/dio.dart' as dio;
@@ -55,37 +57,14 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
   String token = CacheHelper.getData(key: "token");
   TextEditingController titleController = new TextEditingController();
   var showLessons = false;
-  TeacherSession sessionData = null;
-  var lessonsData = null;
+  // TeacherSession sessionData = null;
+  TeacherLessons lessonsData;
   bool showReorderTip = true;
   bool isSessionActive;
+  //the following function is only used for the video procedures:
   void getData() async {
-    DioHelper.getData(
-            url: "TeacherSession",
-            query: {
-              "TeacherId": widget.TeacherId,
-              "LessonId": widget.LessonId,
-              "DataDate": DateTime.now()
-            },
-            token: token,
-            lang: lang)
-        .then((value) {
-      print(value.data);
-      if (value.data["status"] == false &&
-          value.data["message"] == "SessionExpired") {
-        handleSessionExpired(context);
-        return;
-      } else if (value.data["status"] == false) {
-        showToast(text: value.data["message"], state: ToastStates.ERROR);
-        return;
-      }
-      setState(() {
-        sessionData = TeacherSession.fromJson(value.data['data']);
-        isSessionActive = sessionData.active;
-      });
-    }).catchError((error) {
-      showToast(text: error.toString(), state: ToastStates.ERROR);
-    });
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .getData(context, widget.TeacherId, widget.LessonId);
   }
 
   void getLessons() async {
@@ -115,87 +94,18 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
     });
   }
 
-  void DeleteSessionDetail(int SessionDetailId) async {
-    // DeleteSessionDetail(int TeacherId, int SessionDetailId, [FromHeader] string lang)
-    // setState(() {
-    //   sessionData = null;
-    // });
-    DioHelper.postData(
-            url: 'TeacherSession/DeleteSessionDetail',
-            query: {
-              'TeacherId': widget.TeacherId,
-              "SessionDetailId": SessionDetailId,
-            },
-            lang: lang,
-            token: token)
-        .then((value) {
-      if (value.data["status"] == false &&
-          value.data["message"] == "SessionExpired") {
-        handleSessionExpired(context);
-        return;
-      } else if (value.data["status"] == false) {
-        showToast(text: value.data["message"], state: ToastStates.ERROR);
-        return;
-      }
-      Navigator.pop(context);
-      getData();
-    }).catchError((error) {
-      showToast(text: error.toString(), state: ToastStates.ERROR);
-    });
-  }
-
   void ActivateSessionDetail(int SessionDetailId) async {
-    DioHelper.postData(
-            url: 'TeacherSession/ActivateSessionDetail',
-            query: {
-              'TeacherId': widget.TeacherId,
-              "SessionDetailId": SessionDetailId,
-            },
-            lang: lang,
-            token: token)
-        .then((value) {
-      if (value.data["status"] == false &&
-          value.data["message"] == "SessionExpired") {
-        handleSessionExpired(context);
-        return;
-      } else if (value.data["status"] == false) {
-        showToast(text: value.data["message"], state: ToastStates.ERROR);
-        return;
-      }
-      showToast(
-          text: lang == "en" ? "Saved Successfully!" : "تم الحفظ بنجاح!",
-          state: ToastStates.SUCCESS);
-      getData();
-    }).catchError((error) {
-      showToast(text: error.toString(), state: ToastStates.ERROR);
-    });
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .ActivateSessionDetail(context, SessionDetailId, widget.TeacherId);
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .getData(context, widget.TeacherId, widget.LessonId);
   }
 
   void DeactivateSessionDetail(int SessionDetailId) async {
-    DioHelper.postData(
-            url: 'TeacherSession/DeactivateSessionDetail',
-            query: {
-              'TeacherId': widget.TeacherId,
-              "SessionDetailId": SessionDetailId,
-            },
-            lang: lang,
-            token: token)
-        .then((value) {
-      if (value.data["status"] == false &&
-          value.data["message"] == "SessionExpired") {
-        handleSessionExpired(context);
-        return;
-      } else if (value.data["status"] == false) {
-        showToast(text: value.data["message"], state: ToastStates.ERROR);
-        return;
-      }
-      showToast(
-          text: lang == "en" ? "Saved Successfully!" : "تم الحفظ بنجاح!",
-          state: ToastStates.SUCCESS);
-      getData();
-    }).catchError((error) {
-      showToast(text: error.toString(), state: ToastStates.ERROR);
-    });
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .DeactivateSessionDetail(context, SessionDetailId, widget.TeacherId);
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .getData(context, widget.TeacherId, widget.LessonId);
   }
 
   void _uploadVideoThumnail(int VideoId) async {
@@ -213,21 +123,10 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
           filename: filename, contentType: new MediaType('file', '*/*')),
       "type": "file"
     });
-
-    DioHelper.postImage(
-            url: 'TeacherSession/TeacherUploadVideoThumbnail',
-            data: formData,
-            query: {"VideoId": VideoId},
-            lang: "en",
-            token: "")
-        .then((value) {
-      print(value.data);
-      getData();
-      //  widget.onSelectImage(value.data);
-    });
-    setState(() {
-      //  _storedImage = File(imageFile.path);
-    });
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .UploadVideoThumnail(context, VideoId, formData);
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .getData(context, widget.TeacherId, widget.LessonId);
   }
 
   void _startEditTitle(ctx, {String title, int sessionDetailId}) {
@@ -302,59 +201,70 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
     if (titleController.text == "") {
       return;
     }
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .updateTitle(
+            context: context,
+            sessionDetailId: sessionDetailId,
+            TeacherId: widget.TeacherId,
+            Title: titleController.text);
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .getData(context, widget.TeacherId, widget.LessonId);
+    // DioHelper.postData(
+    //     url: "TeacherSession/UpdateSessionDetailTitle",
+    //     lang: lang,
+    //     token: token,
+    //     data: {},
+    //     query: {
+    //       "TeacherId": widget.TeacherId,
+    //       "SessionDetailId": sessionDetailId,
+    //       "Title": titleController.text,
+    //     }).then((value) {
+    //   if (value.data["status"] == false &&
+    //       value.data["message"] == "SessionExpired") {
+    //     handleSessionExpired(context);
+    //     return;
+    //   } else if (value.data["status"] == false) {
+    //     showToast(text: value.data["message"], state: ToastStates.ERROR);
+    //     return;
+    //   } else {
+    //     Navigator.of(context).pop();
+    //     showToast(text: value.data["message"], state: ToastStates.SUCCESS);
 
-    DioHelper.postData(
-        url: "TeacherSession/UpdateSessionDetailTitle",
-        lang: lang,
-        token: token,
-        data: {},
-        query: {
-          "TeacherId": widget.TeacherId,
-          "SessionDetailId": sessionDetailId,
-          "Title": titleController.text,
-        }).then((value) {
-      if (value.data["status"] == false &&
-          value.data["message"] == "SessionExpired") {
-        handleSessionExpired(context);
-        return;
-      } else if (value.data["status"] == false) {
-        showToast(text: value.data["message"], state: ToastStates.ERROR);
-        return;
-      } else {
-        Navigator.of(context).pop();
-        showToast(text: value.data["message"], state: ToastStates.SUCCESS);
-        getData();
-      }
-    });
+    //   }
+    // });
   }
 
-  void ReorderSessionDetails() async {
+  void ReorderSessionDetails(List<TeacherSessionDetail> reorderedItems) async {
     String ids = '';
-    sessionData.teacherSessionDetails.map((e) {
+    reorderedItems.map((e) {
       ids += '${e.id},';
     }).toList();
     ids = ids.substring(0, ids.length - 1);
     print(ids);
-    DioHelper.postData(
-            url: "TeacherSession/ReorderSessionDetails",
-            lang: lang,
-            token: token,
-            data: {},
-            query: {"TeacherId": widget.TeacherId, 'SessionDetailsList': ids})
-        .then((value) {
-      if (value.data["status"] == false &&
-          value.data["message"] == "SessionExpired") {
-        handleSessionExpired(context);
-        return;
-      } else if (value.data["status"] == false) {
-        showToast(text: value.data["message"], state: ToastStates.ERROR);
-        return;
-      } else {
-        showToast(text: value.data["message"], state: ToastStates.SUCCESS);
-      }
-    }).catchError((error) {
-      showToast(text: error.toString(), state: ToastStates.ERROR);
-    });
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .ReorderSessionDetails(context, widget.TeacherId, ids);
+    await Provider.of<TeacherSessionProvider>(context, listen: false)
+        .getData(context, widget.TeacherId, widget.LessonId);
+    // DioHelper.postData(
+    //         url: "TeacherSession/ReorderSessionDetails",
+    //         lang: lang,
+    //         token: token,
+    //         data: {},
+    //         query: {"TeacherId": widget.TeacherId, 'SessionDetailsList': ids})
+    //     .then((value) {
+    //   if (value.data["status"] == false &&
+    //       value.data["message"] == "SessionExpired") {
+    //     handleSessionExpired(context);
+    //     return;
+    //   } else if (value.data["status"] == false) {
+    //     showToast(text: value.data["message"], state: ToastStates.ERROR);
+    //     return;
+    //   } else {
+    //     showToast(text: value.data["message"], state: ToastStates.SUCCESS);
+    //   }
+    // }).catchError((error) {
+    //   showToast(text: error.toString(), state: ToastStates.ERROR);
+    // });
   }
 
   @override
@@ -363,8 +273,9 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
     print(
         "--------------------------------------TeacherId:${widget.TeacherId}");
     print("--------------------------------------LessonId:${widget.LessonId}");
-    getData();
+
     getLessons();
+    //for the button navigation bar:
   }
 
   @override
@@ -372,234 +283,328 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
     String align = widget.dir == "ltr" ? "left" : "right";
     return RefreshIndicator(
       onRefresh: () async {
-        getData();
+        Provider.of<TeacherSessionProvider>(context, listen: false)
+            .getData(context, widget.TeacherId, widget.LessonId);
       },
       child: Scaffold(
         appBar: appBarComponent(context, widget.LessonName),
-        body: sessionData == null || lessonsData == null
-            ? Center(child: CircularProgressIndicator())
-            : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                Container(
-                    width: 25,
-                    margin: EdgeInsets.only(right: 7),
-                    child: GestureDetector(
-                      child: Image.asset(
-                        "assets/images/${showLessons ? 'expand_left.png' : 'expand_right.png'}",
-                        width: 25,
-                        height: 50,
-                        opacity: AlwaysStoppedAnimation(1),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          showLessons = !showLessons;
-                          print(showLessons);
-                        });
-                      },
-                    )),
-                showLessons == false
-                    //----------------------------------------------Session Details
-                    ? Expanded(
-                        child: Directionality(
-                            textDirection: widget.dir == "ltr"
-                                ? TextDirection.ltr
-                                : TextDirection.rtl,
-                            child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 3),
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      sessionData.lessonDescription == null
-                                          ? Container()
-                                          : Container(
-                                              alignment: widget.dir == "ltr"
-                                                  ? Alignment.centerLeft
-                                                  : Alignment.centerRight,
-                                              width: double.infinity,
-                                              padding: EdgeInsets.all(10),
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 5, vertical: 7),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.purple
-                                                      .withOpacity(0.05),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
-                                                  border: Border.all(
-                                                      color: defaultColor
-                                                          .withOpacity(0.4),
-                                                      width: 1)),
-                                              child: Column(
+        body: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Container(
+              width: 25,
+              margin: EdgeInsets.only(right: 7),
+              child: GestureDetector(
+                child: Image.asset(
+                  "assets/images/${showLessons ? 'expand_left_pink.png' : 'expand_right_pink.png'}",
+                  width: 25,
+                  height: 50,
+                  opacity: AlwaysStoppedAnimation(1),
+                ),
+                onTap: () {
+                  setState(() {
+                    showLessons = !showLessons;
+                    print(showLessons);
+                  });
+                },
+              )),
+          showLessons == false
+              //----------------------------------------------Session Details
+              ? Expanded(
+                  child: FutureBuilder(
+                      future: Provider.of<TeacherSessionProvider>(context,
+                              listen: false)
+                          .getData(context, widget.TeacherId, widget.LessonId),
+                      builder: ((context, snapshot) =>
+                          Consumer<TeacherSessionProvider>(
+                              builder: (ctx, model, child) {
+                            // setState(() {
+                            //   print("set state called!");
+                            //   //-------------------------------------------------Potential problem:-----------------------------
+                            //   sessionData = model.session;
+                            // });
+                            return model.isLoading == true
+                                ? Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : model.session.teacherSessionDetails.length ==
+                                        0
+                                    ? EmptyContentWidget(widget.dir)
+                                    : Directionality(
+                                        textDirection: widget.dir == "ltr"
+                                            ? TextDirection.ltr
+                                            : TextDirection.rtl,
+                                        child: Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 3),
+                                            child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    sessionData.lessonDescription ==
-                                                            null
-                                                        ? ""
-                                                        : sessionData
-                                                            .lessonDescription,
-                                                    textAlign: TextAlign.start,
-                                                    style: TextStyle(
-                                                        fontStyle:
-                                                            FontStyle.italic,
-                                                        color: Colors
-                                                            .purple.shade300),
+                                                  model.session
+                                                              .lessonDescription ==
+                                                          null
+                                                      ? Container()
+                                                      : Container(
+                                                          alignment: widget
+                                                                      .dir ==
+                                                                  "ltr"
+                                                              ? Alignment
+                                                                  .centerLeft
+                                                              : Alignment
+                                                                  .centerRight,
+                                                          width:
+                                                              double.infinity,
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  10),
+                                                          margin: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal: 5,
+                                                                  vertical: 7),
+                                                          decoration: BoxDecoration(
+                                                              color: Colors
+                                                                  .purple
+                                                                  .withOpacity(
+                                                                      0.05),
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                      5),
+                                                              border: Border.all(
+                                                                  color: defaultColor
+                                                                      .withOpacity(
+                                                                          0.4),
+                                                                  width: 1)),
+                                                          child: Column(
+                                                            children: [
+                                                              Text(
+                                                                model.session
+                                                                            .lessonDescription ==
+                                                                        null
+                                                                    ? ""
+                                                                    : model
+                                                                        .session
+                                                                        .lessonDescription,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .start,
+                                                                style: TextStyle(
+                                                                    fontStyle:
+                                                                        FontStyle
+                                                                            .italic,
+                                                                    color: Colors
+                                                                        .purple
+                                                                        .shade300),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                  model.session.id == 0 ||
+                                                          isSessionActive ==
+                                                              true
+                                                      ? Container()
+                                                      : Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  top: 5),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      5),
+                                                          child: Container(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    5),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons
+                                                                      .lightbulb,
+                                                                  color: Colors
+                                                                      .amber
+                                                                      .shade700,
+                                                                ),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    widget.dir ==
+                                                                            "ltr"
+                                                                        ? "This content is not visible for visitors, tap the settings button below"
+                                                                        : "هذا المحتوى غير مرئي للمتصفح، انقر على زر الإعدادات اسفل",
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .amber
+                                                                            .shade700,
+                                                                        fontStyle:
+                                                                            FontStyle.italic),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            decoration: BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            5),
+                                                                border: Border.all(
+                                                                    color: Colors
+                                                                        .amber
+                                                                        .shade700),
+                                                                color: Colors
+                                                                    .amber
+                                                                    .withOpacity(
+                                                                        0.05)),
+                                                          ),
+                                                        ),
+                                                  model.session.teacherSessionDetails
+                                                                  .length >
+                                                              1 &&
+                                                          showReorderTip
+                                                      ? Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  top: 5),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      5),
+                                                          child: Container(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    5),
+                                                            child: Row(
+                                                              children: [
+                                                                Icon(
+                                                                  Icons
+                                                                      .lightbulb,
+                                                                  color: Colors
+                                                                      .amber
+                                                                      .shade700,
+                                                                ),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    widget.dir ==
+                                                                            "ltr"
+                                                                        ? "Tap, Long Hold with Drag to reorder items"
+                                                                        : "للترتيب: إضغط طويلا مع سحب العنصر رأسيا",
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .amber
+                                                                            .shade700,
+                                                                        fontStyle:
+                                                                            FontStyle.italic),
+                                                                  ),
+                                                                ),
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    setState(
+                                                                        () {
+                                                                      showReorderTip =
+                                                                          false;
+                                                                    });
+                                                                  },
+                                                                  child: Icon(
+                                                                    Icons.close,
+                                                                    color: Colors
+                                                                        .red,
+                                                                    size: 17,
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            decoration: BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            5),
+                                                                border: Border.all(
+                                                                    color: Colors
+                                                                        .amber
+                                                                        .shade700),
+                                                                color: Colors
+                                                                    .amber
+                                                                    .withOpacity(
+                                                                        0.05)),
+                                                          ),
+                                                        )
+                                                      : Container(),
+                                                  Expanded(
+                                                    child: Container(
+                                                      //to be revised
+                                                      height: double.infinity,
+                                                      child: ReorderableListView
+                                                          .builder(
+                                                        itemCount: model
+                                                            .session
+                                                            .teacherSessionDetails
+                                                            .length,
+                                                        onReorder: (oldIndex,
+                                                            newIndex) {
+                                                          if (oldIndex <
+                                                              newIndex) {
+                                                            newIndex--;
+                                                          }
+                                                          var tempList = [
+                                                            ...model.session
+                                                                .teacherSessionDetails
+                                                          ];
+                                                          final tile =
+                                                              tempList.removeAt(
+                                                                  oldIndex);
+                                                          tempList.insert(
+                                                              newIndex, tile);
+
+                                                          ReorderSessionDetails(
+                                                              tempList);
+                                                        },
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          var item = model
+                                                                  .session
+                                                                  .teacherSessionDetails[
+                                                              index];
+                                                          return Item(
+                                                            key: ValueKey(item),
+                                                            item: item,
+                                                            teacherSession:
+                                                                model.session,
+                                                            widget: widget,
+                                                            align: align,
+                                                            UploadVideoThumbnail: () =>
+                                                                _uploadVideoThumnail(
+                                                                    item.videoId),
+                                                            RenameSessionDetail: () =>
+                                                                _startEditTitle(
+                                                                    context,
+                                                                    sessionDetailId:
+                                                                        item.id,
+                                                                    title: item
+                                                                        .title),
+                                                            ActivateSessionDetail:
+                                                                () =>
+                                                                    ActivateSessionDetail(
+                                                                        item.id),
+                                                            DeactivateSessionDetail:
+                                                                () =>
+                                                                    DeactivateSessionDetail(
+                                                              item.id,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
                                                   ),
-                                                ],
-                                              ),
-                                            ),
-                                      sessionData.id == 0 ||
-                                              isSessionActive == true
-                                          ? Container()
-                                          : Container(
-                                              margin: EdgeInsets.only(top: 5),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              child: Container(
-                                                padding: EdgeInsets.all(5),
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.lightbulb,
-                                                      color:
-                                                          Colors.amber.shade700,
-                                                    ),
-                                                    Expanded(
-                                                      child: Text(
-                                                        widget.dir == "ltr"
-                                                            ? "This content is not visible for visitors, tap the settings button below"
-                                                            : "هذا المحتوى غير مرئي للمتصفح، انقر على زر الإعدادات اسفل",
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .amber.shade700,
-                                                            fontStyle: FontStyle
-                                                                .italic),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                    border: Border.all(
-                                                        color: Colors
-                                                            .amber.shade700),
-                                                    color: Colors.amber
-                                                        .withOpacity(0.05)),
-                                              ),
-                                            ),
-                                      sessionData.teacherSessionDetails.length >
-                                                  1 &&
-                                              showReorderTip
-                                          ? Container(
-                                              margin: EdgeInsets.only(top: 5),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              child: Container(
-                                                padding: EdgeInsets.all(5),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.lightbulb,
-                                                      color:
-                                                          Colors.amber.shade700,
-                                                    ),
-                                                    Expanded(
-                                                      child: Text(
-                                                        widget.dir == "ltr"
-                                                            ? "Tap, Long Hold with Drag to reorder items"
-                                                            : "للترتيب: إضغط طويلا مع سحب العنصر رأسيا",
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .amber.shade700,
-                                                            fontStyle: FontStyle
-                                                                .italic),
-                                                      ),
-                                                    ),
-                                                    InkWell(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          showReorderTip =
-                                                              false;
-                                                        });
-                                                      },
-                                                      child: Icon(
-                                                        Icons.close,
-                                                        color: Colors.red,
-                                                        size: 17,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                    border: Border.all(
-                                                        color: Colors
-                                                            .amber.shade700),
-                                                    color: Colors.amber
-                                                        .withOpacity(0.05)),
-                                              ),
-                                            )
-                                          : Container(),
-                                      Container(
-                                        height:
-                                            MediaQuery.of(context).size.height -
-                                                256,
-                                        child: ReorderableListView.builder(
-                                          itemCount: sessionData
-                                              .teacherSessionDetails.length,
-                                          onReorder: (oldIndex, newIndex) {
-                                            setState(() {
-                                              if (oldIndex < newIndex) {
-                                                newIndex--;
-                                              }
-                                              final tile = sessionData
-                                                  .teacherSessionDetails
-                                                  .removeAt(oldIndex);
-                                              sessionData.teacherSessionDetails
-                                                  .insert(newIndex, tile);
-                                            });
-                                            ReorderSessionDetails();
-                                          },
-                                          itemBuilder: (context, index) {
-                                            var item = sessionData
-                                                .teacherSessionDetails[index];
-                                            return Item(
-                                              key: ValueKey(item),
-                                              item: item,
-                                              teacherSession: sessionData,
-                                              widget: widget,
-                                              align: align,
-                                              UploadVideoThumbnail: () =>
-                                                  _uploadVideoThumnail(
-                                                      item.videoId),
-                                              RenameSessionDetail: () =>
-                                                  _startEditTitle(context,
-                                                      sessionDetailId: item.id,
-                                                      title: item.title),
-                                              DeleteSessionDetail: () =>
-                                                  DeleteSessionDetail(item.id),
-                                              ActivateSessionDetail: () =>
-                                                  ActivateSessionDetail(
-                                                      item.id),
-                                              DeactivateSessionDetail: () =>
-                                                  DeactivateSessionDetail(
-                                                item.id,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ]))))
-                    //----------------------------------------------Lessons List
-                    : Expanded(
-                        child: Padding(
+                                                ])));
+                          }))))
+              //----------------------------------------------Lessons List
+              : Expanded(
+                  child: lessonsData.Lessons.length == 0
+                      ? Container()
+                      : Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Container(
                             decoration: BoxDecoration(
@@ -851,20 +856,27 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                             ),
                           ),
                         ),
-                      )
-              ]),
-        bottomNavigationBar: sessionData != null
-            ? sessionData.id == 0
-                ? null
-                : TeacherSessionNavigationBar(
-                    LessonId: widget.LessonId,
-                    LessonName: widget.LessonName,
-                    TeacherId: widget.TeacherId,
-                    TermIndex: widget.TermIndex,
-                    YearSubjectId: widget.YearSubjectId,
-                    dir: widget.dir,
-                    PageIndex: 0)
-            : null,
+                )
+        ]),
+        ///////////////////-------------------Potential error--------------------
+        bottomNavigationBar:
+            Provider.of<TeacherSessionProvider>(context, listen: false)
+                        .session !=
+                    null
+                ? Provider.of<TeacherSessionProvider>(context, listen: false)
+                            .session
+                            .id ==
+                        0
+                    ? null
+                    : TeacherSessionNavigationBar(
+                        LessonId: widget.LessonId,
+                        LessonName: widget.LessonName,
+                        TeacherId: widget.TeacherId,
+                        TermIndex: widget.TermIndex,
+                        YearSubjectId: widget.YearSubjectId,
+                        dir: widget.dir,
+                        PageIndex: 0)
+                : null,
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.green,
           child: Icon(Icons.add),
@@ -887,7 +899,10 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                sessionData.teacherSessionDetails
+                                Provider.of<TeacherSessionProvider>(context,
+                                                listen: false)
+                                            .session
+                                            .teacherSessionDetails
                                             .where((m) => m.type == "Promo")
                                             .length ==
                                         0
@@ -927,22 +942,31 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                             ]),
                                       )
                                     : Container(),
-                                sessionData.teacherSessionDetails
-                                            .where((m) => m.type == "Promo")
-                                            .length ==
-                                        0
-                                    ? Divider(
-                                        color: Colors.white54,
-                                        thickness: 0.5,
-                                      )
-                                    : Container(),
+                                Provider.of<TeacherSessionProvider>(context,
+                                                listen: false)
+                                            .session ==
+                                        null
+                                    ? Container()
+                                    : Provider.of<TeacherSessionProvider>(
+                                                    context,
+                                                    listen: false)
+                                                .session
+                                                .teacherSessionDetails
+                                                .where((m) => m.type == "Promo")
+                                                .length ==
+                                            0
+                                        ? Divider(
+                                            color: Colors.white54,
+                                            thickness: 0.5,
+                                          )
+                                        : Container(),
                                 InkWell(
                                   onTap: () async {
                                     Navigator.of(context).pop();
                                     showDialog(
                                       context: context,
                                       barrierDismissible: false,
-                                      builder: (context) => Dialog(
+                                      builder: (ctx) => Dialog(
                                           child: UploadProgressDialog(
                                               TeacherId: widget.TeacherId,
                                               LessonId: widget.LessonId,
@@ -985,7 +1009,9 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                         query: {
                                           'TeacherId': widget.TeacherId,
                                           "LessonId": widget.LessonId,
-                                          "DataDate": DateTime.now()
+                                          "DataDate": DateTime.now(),
+                                          "UserId":
+                                              CacheHelper.getData(key: 'userId')
                                         }).then(
                                       (value) {
                                         print(value.data["data"]);
@@ -1010,6 +1036,13 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                   // TeacherId: widget.TeacherId,
                                                   // LessonId: widget.LessonId,
                                                   dir: widget.dir));
+                                          Provider.of<TeacherSessionProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .getData(
+                                                  context,
+                                                  widget.TeacherId,
+                                                  widget.LessonId);
                                         }
                                       },
                                     ).catchError((error) {
@@ -1093,7 +1126,6 @@ class Item extends StatelessWidget {
     @required this.widget,
     @required this.teacherSession,
     @required this.align,
-    @required this.DeleteSessionDetail,
     @required this.RenameSessionDetail,
     @required this.ActivateSessionDetail,
     @required this.DeactivateSessionDetail,
@@ -1105,7 +1137,7 @@ class Item extends StatelessWidget {
   final TeacherSessionScreen widget;
   final String align;
   final TeacherSession teacherSession;
-  final Function DeleteSessionDetail;
+
   final Function RenameSessionDetail;
   final Function ActivateSessionDetail;
   final Function DeactivateSessionDetail;
@@ -1388,7 +1420,26 @@ class Item extends StatelessWidget {
                                             child: Text(widget.dir == "ltr"
                                                 ? 'Yes'
                                                 : "نعم"),
-                                            onPressed: DeleteSessionDetail,
+                                            onPressed: () async {
+                                              await Provider.of<
+                                                          TeacherSessionProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .DeleteSessionDetail(
+                                                      context,
+                                                      item.id,
+                                                      widget.TeacherId);
+
+                                              await Provider.of<
+                                                          TeacherSessionProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .getData(
+                                                      context,
+                                                      widget.TeacherId,
+                                                      widget.LessonId);
+                                              Navigator.of(ctx).pop();
+                                            },
                                           ),
                                         ],
                                       ),
@@ -1496,4 +1547,40 @@ String getVideoDuration(dur) {
   return [duration.inMinutes, duration.inSeconds]
       .map((seg) => seg.remainder(60).toString().padLeft(2, '0'))
       .join(':');
+}
+
+class EmptyContentWidget extends StatelessWidget {
+  EmptyContentWidget(this.dir, {Key key}) : super(key: key);
+  String dir;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(30),
+      child: Center(
+        child: Directionality(
+          textDirection: dir == "ltr" ? TextDirection.ltr : TextDirection.rtl,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/empty-content.png'),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                dir == "ltr"
+                    ? "Click on the '+' button below to add a new content"
+                    : "لإضافة محتوى جديد إضغط ايقونة '+'",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black54,
+                    fontStyle: FontStyle.italic),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

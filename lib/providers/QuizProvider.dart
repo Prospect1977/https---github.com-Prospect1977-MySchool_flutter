@@ -50,13 +50,17 @@ class QuizProvider with ChangeNotifier {
   Future<void> DeleteQuestion(int TeacherId, int QuestionId) async {
     isLoading = true;
     notifyListeners();
+    var userId = CacheHelper.getData(key: 'userId');
     DioHelper.postData(
-            url: "TeacherQuiz/DeleteQuestion",
-            lang: lang,
-            token: token,
-            data: {},
-            query: {"TeacherId": TeacherId, 'QuestionId': QuestionId})
-        .then((value) {
+        url: "TeacherQuiz/DeleteQuestion",
+        lang: lang,
+        token: token,
+        data: {},
+        query: {
+          "TeacherId": TeacherId,
+          'QuestionId': QuestionId,
+          "UserId": userId
+        }).then((value) {
       if (value.data["status"] == false &&
           value.data["message"] == "SessionExpired") {
         showToast(
@@ -81,6 +85,7 @@ class QuizProvider with ChangeNotifier {
 
   Future<void> saveQuestion(
       {context, Question question, int TeacherId, int QuizId}) {
+    var userId = CacheHelper.getData(key: 'userId');
     DioHelper.postData(
         url: "TeacherQuiz/SaveQuestion",
         lang: lang,
@@ -89,7 +94,8 @@ class QuizProvider with ChangeNotifier {
         query: {
           "TeacherId": TeacherId,
           "QuizId": QuizId,
-          "QuestionId": question.id
+          "QuestionId": question.id,
+          "UserId": userId
         }).then((value) {
       if (value.data["status"] == false &&
           value.data["message"] == "SessionExpired") {
@@ -123,6 +129,7 @@ class QuizProvider with ChangeNotifier {
     // });
     // questions = questionsNew;
     // notifyListeners();
+    var userId = CacheHelper.getData(key: 'userId');
     DioHelper.postData(
         url: "TeacherQuiz/ReorderQuestions",
         lang: lang,
@@ -131,7 +138,8 @@ class QuizProvider with ChangeNotifier {
         query: {
           "TeacherId": TeacherId,
           'QuestionsList': ids,
-          "QuizId": QuizId
+          "QuizId": QuizId,
+          "UserId": userId
         }).then((value) {
       if (value.data["status"] == false &&
           value.data["message"] == "SessionExpired") {

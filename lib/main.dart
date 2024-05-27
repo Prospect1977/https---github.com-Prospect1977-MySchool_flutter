@@ -7,7 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:my_school/providers/CurriculumProvider.dart';
 import 'package:my_school/providers/QuizProvider.dart';
-import 'package:my_school/providers/StudentLessonSessions_provider.dart';
+import 'package:my_school/providers/StudentLessonSessionsProvider.dart';
+import 'package:my_school/providers/TeacherSessionProvider.dart';
 import 'package:my_school/providers/WalletProvider.dart';
 
 import 'package:my_school/screens/login_screen.dart';
@@ -111,6 +112,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider.value(value: QuizProvider()),
           ChangeNotifierProvider.value(value: WalletProvider()),
           ChangeNotifierProvider.value(value: CurriculumProvider()),
+          ChangeNotifierProvider.value(value: TeacherSessionProvider()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

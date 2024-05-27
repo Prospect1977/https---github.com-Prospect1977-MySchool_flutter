@@ -144,7 +144,7 @@ class _CurriculumLessonDetailsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarComponent(
-          context, widget.dir == "ltr" ? "Lesson Details" : "تفاصيل الدرس"),
+          context, widget.dir == "ltr" ? "Details" : "التفاصيل"),
       body: Padding(
         padding: EdgeInsets.all(8),
         child: Directionality(
@@ -160,12 +160,12 @@ class _CurriculumLessonDetailsScreenState
                   validate: (value) {
                     if (value.isEmpty) {
                       return widget.dir == "ltr"
-                          ? "Please enter the lesson title!"
-                          : "من فضلك ادخل عنوان الدرس!";
+                          ? "Please enter the  title!"
+                          : "من فضلك ادخل العنوان !";
                     }
                     return null;
                   },
-                  label: widget.dir == "rtl" ? "عنوان الدرس" : "Lesson Title",
+                  label: widget.dir == "rtl" ? "العنوان" : "Title",
                 ),
                 if (widget.lessonsWithNoParents.length > 0)
                   const SizedBox(
@@ -257,7 +257,7 @@ class _CurriculumLessonDetailsScreenState
                       widget.dir == "ltr"
                           ? "Visible for teachers"
                           : "مرئي للمعلمين",
-                      style: TextStyle(fontSize: 20, color: Colors.black54),
+                      style: TextStyle(fontSize: 16, color: Colors.black87),
                     )
                   ],
                 ),
@@ -283,7 +283,7 @@ class _CurriculumLessonDetailsScreenState
                       widget.dir == "ltr"
                           ? "Blocked from adding content"
                           : "حظر إضافة محتوى",
-                      style: TextStyle(fontSize: 20, color: Colors.black54),
+                      style: TextStyle(fontSize: 16, color: Colors.black87),
                     )
                   ],
                 ),
@@ -303,7 +303,7 @@ class _CurriculumLessonDetailsScreenState
                         borderRadius: 5,
                         background: widget.lesson != null
                             ? Colors.blue.shade700
-                            : Colors.green,
+                            : Colors.green.shade700,
                         text: widget.lesson != null
                             ? widget.dir == "ltr"
                                 ? "Save"

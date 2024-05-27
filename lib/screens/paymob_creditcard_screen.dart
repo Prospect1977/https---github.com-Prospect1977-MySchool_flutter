@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:my_school/providers/StudentLessonSessionsProvider.dart';
 import 'package:my_school/providers/WalletProvider.dart';
 import 'package:my_school/screens/studentSessionDetails_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
@@ -50,6 +51,7 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
   bool isLoaded = false;
   var token = CacheHelper.getData(key: "token");
   int OrderId = 0;
+  int lessonId;
   void postPurchase(StudentId, SessionHeaderId) {
     if (widget.ChargeWalletMode) {
       DioHelper.postData(
@@ -102,6 +104,9 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
           showToast(text: value.data["message"], state: ToastStates.ERROR);
           return;
         }
+        setState(() {
+          lessonId = value.data["data"];
+        });
       }).catchError((error) {
         showToast(text: error.toString(), state: ToastStates.ERROR);
         //emit(ErrorState(error.toString()));
@@ -208,11 +213,17 @@ class _PaymobCreditCardScreenState extends State<PaymobCreditCardScreen> {
                     setState(() {
                       isResponseRecieved = true;
                     });
+
                     if (widget.ChargeWalletMode) {
                       // showToast(text: lang=="en"?"Wallet charged successfully!":"تم شحن المحفظة بنجاح!", state: ToastStates.SUCCESS)
                       await Provider.of<WalletProvider>(context, listen: false)
                           .getData(context);
+
                       // Navigator.of(context).pop();
+                    } else {
+                      Provider.of<StudentLessonSessionsProvider>(context,
+                              listen: false)
+                          .getSessions(context, widget.StudentId, lessonId);
                     }
                   }
                 },

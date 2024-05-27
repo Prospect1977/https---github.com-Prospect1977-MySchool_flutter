@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
@@ -36,6 +37,7 @@ class _TicketScreenState extends State<TicketScreen> {
   //TextEditingController titleController = new TextEditingController();
   TextEditingController descriptionController = new TextEditingController();
   var formKey = GlobalKey<FormState>();
+  String hotline;
   void getUserData() {
     DioHelper.getData(
             url: 'Ticket/UserDataById',
@@ -56,6 +58,7 @@ class _TicketScreenState extends State<TicketScreen> {
         isUserDataLoaded = true;
         var phone = value.data["data"]["phoneNumber"];
         phoneNumberController.text = phone == null ? "" : phone;
+        hotline = value.data["additionalData"];
       });
     }).catchError((error) {
       showToast(text: error.toString(), state: ToastStates.ERROR);
@@ -317,7 +320,42 @@ class _TicketScreenState extends State<TicketScreen> {
                                               color: Colors.green.shade900,
                                               fontSize: 16),
                                         ),
-                                      )
+                                      ),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Divider(
+                              thickness: 1,
+                              color: Colors.black26,
+                              height: 15,
+                            ),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  lang == "en"
+                                      ? "OR CALL THE HOTLINE"
+                                      : "أو اتصل على الخط الساخن",
+                                  style: TextStyle(
+                                      fontSize: lang == "ar" ? 18 : 16,
+                                      color: Colors.black54),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                IconButton(
+                                    onPressed: () async {
+                                      await FlutterPhoneDirectCaller.callNumber(
+                                          hotline);
+                                    },
+                                    icon: Image.asset(
+                                      'assets/images/phone.png',
+                                    ),
+                                    iconSize: 45),
+                              ],
+                            )
                           ],
                         ),
                       )),

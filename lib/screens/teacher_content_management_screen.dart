@@ -41,6 +41,7 @@ class _TeacherContentManagementScreenState
   int Form_TermIndex = 0;
   int Form_YearOfStudyId = 0;
   int Form_YearSubjectId = 0;
+  bool isLoadingSubjects = false;
 
   void StudyYearsBySchoolTypeId(int SchoolTypeId) {
     setState(() {
@@ -65,9 +66,12 @@ class _TeacherContentManagementScreenState
     });
   }
 
-  void GetYearSubjects() {
+  void GetYearSubjects() async {
     if (Form_SchoolTypeId > 0 && Form_YearOfStudyId > 0) {
-      DioHelper.getData(
+      setState(() {
+        isLoadingSubjects = true;
+      });
+      await DioHelper.getData(
           url: "TeacherContentManager/TeacherSubjectsByYearOfStudy",
           lang: lang,
           token: token,
@@ -117,6 +121,7 @@ class _TeacherContentManagementScreenState
                 ),
                 value: y.YearSubjectId,
               )).toList();
+          isLoadingSubjects = false;
         });
       }).catchError((error) {
         showToast(text: error.toString(), state: ToastStates.ERROR);
@@ -376,6 +381,73 @@ class _TeacherContentManagementScreenState
                               SizedBox(
                                 height: 15,
                               ),
+                              isLoadingSubjects
+                                  ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : Container(
+                                      padding:
+                                          EdgeInsets.only(left: 10, right: 10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        border:
+                                            Border.all(color: Colors.black38),
+                                      ),
+                                      child: DropdownButton(
+                                        //key: ValueKey(1),
+                                        value: Form_YearSubjectId,
+                                        items: [
+                                          //add items in the dropdown
+                                          DropdownMenuItem(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      bottom: BorderSide(
+                                                          color:
+                                                              Colors.white))),
+                                              alignment: lang == "en"
+                                                  ? Alignment.centerLeft
+                                                  : Alignment.centerRight,
+                                              child: Text(
+                                                lang == "en"
+                                                    ? "Subject"
+                                                    : "المادة",
+                                              ),
+                                            ),
+                                            value: 0,
+                                          ),
+                                          ...YearSubjects,
+                                        ],
+
+                                        onChanged: (value) {
+                                          setState(() {
+                                            Form_YearSubjectId = value;
+                                          });
+                                        },
+                                        icon: Padding(
+                                            //Icon at tail, arrow bottom is default icon
+                                            padding: EdgeInsets.all(0),
+                                            child: Icon(
+                                                Icons.keyboard_arrow_down)),
+                                        iconEnabledColor:
+                                            Colors.black54, //Icon color
+                                        style: TextStyle(
+                                            //te
+                                            color: Colors.black87, //Font color
+                                            fontSize:
+                                                16 //font size on dropdown button
+                                            ),
+                                        underline: Container(),
+
+                                        dropdownColor: Colors
+                                            .white, //dropdown background color
+                                        //remove underline
+                                        isExpanded:
+                                            true, //make true to make width 100%
+                                      )),
+                              SizedBox(
+                                height: 15,
+                              ),
                               Container(
                                   padding: EdgeInsets.only(left: 10, right: 10),
                                   decoration: BoxDecoration(
@@ -410,63 +482,6 @@ class _TeacherContentManagementScreenState
                                     onChanged: (value) {
                                       setState(() {
                                         Form_TermIndex = value;
-                                      });
-                                    },
-                                    icon: Padding(
-                                        //Icon at tail, arrow bottom is default icon
-                                        padding: EdgeInsets.all(0),
-                                        child: Icon(Icons.keyboard_arrow_down)),
-                                    iconEnabledColor:
-                                        Colors.black54, //Icon color
-                                    style: TextStyle(
-                                        //te
-                                        color: Colors.black87, //Font color
-                                        fontSize:
-                                            16 //font size on dropdown button
-                                        ),
-                                    underline: Container(),
-
-                                    dropdownColor: Colors
-                                        .white, //dropdown background color
-                                    //remove underline
-                                    isExpanded:
-                                        true, //make true to make width 100%
-                                  )),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Container(
-                                  padding: EdgeInsets.only(left: 10, right: 10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: Colors.black38),
-                                  ),
-                                  child: DropdownButton(
-                                    //key: ValueKey(1),
-                                    value: Form_YearSubjectId,
-                                    items: [
-                                      //add items in the dropdown
-                                      DropdownMenuItem(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  bottom: BorderSide(
-                                                      color: Colors.white))),
-                                          alignment: lang == "en"
-                                              ? Alignment.centerLeft
-                                              : Alignment.centerRight,
-                                          child: Text(
-                                            lang == "en" ? "Subject" : "المادة",
-                                          ),
-                                        ),
-                                        value: 0,
-                                      ),
-                                      ...YearSubjects,
-                                    ],
-
-                                    onChanged: (value) {
-                                      setState(() {
-                                        Form_YearSubjectId = value;
                                       });
                                     },
                                     icon: Padding(

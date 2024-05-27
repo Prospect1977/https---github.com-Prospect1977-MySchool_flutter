@@ -41,8 +41,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "NationalId": nationalIdController.text,
           "Role": accountType,
         }).then((value) {
-      print(value.data);
-      UserData userData = UserData.fromJson(value.data);
+      print(value.data['data']);
+      if (value.data['status'] == false) {
+        showToast(text: value.data['message'], state: ToastStates.ERROR);
+        return;
+      }
+      ;
+      UserData userData = UserData.fromJson(value.data['data']);
       CacheHelper.saveData(key: "token", value: userData.token);
       CacheHelper.saveData(key: "roles", value: userData.roles);
       CacheHelper.saveData(key: "fullName", value: userData.fullName);
@@ -115,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               imageNameDisabled: "parent-bw.png",
                               title: lang == "en"
                                   ? "Parent + Students"
-                                  : "ولي أمر + أبناء",
+                                  : "ولي أمر+أبناء",
                             ),
                           ),
                           GestureDetector(
@@ -249,7 +254,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (value.length < 8) {
                         return lang == "en"
                             ? 'Password must be at least 8 characters long!'
-                            : "كلمة المرور لا يجب أن تقل عن 8 احرف";
+                            : "كلمة المرور لا يجب أن تقل عن 8 حروف";
                       }
                     },
                     label: lang == "en" ? 'Password' : "كلمة المرور",
@@ -283,6 +288,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       }
                       if (value != passwordController.text) {
                         return 'Password not match';
+                      }
+                      if (value.length < 8) {
+                        return lang == "en"
+                            ? 'Password must be at least 8 characters long!'
+                            : "كلمة المرور لا يجب أن تقل عن 8 حروف";
                       }
                     },
                     label:

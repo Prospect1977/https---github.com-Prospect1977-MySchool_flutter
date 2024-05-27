@@ -35,7 +35,7 @@ void handleSessionExpired(context) {
       ? "Session Expired, please sign in again"
       : "من فضلك قم بتسجيل الدخول";
   showToast(text: message, state: ToastStates.WARNING);
-  Navigator.of(context).pop();
+  // Navigator.of(context).pop();
   navigateAndFinish(context, LoginScreen());
 }
 

@@ -2,19 +2,19 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
-import 'package:my_school/shared/components/constants.dart';
+
 import 'package:my_school/shared/dio_helper.dart';
-import 'package:my_school/shared/styles/colors.dart';
-import 'package:my_school/shared/widgets/progress_dialog_widget.dart';
+
+import '../cache_helper.dart';
 
 Future<void> UploadFile(
     {var context, int TeacherId, int LessonId, Function getData}) async {
   var pickedFile = await FilePicker.platform.pickFiles(
       allowMultiple: false, type: FileType.custom, allowedExtensions: ['pdf']);
+
   if (pickedFile == null) {
     return;
   }
@@ -51,7 +51,8 @@ Future<void> UploadFile(
           query: {
             "TeacherId": TeacherId,
             "LessonId": LessonId,
-            "DataDate": DateTime.now()
+            "DataDate": DateTime.now(),
+            "UserId": CacheHelper.getData(key: 'userId')
           },
           lang: "en",
           token: "")

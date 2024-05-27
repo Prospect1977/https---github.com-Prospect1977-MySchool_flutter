@@ -237,161 +237,211 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
                     ),
                   ),
                   Expanded(
-                      child: ScrollablePositionedList.builder(
-                          itemScrollController: _itemScrollController,
-                          itemCount: StudentLessonsByYearSubjectIdCollection
-                              .items.length,
-                          itemBuilder: (context, index) {
-                            var item = StudentLessonsByYearSubjectIdCollection
-                                .items[index];
-                            return InkWell(
-                              onTap: () {
-                                if (!item.blockedFromAddingSessions) {
-                                  navigateTo(
-                                      context,
-                                      StudentLessonSessionsScreen(
-                                          widget.studentId,
-                                          item.id,
-                                          TermIndex,
-                                          item.lessonName,
-                                          item.lessonDescription,
-                                          widget.YearSubjectId,
-                                          widget.dir));
-                                } else {
-                                  showToast(
-                                      text: item.dir == "ltr"
-                                          ? "Main chapters have no content!"
-                                          : "الأبواب الرئيسية ليس لها محتوى",
-                                      state: ToastStates.ERROR);
-                                }
-                              },
-                              child: Container(
-                                //-----------------------------------------item Container
-                                padding: EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border(
-                                        top: BorderSide(
-                                            width: 0.25, color: defaultColor),
-                                        bottom: index ==
-                                                StudentLessonsByYearSubjectIdCollection
-                                                        .items.length -
-                                                    1
-                                            ? BorderSide(color: Colors.black38)
-                                            : BorderSide(
-                                                color: defaultColor,
-                                                width: 0.25))),
-                                child: Directionality(
-                                  textDirection: item.dir == "ltr"
-                                      ? TextDirection.ltr
-                                      : TextDirection.rtl,
-                                  child: Row(
-                                    //-----------------------------------------item row
-                                    children: [
-                                      SizedBox(
-                                        width: item.parentLessonId != null
-                                            ? 15
-                                            : 3,
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
+                      child: StudentLessonsByYearSubjectIdCollection
+                                  .items.length ==
+                              0
+                          ? EmptyCurriculum(widget.dir)
+                          : ScrollablePositionedList.builder(
+                              itemScrollController: _itemScrollController,
+                              itemCount: StudentLessonsByYearSubjectIdCollection
+                                  .items.length,
+                              itemBuilder: (context, index) {
+                                var item =
+                                    StudentLessonsByYearSubjectIdCollection
+                                        .items[index];
+                                return InkWell(
+                                  onTap: () {
+                                    if (!item.blockedFromAddingSessions) {
+                                      navigateTo(
+                                          context,
+                                          StudentLessonSessionsScreen(
+                                              widget.studentId,
+                                              item.id,
+                                              TermIndex,
                                               item.lessonName,
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight:
-                                                    item.parentLessonId == null
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal,
-                                                color: defaultColor,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            item.dataDate != null
-                                                ? Container(
-                                                    width: double.infinity,
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 10),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: [
-                                                        Icon(
-                                                          Icons
-                                                              .calendar_month_outlined,
-                                                          size: 18,
-                                                          color: Colors.black54,
-                                                        ),
-                                                        SizedBox(
-                                                          width: 5,
-                                                        ),
-                                                        Text(
-                                                          formatDate(
-                                                            item.dataDate,
-                                                            item.dir == "ltr"
-                                                                ? "en"
-                                                                : "ar",
-                                                          ),
-                                                          textAlign:
-                                                              TextAlign.end,
-                                                          style: TextStyle(
+                                              item.lessonDescription,
+                                              widget.YearSubjectId,
+                                              widget.dir));
+                                    } else {
+                                      showToast(
+                                          text: item.dir == "ltr"
+                                              ? "Main chapters have no content!"
+                                              : "الأبواب الرئيسية ليس لها محتوى",
+                                          state: ToastStates.ERROR);
+                                    }
+                                  },
+                                  child: Container(
+                                    //-----------------------------------------item Container
+                                    padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border(
+                                            top: BorderSide(
+                                                width: 0.25,
+                                                color: defaultColor),
+                                            bottom: index ==
+                                                    StudentLessonsByYearSubjectIdCollection
+                                                            .items.length -
+                                                        1
+                                                ? BorderSide(
+                                                    color: Colors.black38)
+                                                : BorderSide(
+                                                    color: defaultColor,
+                                                    width: 0.25))),
+                                    child: Directionality(
+                                      textDirection: item.dir == "ltr"
+                                          ? TextDirection.ltr
+                                          : TextDirection.rtl,
+                                      child: Row(
+                                        //-----------------------------------------item row
+                                        children: [
+                                          SizedBox(
+                                            width: item.parentLessonId != null
+                                                ? 15
+                                                : 3,
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  item.lessonName,
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        item.parentLessonId ==
+                                                                null
+                                                            ? FontWeight.bold
+                                                            : FontWeight.normal,
+                                                    color: defaultColor,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                item.dataDate != null
+                                                    ? Container(
+                                                        width: double.infinity,
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 10),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .calendar_month_outlined,
+                                                              size: 18,
                                                               color: Colors
-                                                                  .black54),
+                                                                  .black54,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 5,
+                                                            ),
+                                                            Text(
+                                                              formatDate(
+                                                                item.dataDate,
+                                                                item.dir ==
+                                                                        "ltr"
+                                                                    ? "en"
+                                                                    : "ar",
+                                                              ),
+                                                              textAlign:
+                                                                  TextAlign.end,
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black54),
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                : Container(),
-                                            item.lessonProgress > 0
-                                                ? SizedBox(
-                                                    height: 5,
-                                                  )
-                                                : Container(),
-                                            item.lessonProgress > 0
-                                                ? Directionality(
-                                                    textDirection:
-                                                        TextDirection.ltr,
-                                                    child: Container(
-                                                      height: 3,
-                                                      child: Stack(children: [
-                                                        FractionallySizedBox(
-                                                          widthFactor:
-                                                              item.lessonProgress >=
-                                                                      100
-                                                                  ? 1
-                                                                  : item.lessonProgress /
-                                                                      100,
-                                                          heightFactor: 1,
-                                                          child: Container(
-                                                              color:
-                                                                  Colors.green),
+                                                      )
+                                                    : Container(),
+                                                item.lessonProgress > 0
+                                                    ? SizedBox(
+                                                        height: 5,
+                                                      )
+                                                    : Container(),
+                                                item.lessonProgress > 0
+                                                    ? Directionality(
+                                                        textDirection:
+                                                            TextDirection.ltr,
+                                                        child: Container(
+                                                          height: 3,
+                                                          child:
+                                                              Stack(children: [
+                                                            FractionallySizedBox(
+                                                              widthFactor:
+                                                                  item.lessonProgress >=
+                                                                          100
+                                                                      ? 1
+                                                                      : item.lessonProgress /
+                                                                          100,
+                                                              heightFactor: 1,
+                                                              child: Container(
+                                                                  color: Colors
+                                                                      .green),
+                                                            ),
+                                                            Container(
+                                                              color: Colors
+                                                                  .black26,
+                                                            )
+                                                          ]),
                                                         ),
-                                                        Container(
-                                                          color: Colors.black26,
-                                                        )
-                                                      ]),
-                                                    ),
-                                                  )
-                                                : Container(),
-                                            SizedBox(
-                                              height: 5,
+                                                      )
+                                                    : Container(),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                            );
-                          }))
+                                );
+                              }))
                 ]),
               ));
+  }
+}
+
+class EmptyCurriculum extends StatelessWidget {
+  EmptyCurriculum(this.dir, {Key key}) : super(key: key);
+  String dir;
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Directionality(
+      textDirection: dir == "ltr" ? TextDirection.ltr : TextDirection.rtl,
+      child: Padding(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              "assets/images/empty-folder.png",
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              dir == "ltr"
+                  ? 'No plan has been set for this qurriculum yet!'
+                  : 'لم يتم وضع خطة لهذا المنهج بعد',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontSize: 20,
+                color: Colors.black54,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 }

@@ -85,7 +85,8 @@ class _CurriculumEditScreenState extends State<CurriculumEditScreen> {
                     SizedBox(
                       width: 5,
                     ),
-                    Text(widget.dir == "ltr" ? "New Lesson" : "درس جديد",
+                    Text(
+                        widget.dir == "ltr" ? "New Lesson/Chapter" : "درس جديد",
                         style: TextStyle(
                             color: Colors.green.shade200,
                             fontSize: 18,
@@ -338,7 +339,7 @@ class Item extends StatelessWidget {
         elevation: item.parentLessonId != null ? 0 : 1,
         margin: EdgeInsets.all(2),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
           decoration: BoxDecoration(
               border: Border.all(
                   color: item.active
@@ -388,7 +389,7 @@ class Item extends StatelessWidget {
                       itemBuilder: (_) => <PopupMenuItem<String>>[
                             new PopupMenuItem<String>(
                                 child: Container(
-                                    width: 175,
+                                    width: 190,
                                     // height: 30,
                                     child: Row(
                                       children: [
@@ -420,7 +421,7 @@ class Item extends StatelessWidget {
                                 value: 'block'),
                             new PopupMenuItem<String>(
                                 child: Container(
-                                    width: 175,
+                                    width: 190,
                                     // height: 30,
                                     child: Row(
                                       children: [
@@ -447,7 +448,7 @@ class Item extends StatelessWidget {
                                 value: 'switchterm'),
                             new PopupMenuItem<String>(
                                 child: Container(
-                                    width: 175,
+                                    width: 190,
                                     // height: 30,
                                     child: Row(
                                       children: [

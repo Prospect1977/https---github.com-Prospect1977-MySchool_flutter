@@ -97,7 +97,8 @@ class _TeacherSessionSettingsScreenState
               "LessonId": widget.LessonId,
               "Active": active,
               "IsFree": isFree,
-              "Price": isFree ? 0.0 : priceController.text
+              "Price": isFree ? 0.0 : priceController.text,
+              "UserId": CacheHelper.getData(key: 'userId')
             },
             token: token,
             lang: lang)

@@ -3,6 +3,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
+import 'package:my_school/providers/StudentLessonSessionsProvider.dart';
 import 'package:my_school/providers/StudentVideo_provider.dart';
 import 'package:my_school/providers/WalletProvider.dart';
 import 'package:my_school/screens/paymob_creditcard_screen.dart';
@@ -167,6 +168,12 @@ class _PaymobOptionsScreenState extends State<PaymobOptionsScreen> {
                                             .getData(
                                           context,
                                         );
+                                        int lessonId = value.data["data"];
+                                        Provider.of<StudentLessonSessionsProvider>(
+                                                context,
+                                                listen: false)
+                                            .getSessions(context,
+                                                widget.StudentId, lessonId);
                                         //close the page
                                         Navigator.of(context).pop();
                                         //navigate to student session details screen

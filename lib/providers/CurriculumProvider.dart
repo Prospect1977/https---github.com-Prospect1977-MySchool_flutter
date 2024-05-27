@@ -63,6 +63,7 @@ class CurriculumProvider with ChangeNotifier {
       notifyListeners();
     }).catchError((error) {
       showToast(text: error.toString(), state: ToastStates.ERROR);
+      print(error.toString());
     });
   }
 
@@ -76,6 +77,7 @@ class CurriculumProvider with ChangeNotifier {
         data: {},
         query: {
           "LessonId": LessonId,
+          "UserId": CacheHelper.getData(key: 'userId'),
         }).then((value) {
       if (value.data["status"] == false &&
           value.data["message"] == "SessionExpired") {
@@ -117,6 +119,7 @@ class CurriculumProvider with ChangeNotifier {
           "Name": Name,
           "Description": Description == "" ? null : Description,
           "Active": Active,
+          "UserId": CacheHelper.getData(key: 'userId'),
           "ParentLessonId": ParentLessonId,
           "BlockedFromAddingSessions": BlockedFromAddingSessions,
         },
@@ -162,6 +165,7 @@ class CurriculumProvider with ChangeNotifier {
           "Active": Active,
           "ParentLessonId": ParentLessonId,
           "BlockedFromAddingSessions": BlockedFromAddingSessions,
+          "UserId": CacheHelper.getData(key: 'userId'),
         },
         data: {}).then((value) {
       if (value.data["status"] == false &&
@@ -189,6 +193,7 @@ class CurriculumProvider with ChangeNotifier {
         data: {},
         query: {
           "LessonId": LessonId,
+          "UserId": CacheHelper.getData(key: 'userId'),
         }).then((value) {
       if (value.data["status"] == false &&
           value.data["message"] == "SessionExpired") {
@@ -256,6 +261,7 @@ class CurriculumProvider with ChangeNotifier {
         data: {},
         query: {
           "LessonId": LessonId,
+          "UserId": CacheHelper.getData(key: 'userId'),
         }).then((value) {
       if (value.data["status"] == false &&
           value.data["message"] == "SessionExpired") {
@@ -294,6 +300,7 @@ class CurriculumProvider with ChangeNotifier {
         data: {},
         query: {
           "LessonsList": LessonsList,
+          "UserId": CacheHelper.getData(key: 'userId'),
         }).then((value) {
       if (value.data["status"] == false &&
           value.data["message"] == "SessionExpired") {
