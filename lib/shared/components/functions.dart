@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_school/screens/admin_dashboard_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -88,8 +89,8 @@ getHomeScreen() {
   if (roles.contains("Student")) {
     return StudentDashboardScreen();
   }
-  if (roles.contains("Owner")) {
-    return LoginScreen();
+  if (roles.contains("Admin")) {
+    return AdminDashboardScreen();
   }
 }
 

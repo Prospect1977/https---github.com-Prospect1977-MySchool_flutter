@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_school/cubits/main_cubit.dart';
 import 'package:my_school/models/teacher-payment-type-model.dart';
+import 'package:my_school/screens/admin_dashboard_screen.dart';
 import 'package:my_school/screens/changeLanguageScreen.dart';
 
 import 'package:my_school/screens/login_screen.dart';
@@ -61,6 +62,9 @@ var AppBarActions = [
                 }
                 if (roles.contains("Student")) {
                   navigateTo(ctx, StudentDashboardScreen());
+                }
+                if (roles.contains("Admin")) {
+                  navigateTo(ctx, AdminDashboardScreen());
                 }
               },
             ),

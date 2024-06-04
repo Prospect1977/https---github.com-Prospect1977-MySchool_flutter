@@ -14,6 +14,7 @@ import 'package:my_school/screens/studentDashboard_screen.dart';
 import 'package:my_school/screens/teacher_dashboard_screen.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/cache_helper.dart';
+import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -60,7 +61,10 @@ class _LoginScreenState extends State<LoginScreen> {
           key: "isStudentHasParent", value: userData.isStudentHasParent);
       CacheHelper.saveData(key: "teacherId", value: userData.teacherId);
       CacheHelper.saveData(key: "fullName", value: userData.fullName);
-      CacheHelper.saveData(key: "phoneNumber", value: userData.phoneNumber);
+      try {
+        CacheHelper.saveData(key: "phoneNumber", value: userData.phoneNumber);
+      } catch (ex) {}
+
       CacheHelper.saveData(key: "userId", value: userData.userId);
 
       CacheHelper.saveData(key: "token", value: userData.token);
@@ -79,15 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = false;
       });
       String roles = userData.roles;
-      if (roles.contains("Parent")) {
-        navigateAndFinish(context, ParentsLandingScreen());
-      }
-      if (roles.contains("Student")) {
-        navigateAndFinish(context, StudentDashboardScreen());
-      }
-      if (roles.contains("Teacher")) {
-        navigateAndFinish(context, TeacherDashboardScreen());
-      }
+      navigateTo(context, getHomeScreen());
     }).catchError((error) {
       print(error.toString());
       setState(() {

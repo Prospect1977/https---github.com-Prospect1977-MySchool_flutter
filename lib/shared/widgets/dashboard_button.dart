@@ -25,6 +25,8 @@ Widget dashboardButton(context, onClick, imageName, title, isDisabled) {
             height: MediaQuery.of(context).size.width / 5.5,
             child: Image.asset(
               'assets/images/$imageName',
+              width: 180,
+              height: 180,
             ),
           )),
           Container(

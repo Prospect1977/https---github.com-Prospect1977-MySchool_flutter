@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:my_school/cubits/login_cubit.dart';
 import 'package:my_school/models/login_model.dart';
+import 'package:my_school/providers/StudentVideo_provider.dart';
 import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentDashboard_screen.dart';
 import 'package:my_school/screens/studentProfile_screen.dart';
@@ -120,7 +121,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               imageNameDisabled: "parent-bw.png",
                               title: lang == "en"
                                   ? "Parent + Students"
-                                  : "ولي أمر+أبناء",
+                                  : "ولي أمر + أبناء",
+                              lang: lang,
                             ),
                           ),
                           GestureDetector(
@@ -135,6 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               imageName: "student3d.png",
                               imageNameDisabled: "student3d-bw.png",
                               title: lang == "en" ? "Student" : "طالب",
+                              lang: lang,
                             ),
                           ),
                           GestureDetector(
@@ -149,6 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               imageName: "teacher.png",
                               imageNameDisabled: "teacher-bw.png",
                               title: lang == "en" ? "Teacher" : "مُعلم",
+                              lang: lang,
                             ),
                           ),
                         ],
@@ -325,6 +329,7 @@ class AccountTypeItem extends StatelessWidget {
     @required this.title,
     @required this.imageName,
     @required this.imageNameDisabled,
+    @required this.lang,
   }) : super(key: key);
 
   final String accountType;
@@ -332,6 +337,7 @@ class AccountTypeItem extends StatelessWidget {
   final String title;
   final String imageName;
   final String imageNameDisabled;
+  final String lang;
 
   @override
   Widget build(BuildContext context) {
@@ -359,7 +365,7 @@ class AccountTypeItem extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-              fontSize: 16,
+              fontSize: lang == "en" ? 13 : 16,
               color: currentAccountType == accountType
                   ? Colors.deepPurple
                   : Colors.black54),

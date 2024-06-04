@@ -18,6 +18,8 @@ import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/dashboard_button.dart';
 
+import 'admin_teacher_privilages_screen.dart';
+
 class TeacherDashboardScreen extends StatefulWidget {
   TeacherDashboardScreen({Key key}) : super(key: key);
 
@@ -134,6 +136,16 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                         : "Manage Curriculum",
                     false,
                   ),
+                  if (CacheHelper.getData(key: 'roles').contains("Admin"))
+                    dashboardButton(
+                      context,
+                      () {
+                        navigateTo(context, AdminTeacherPrivilagesScreen(Id));
+                      },
+                      'onboard_2.png',
+                      "صلاحيات المُعلم",
+                      false,
+                    ),
                 ],
               ),
             ),

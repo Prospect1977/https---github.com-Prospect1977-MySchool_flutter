@@ -72,10 +72,6 @@ class _StudentDailyScheduleScreenState
           isScheduleExist = false;
         });
         return;
-      } else {
-        setState(() {
-          isScheduleExist = true;
-        });
       }
       var tempDailySchedule = m.DailySchedule.fromJson(value.data['data']);
       var now = new DateTime.now();
