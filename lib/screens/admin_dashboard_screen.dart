@@ -9,6 +9,7 @@ import 'package:my_school/screens/admin_teacher_privilages_screen.dart';
 import '../shared/components/components.dart';
 import '../shared/widgets/dashboard_button.dart';
 import 'admin_recent_sessions_screen.dart';
+import 'curriculum_landing_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({Key key}) : super(key: key);
@@ -60,6 +61,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     },
                     'empty-content.png',
                     "الدروس",
+                    false,
+                  ),
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context, CurriculumLandingScreen());
+                    },
+                    'lessons.png',
+                    "إدارة دروس المنهج",
                     false,
                   ),
                   // dashboardButton(
