@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
+//import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+//import 'package:flutter/services.dart';
+//import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:my_school/providers/CurriculumProvider.dart';
 import 'package:my_school/providers/QuizProvider.dart';
@@ -13,17 +13,17 @@ import 'package:my_school/providers/WalletProvider.dart';
 
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/on_boarding_screen.dart';
-import 'package:my_school/screens/parents_landing_screen.dart';
+//import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/require_update_screen.dart';
-import 'package:my_school/screens/studentDashboard_screen.dart';
-import 'package:my_school/screens/teacher_dashboard_screen.dart';
-import 'package:my_school/screens/test_screen.dart';
-import 'package:my_school/screens/video_screen.dart';
-import 'package:my_school/shared/bloc_observer.dart';
-import 'package:my_school/cubits/main_cubit.dart';
-import 'package:my_school/cubits/main_states.dart';
+//import 'package:my_school/screens/studentDashboard_screen.dart';
+//import 'package:my_school/screens/teacher_dashboard_screen.dart';
+//import 'package:my_school/screens/test_screen.dart';
+//import 'package:my_school/screens/video_screen.dart';
+//import 'package:my_school/shared/bloc_observer.dart';
+//import 'package:my_school/cubits/main_cubit.dart';
+//import 'package:my_school/cubits/main_states.dart';
 import 'package:my_school/shared/cache_helper.dart';
-import 'package:my_school/shared/components/components.dart';
+//import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/themes.dart';
 

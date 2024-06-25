@@ -402,8 +402,8 @@ class _TeacherQuizQuestionScreenState extends State<TeacherQuizQuestionScreen> {
                                                           : "هل انت متأكد؟"),
                                                   content: Text(
                                                     widget.dir == "ltr"
-                                                        ? 'Are you sure that you want to remove this question?'
-                                                        : "هل تريد حذف هذا السؤال؟",
+                                                        ? 'Are you sure that you want to remove this image?'
+                                                        : "هل تريد حذف هذه الصورة",
                                                   ),
                                                   actions: <Widget>[
                                                     TextButton(

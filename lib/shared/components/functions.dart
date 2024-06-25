@@ -1,3 +1,4 @@
+//import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:my_school/screens/admin_dashboard_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
@@ -32,7 +33,7 @@ String ConvertNumberToHindi(String number) {
 
 void handleSessionExpired(context) {
   var lang = CacheHelper.getData(key: 'lang');
-  var message = lang.ToLower() == "en"
+  var message = lang == "en"
       ? "Session Expired, please sign in again"
       : "من فضلك قم بتسجيل الدخول";
   showToast(text: message, state: ToastStates.WARNING);
@@ -234,3 +235,13 @@ String QuestionType({String type, String dir}) {
   }
   return (out);
 }
+
+// Future<bool> isUserOnline() async {
+//   var connectivityResult = await (Connectivity().checkConnectivity());
+//   if (connectivityResult == ConnectivityResult.mobile ||
+//       connectivityResult == ConnectivityResult.wifi) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }

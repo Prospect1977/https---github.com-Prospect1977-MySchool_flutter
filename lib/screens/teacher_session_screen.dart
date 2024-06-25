@@ -209,29 +209,6 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
             Title: titleController.text);
     await Provider.of<TeacherSessionProvider>(context, listen: false)
         .getData(context, widget.TeacherId, widget.LessonId);
-    // DioHelper.postData(
-    //     url: "TeacherSession/UpdateSessionDetailTitle",
-    //     lang: lang,
-    //     token: token,
-    //     data: {},
-    //     query: {
-    //       "TeacherId": widget.TeacherId,
-    //       "SessionDetailId": sessionDetailId,
-    //       "Title": titleController.text,
-    //     }).then((value) {
-    //   if (value.data["status"] == false &&
-    //       value.data["message"] == "SessionExpired") {
-    //     handleSessionExpired(context);
-    //     return;
-    //   } else if (value.data["status"] == false) {
-    //     showToast(text: value.data["message"], state: ToastStates.ERROR);
-    //     return;
-    //   } else {
-    //     Navigator.of(context).pop();
-    //     showToast(text: value.data["message"], state: ToastStates.SUCCESS);
-
-    //   }
-    // });
   }
 
   void ReorderSessionDetails(List<TeacherSessionDetail> reorderedItems) async {
@@ -245,26 +222,6 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
         .ReorderSessionDetails(context, widget.TeacherId, ids);
     await Provider.of<TeacherSessionProvider>(context, listen: false)
         .getData(context, widget.TeacherId, widget.LessonId);
-    // DioHelper.postData(
-    //         url: "TeacherSession/ReorderSessionDetails",
-    //         lang: lang,
-    //         token: token,
-    //         data: {},
-    //         query: {"TeacherId": widget.TeacherId, 'SessionDetailsList': ids})
-    //     .then((value) {
-    //   if (value.data["status"] == false &&
-    //       value.data["message"] == "SessionExpired") {
-    //     handleSessionExpired(context);
-    //     return;
-    //   } else if (value.data["status"] == false) {
-    //     showToast(text: value.data["message"], state: ToastStates.ERROR);
-    //     return;
-    //   } else {
-    //     showToast(text: value.data["message"], state: ToastStates.SUCCESS);
-    //   }
-    // }).catchError((error) {
-    //   showToast(text: error.toString(), state: ToastStates.ERROR);
-    // });
   }
 
   @override
@@ -292,20 +249,26 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
           Container(
               width: 25,
               margin: EdgeInsets.only(right: 7),
-              child: GestureDetector(
-                child: Image.asset(
-                  "assets/images/${showLessons ? 'expand_left_pink.png' : 'expand_right_pink.png'}",
-                  width: 25,
-                  height: 50,
-                  opacity: AlwaysStoppedAnimation(1),
-                ),
-                onTap: () {
-                  setState(() {
-                    showLessons = !showLessons;
-                    print(showLessons);
-                  });
-                },
-              )),
+              child: lessonsData == null
+                  ? Icon(
+                      Icons.chevron_right_rounded,
+                      color: Colors.black26,
+                      size: 45,
+                    )
+                  : GestureDetector(
+                      child: Image.asset(
+                        "assets/images/${showLessons ? 'expand_left_pink.png' : 'expand_right_pink.png'}",
+                        width: 25,
+                        height: 50,
+                        opacity: AlwaysStoppedAnimation(1),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          showLessons = !showLessons;
+                          print(showLessons);
+                        });
+                      },
+                    )),
           showLessons == false
               //----------------------------------------------Session Details
               ? Expanded(

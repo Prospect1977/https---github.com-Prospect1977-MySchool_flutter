@@ -17,7 +17,7 @@ description: A new Flutter project.
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.25+26
+version: 1.0.27+28
 
 environment:
   sdk: '>=2.7.0 <3.0.0'
@@ -35,8 +35,8 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   conditional_builder: ^1.0.2
-  bloc: ^7.0.0
-  flutter_bloc: ^7.0.0
+  # bloc: ^7.0.0
+  # flutter_bloc: ^7.0.0
   dio: ^4.0.0
   hexcolor: ^2.0.3
   shared_preferences: ^2.0.16
@@ -67,6 +67,8 @@ dependencies:
   restart_app: ^1.1.0+1
   flutter_phone_direct_caller: ^2.1.1
   permission_handler: ^11.0.1
+  percent_indicator: ^4.2.3
+  # connectivity_plus: ^5.0.2
 
   
 dev_dependencies:

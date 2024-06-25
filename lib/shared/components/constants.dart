@@ -12,10 +12,8 @@
 // var baseUrl = 'https://10.0.2.2:7182/api/';
 // var baseUrl0 = 'https://10.0.2.2:7182/';
 
-// var baseUrl =
-//     'https://51bf-2c0f-fc89-12b-6cef-4414-b38e-1efc-77f4.ngrok-free.app/api/';
-// var baseUrl0 =
-//     'https://51bf-2c0f-fc89-12b-6cef-4414-b38e-1efc-77f4.ngrok-free.app/';
+// var baseUrl = 'https://84a7-154-184-76-250.ngrok-free.app/api/';
+// var baseUrl0 = 'https://84a7-154-184-76-250.ngrok-free.app/';
 
 var baseUrl = 'https://prospect79-001-site3.ftempurl.com/api/';
 var baseUrl0 = 'https://prospect79-001-site3.ftempurl.com/';

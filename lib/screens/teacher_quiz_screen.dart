@@ -325,9 +325,7 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen> {
                                                                               TextButton(
                                                                                 child: Text(widget.dir == "ltr" ? 'Yes' : "نعم"),
                                                                                 onPressed: () {
-                                                                                  Provider.of<QuizProvider>(context, listen: false).DeleteQuestion(TeacherId, item.id).then((value) {
-                                                                                    Navigator.of(context).pop();
-                                                                                  });
+                                                                                  Provider.of<QuizProvider>(context, listen: false).DeleteQuestion(TeacherId, item.id, ctx).then((value) {});
                                                                                 },
                                                                               ),
                                                                             ],
