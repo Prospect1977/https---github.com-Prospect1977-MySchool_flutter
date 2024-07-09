@@ -128,20 +128,27 @@ class _StudentLessonSessionsScreenState
                           Container(
                               width: 25,
                               margin: EdgeInsets.only(right: 7),
-                              child: GestureDetector(
-                                child: Image.asset(
-                                  "assets/images/expand_right_pink.png",
-                                  width: 25,
-                                  height: 50,
-                                  opacity: AlwaysStoppedAnimation(1),
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    widget.showLessons = true;
-                                    print(widget.showLessons);
-                                  });
-                                },
-                              )),
+                              child: StudentLessonsByYearSubjectIdCollection ==
+                                      null
+                                  ? Icon(
+                                      Icons.chevron_right_outlined,
+                                      color: Colors.black26,
+                                      size: 45,
+                                    )
+                                  : GestureDetector(
+                                      child: Image.asset(
+                                        "assets/images/expand_right_pink.png",
+                                        width: 25,
+                                        height: 50,
+                                        opacity: AlwaysStoppedAnimation(1),
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          widget.showLessons = true;
+                                          print(widget.showLessons);
+                                        });
+                                      },
+                                    )),
                           Expanded(
                               child: FutureBuilder(
                                   future: Provider.of<

@@ -9,6 +9,8 @@ import 'package:my_school/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:my_school/shared/styles/colors.dart';
 
+import '../../screens/student_favorites_bysubject_screen.dart';
+
 enum pageIndex { Lessons, VideoNotes }
 
 class StudentStudyBySubjectNavigationBar extends StatefulWidget {
@@ -58,6 +60,18 @@ class StudentStudyBySubjectNavigationBarState
                 ));
             break;
           }
+        case 2:
+          {
+            navigateTo(
+                context,
+                StudentFavoritesBySubjectScreen(
+                  YearSubjectId: CacheHelper.getData(key: "yearSubjectId"),
+                  dir: CacheHelper.getData(key: "dir"),
+                  StudentId: widget.StudentId,
+                  SubjectName: CacheHelper.getData(key: "subjectName"),
+                ));
+            break;
+          }
       }
     });
   }
@@ -83,6 +97,11 @@ class StudentStudyBySubjectNavigationBarState
             backgroundColor: interfaceColor,
             icon: Icon(Icons.note_alt_outlined),
             label: lang == "en" ? 'Video Notes' : "ملاحظات الفيدوهات",
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: interfaceColor,
+            icon: Icon(Icons.star),
+            label: lang == "en" ? 'Favorites' : "المفضلات",
           ),
         ],
       ),

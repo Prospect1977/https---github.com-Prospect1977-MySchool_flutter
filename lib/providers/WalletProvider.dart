@@ -22,7 +22,7 @@ class WalletProvider with ChangeNotifier {
   Future<void> getData(context) async {
     isLoading = true;
     var url = Uri.parse(
-      '${baseUrl}Wallet/GetUserBalance',
+      '${baseUrl}Wallet/GetUserBalance?UserId=${CacheHelper.getData(key: 'userId')}',
     );
     var response = await http.get(url, headers: {
       "lang": lang,

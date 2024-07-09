@@ -9,6 +9,7 @@ import 'package:my_school/screens/parents_landing_screen.dart';
 import 'package:my_school/screens/studentLearnBySubjectScreen1.dart';
 import 'package:my_school/screens/studentProfile_screen.dart';
 import 'package:my_school/screens/studentSelectedSubjects_screen.dart';
+import 'package:my_school/screens/student_favorites_all_screen.dart';
 import 'package:my_school/screens/student_followup_list_screen.dart';
 import 'package:my_school/screens/ticket_screen.dart';
 import 'package:my_school/screens/under_construction_screen.dart';
@@ -141,119 +142,165 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             bottom: 0),
         child: Container(
           height: double.infinity,
-          child: GridView(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
-                childAspectRatio: 1,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5),
+          child: Column(
             children: [
-              dashboardButton(
-                context,
-                () {
-                  navigateTo(
+              Expanded(
+                child: GridView(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 200,
+                      childAspectRatio: 1,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5),
+                  children: [
+                    dashboardButton(
                       context,
-                      StudentProfileScreen(
-                        widget.Id,
-                        FullName: widget.FullName,
-                        Gender: widget.Gender,
-                        SchoolTypeId: widget.SchoolTypeId,
-                        YearOfStudyId: widget.YearOfStudyId,
-                      ));
-                },
-                'MainData.png',
-                lang.toString().toLowerCase() == "ar"
-                    ? "البيانات الرئيسية${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (غير مكتملة)" : ""}"
-                    : "Main Profile Data${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (Not Completed)" : ""}",
-                false,
-              ),
-              dashboardButton(
-                context,
-                (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                    ? null
-                    : isStudentHasParent && roles.contains("Student")
-                        ? () {
-                            showToast(
-                                text: lang == "ar"
-                                    ? "من حق ولي الأمر فقط إختيار المواد الدراسية"
-                                    : "Only your parent is allowed to select subjects!",
-                                state: ToastStates.ERROR);
-                            return;
-                          }
-                        : () {
-                            navigateTo(context,
-                                StudentSelectedSubjectsScreen(widget.Id));
-                          },
-                'SelectSubjects.png',
-                lang.toString().toLowerCase() == "ar"
-                    ? "إختر المواد الدراسية"
-                    : "Select Learning Subjects",
-                false,
-              ),
-              dashboardButton(
-                context,
-                (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                    ? null
-                    : () {
+                      () {
                         navigateTo(
                             context,
-                            StudentDailyScheduleScreen(
-                                widget.Id, widget.FullName));
-                      },
-                'Calendar.png',
-                lang.toString().toLowerCase() == "ar"
-                    ? "الجدول اليومي"
-                    : "Daily Schedule",
-                false,
-              ),
-              dashboardButton(
-                context,
-                (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                    ? null
-                    : () {
-                        navigateTo(
-                            context, StudentLearnBySubjectScreen1(widget.Id));
-                      },
-                'StudyBySubject.png',
-                lang.toString().toLowerCase() == "ar"
-                    ? "دراسة حسب المادة"
-                    : "Study by Subject",
-                false,
-              ),
-              dashboardButton(
-                context,
-                (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                    ? null
-                    : () {
-                        navigateTo(
-                            context,
-                            StudentFollowupListScreen(
-                                StudentId: widget.Id,
-                                StudentName: widget.FullName));
-                      },
-                'Chart.png',
-                lang.toString().toLowerCase() == "ar"
-                    ? "المتابعة"
-                    : "Follow Up",
-                false,
-              ),
-              dashboardButton(
-                context,
-                (widget.SchoolTypeId == null || widget.YearOfStudyId == null)
-                    ? null
-                    : () {
-                        navigateTo(
-                            context,
-                            TicketScreen(
-                              StudentId: widget.Id,
+                            StudentProfileScreen(
+                              widget.Id,
+                              FullName: widget.FullName,
+                              Gender: widget.Gender,
+                              SchoolTypeId: widget.SchoolTypeId,
+                              YearOfStudyId: widget.YearOfStudyId,
                             ));
                       },
-                'Chat.png',
-                lang.toString().toLowerCase() == "ar"
-                    ? "تواصل معنا"
-                    : "Contact us",
-                false,
+                      'MainData.png',
+                      lang.toString().toLowerCase() == "ar"
+                          ? "البيانات الرئيسية${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (غير مكتملة)" : ""}"
+                          : "Main Profile Data${(widget.SchoolTypeId == null || widget.YearOfStudyId == null) ? " (Not Completed)" : ""}",
+                      false,
+                    ),
+                    dashboardButton(
+                      context,
+                      (widget.SchoolTypeId == null ||
+                              widget.YearOfStudyId == null)
+                          ? null
+                          : isStudentHasParent && roles.contains("Student")
+                              ? () {
+                                  showToast(
+                                      text: lang == "ar"
+                                          ? "من حق ولي الأمر فقط إختيار المواد الدراسية"
+                                          : "Only your parent is allowed to select subjects!",
+                                      state: ToastStates.ERROR);
+                                  return;
+                                }
+                              : () {
+                                  navigateTo(context,
+                                      StudentSelectedSubjectsScreen(widget.Id));
+                                },
+                      'SelectSubjects.png',
+                      lang.toString().toLowerCase() == "ar"
+                          ? "إختر المواد الدراسية"
+                          : "Select Learning Subjects",
+                      false,
+                    ),
+                    dashboardButton(
+                      context,
+                      (widget.SchoolTypeId == null ||
+                              widget.YearOfStudyId == null)
+                          ? null
+                          : () {
+                              navigateTo(
+                                  context,
+                                  StudentDailyScheduleScreen(
+                                      widget.Id, widget.FullName));
+                            },
+                      'Calendar.png',
+                      lang.toString().toLowerCase() == "ar"
+                          ? "الجدول اليومي"
+                          : "Daily Schedule",
+                      false,
+                    ),
+                    dashboardButton(
+                      context,
+                      (widget.SchoolTypeId == null ||
+                              widget.YearOfStudyId == null)
+                          ? null
+                          : () {
+                              navigateTo(context,
+                                  StudentLearnBySubjectScreen1(widget.Id));
+                            },
+                      'StudyBySubject.png',
+                      lang.toString().toLowerCase() == "ar"
+                          ? "دراسة حسب المادة"
+                          : "Study by Subject",
+                      false,
+                    ),
+                    dashboardButton(
+                      context,
+                      (widget.SchoolTypeId == null ||
+                              widget.YearOfStudyId == null)
+                          ? null
+                          : () {
+                              navigateTo(
+                                  context,
+                                  StudentFollowupListScreen(
+                                      StudentId: widget.Id,
+                                      StudentName: widget.FullName));
+                            },
+                      'Chart.png',
+                      lang.toString().toLowerCase() == "ar"
+                          ? "المتابعة"
+                          : "Follow Up",
+                      false,
+                    ),
+                    dashboardButton(
+                      context,
+                      (widget.SchoolTypeId == null ||
+                              widget.YearOfStudyId == null)
+                          ? null
+                          : () {
+                              navigateTo(
+                                  context,
+                                  TicketScreen(
+                                    StudentId: widget.Id,
+                                  ));
+                            },
+                      'Chat.png',
+                      lang.toString().toLowerCase() == "ar"
+                          ? "تواصل معنا"
+                          : "Contact us",
+                      false,
+                    ),
+                  ],
+                ),
               ),
+              Center(
+                child: InkWell(
+                    onTap: () {
+                      navigateTo(
+                          context,
+                          StudentFavoritesAllScreen(
+                            StudentId: widget.Id,
+                          ));
+                    },
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: Colors.amber.shade700,
+                              size: 35,
+                            ),
+                            Positioned(
+                              top: 3,
+                              left: 3,
+                              child: Icon(
+                                Icons.star,
+                                color: Colors.amber.shade300,
+                                size: 29,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )),
+              ),
+              SizedBox(
+                height: 15,
+              )
             ],
           ),
         ),

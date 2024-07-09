@@ -58,6 +58,7 @@ class _PaymobKioskScreenState extends State<PaymobKioskScreen> {
                 'OrderId': OrderId,
                 'Source': "kiosk",
                 'DataDate': DateTime.now(),
+                'UserId': CacheHelper.getData(key: 'userId')
               },
               lang: lang,
               token: token)

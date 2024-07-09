@@ -48,6 +48,7 @@ class _StudentSessionDetailsScreenState
   String lang = CacheHelper.getData(key: "lang");
   String token = CacheHelper.getData(key: "token");
   String roles = CacheHelper.getData(key: "roles");
+  bool isInFavorites = false;
   void _checkAppVersion() async {
     await checkAppVersion();
     bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
@@ -85,11 +86,45 @@ class _StudentSessionDetailsScreenState
       }
       setState(() {
         allData = AllData.fromJson(value.data["data"]);
+        isInFavorites = value.data["additionalData"];
       });
     }).catchError((error) {
       showToast(text: error.toString(), state: ToastStates.ERROR);
 
       print(error.toString());
+    });
+  }
+
+  void SwitchFavorite() async {
+    var lang = CacheHelper.getData(key: 'lang');
+    if (isInFavorites) {
+      await DioHelper.postData(
+              url: 'StudentFavoriteSessions/RemoveFromFavorites',
+              query: {
+                'StudentId': widget.StudentId,
+                'SessionHeaderId': widget.SessionHeaderId
+              },
+              lang: lang,
+              token: CacheHelper.getData(key: 'token'))
+          .then((value) {
+        showToast(text: value.data["message"], state: ToastStates.WARNING);
+      });
+    } else {
+      await DioHelper.postData(
+              url: 'StudentFavoriteSessions/AddToFavorites',
+              query: {
+                'StudentId': widget.StudentId,
+                'SessionHeaderId': widget.SessionHeaderId,
+                'DataDate': DateTime.now(),
+              },
+              lang: lang,
+              token: CacheHelper.getData(key: 'token'))
+          .then((value) {
+        showToast(text: value.data["message"], state: ToastStates.SUCCESS);
+      });
+    }
+    setState(() {
+      isInFavorites = !isInFavorites;
     });
   }
 
@@ -204,21 +239,50 @@ class _StudentSessionDetailsScreenState
                                 border: Border.all(
                                     color: defaultColor.withOpacity(0.4),
                                     width: 1)),
-                            child: Column(
+                            child: Row(
                               children: [
-                                Text(
-                                  widget.LessonName,
-                                  style: TextStyle(
-                                      fontSize: 17, color: defaultColor),
-                                ),
-                                widget.LessonDescription != null
-                                    ? Text(
-                                        widget.LessonDescription,
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        widget.LessonName,
                                         style: TextStyle(
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.purple.shade300),
-                                      )
-                                    : Container(),
+                                            fontSize: 17, color: defaultColor),
+                                      ),
+                                      widget.LessonDescription != null
+                                          ? Text(
+                                              widget.LessonDescription,
+                                              style: TextStyle(
+                                                  fontStyle: FontStyle.italic,
+                                                  color:
+                                                      Colors.purple.shade300),
+                                            )
+                                          : Container(),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                    icon: isInFavorites
+                                        ? Icon(Icons.star,
+                                            size: 25,
+                                            color: Colors.amber.shade600)
+                                        : Stack(
+                                            children: [
+                                              Icon(Icons.star,
+                                                  size: 25,
+                                                  color: Colors.black26),
+                                              Positioned(
+                                                top: 3,
+                                                left: 3,
+                                                child: Icon(Icons.star,
+                                                    size: 19,
+                                                    color: Colors.white),
+                                              ),
+                                            ],
+                                          ),
+                                    onPressed: () {
+                                      SwitchFavorite();
+                                    })
                               ],
                             ),
                           ),

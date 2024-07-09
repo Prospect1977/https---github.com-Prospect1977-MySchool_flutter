@@ -389,7 +389,9 @@ class _VideoScreenState extends State<VideoScreen> {
     if (roles != 'Teacher') {
       SaveProgress(secondsCounter);
     }
-    _controller.dispose();
+    if (!_isDownloading) {
+      _controller.dispose();
+    }
   }
 
   String getPosition() {
@@ -1328,11 +1330,12 @@ class _VideoScreenState extends State<VideoScreen> {
                               );
                             },
                           )
-                        : roles != 'Teacher'
+                        : /*roles != 'Teacher'
                             ? Center(
                                 child: CircularProgressIndicator(),
                               )
-                            : Container(),
+                            :*/
+                        Container(),
                   )
                 : Container()
           ]),

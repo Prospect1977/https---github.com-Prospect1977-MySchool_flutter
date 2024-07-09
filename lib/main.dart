@@ -1,6 +1,7 @@
 import 'dart:io';
 
 //import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/services.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,7 +56,7 @@ void main() async {
   // bool onBoarding = false;
   String token = CacheHelper.getData(key: 'token');
   String roles = CacheHelper.getData(key: 'roles');
-  await checkAppVersion();
+  //await checkAppVersion();
   bool isUpdated = CacheHelper.getData(key: "isLatestVersion");
   if (isUpdated == false) {
     widget = RequireUpdateScreen();
@@ -81,9 +82,12 @@ void main() async {
   }
 
   // widget = TestScreen();
-  runApp(MyApp(
-    isDark: isDark,
-    startWidget: widget,
+  runApp(ChangeNotifierProvider(
+    create: (context) => ApiProvider(),
+    child: MyApp(
+      isDark: isDark,
+      startWidget: widget,
+    ),
   ));
 }
 
@@ -130,5 +134,16 @@ class MyHttpOverrides extends HttpOverrides {
     return super.createHttpClient(context)
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+class ApiProvider with ChangeNotifier {
+  Dio _dio;
+
+  ApiProvider() {
+    _dio = Dio(BaseOptions(
+      baseUrl: 'https://api.example.com',
+      headers: {'Content-Type': 'application/json'},
+    ));
   }
 }

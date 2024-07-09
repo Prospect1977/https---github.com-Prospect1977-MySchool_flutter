@@ -60,7 +60,6 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
   // TeacherSession sessionData = null;
   TeacherLessons lessonsData;
   bool showReorderTip = true;
-  bool isSessionActive;
   //the following function is only used for the video procedures:
   void getData() async {
     await Provider.of<TeacherSessionProvider>(context, listen: false)
@@ -363,7 +362,7 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
                                                           ),
                                                         ),
                                                   model.session.id == 0 ||
-                                                          isSessionActive ==
+                                                          model.isSessionActive ==
                                                               true
                                                       ? Container()
                                                       : Container(

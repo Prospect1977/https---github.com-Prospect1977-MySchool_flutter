@@ -111,10 +111,10 @@ class _WalletScreenState extends State<WalletScreen> {
                                         controller: AmountController,
                                         type: TextInputType.number,
                                         validate: (value) {
-                                          if (int.parse(value) < 30) {
+                                          if (int.parse(value) < 10) {
                                             return lang == "en"
-                                                ? "Amount must be at least 30 EGP"
-                                                : "مبلغ الشحن لا يجب أن يقل عن 30 ج.م";
+                                                ? "Amount must be at least 10 EGP"
+                                                : "مبلغ الشحن لا يجب أن يقل عن 10 ج.م";
                                           }
                                           return null;
                                         },
