@@ -92,10 +92,6 @@ class _StudentFavoritesAllScreenState extends State<StudentFavoritesAllScreen> {
     return Scaffold(
         appBar: appBarComponent(
             context, lang == "en" ? "My Favorite Sessions" : "دروسي المفضلة"),
-        bottomNavigationBar: StudentStudyBySubjectNavigationBar(
-          PageIndex: 2,
-          StudentId: widget.StudentId,
-        ),
         body: model == null
             ? Center(
                 child: CircularProgressIndicator(),
@@ -437,7 +433,7 @@ class EmptyWidget extends StatelessWidget {
             ),
             Text(
               lang == "en"
-                  ? "You didn't add any favorite sessions yet!"
+                  ? "You haven't added any favorite sessions yet!"
                   : 'لم تقم بإضافة أي دروس مفضلة بعد!',
               textAlign: TextAlign.center,
               style: TextStyle(
