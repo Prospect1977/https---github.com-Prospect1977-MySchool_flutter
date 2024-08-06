@@ -52,6 +52,8 @@ class SessionDetails {
   String urlSource;
   String coverUrlSource;
   int duration;
+  bool isQuizLimited;
+  String limitedQuizCode;
 
   SessionDetails.fromJson(Map<String, dynamic> json) {
     type = json['type'];
@@ -77,5 +79,7 @@ class SessionDetails {
     videoStoppedAt = json['videoStoppedAt'];
     urlSource = json['urlSource'];
     duration = json['duration'];
+    isQuizLimited = json['isQuizLimited'];
+    limitedQuizCode = json['limitedQuizCode'];
   }
 }

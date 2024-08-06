@@ -13,6 +13,8 @@ import 'package:my_school/shared/styles/colors.dart';
 import 'package:my_school/shared/widgets/studentStudyBySubject_navigation_bar.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import '../models/StudentSubject.dart';
+
 class StudentLearnBySubjectScreen2 extends StatefulWidget {
   final int studentId;
 
@@ -20,8 +22,15 @@ class StudentLearnBySubjectScreen2 extends StatefulWidget {
   final String SubjectName;
   final String dir;
 
+  List<int> ChildSubjects;
+
   StudentLearnBySubjectScreen2(
-      {this.studentId, this.YearSubjectId, this.dir, this.SubjectName, Key key})
+      {this.studentId,
+      this.YearSubjectId,
+      this.dir,
+      this.SubjectName,
+      this.ChildSubjects,
+      Key key})
       : super(key: key);
 
   @override
@@ -131,6 +140,7 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
     getLessons(widget.studentId, widget.YearSubjectId);
   }
 
+  List<ChildSubject> ChildSubjects = [];
   void getLessons(Id, YearSubjectId) {
     setState(() {
       StudentLessonsByYearSubjectIdCollection = null;
@@ -141,7 +151,8 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
             query: {
               'Id': Id,
               'YearSubjectId': YearSubjectId,
-              'TermIndex': TermIndex
+              'TermIndex': TermIndex,
+              'ChildSubjects': widget.ChildSubjects
             },
             lang: lang,
             token: token)
@@ -159,7 +170,13 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
         StudentLessonsByYearSubjectIdCollection =
             StudentLessonsByYearSubjectId_collection.fromJson(
                 value.data["data"]);
-        TermsCount = value.data["additionalData"];
+        TermsCount = value.data["additionalData"]["termsCount"];
+        if (value.data["additionalData"]["childSubjects"].length > 0) {
+          ChildSubjects =
+              (value.data["additionalData"]["childSubjects"] as List)
+                  .map((item) => ChildSubject.fromJson(item))
+                  .toList();
+        }
         getTermsIndecies();
       });
     }).catchError((error) {
@@ -236,10 +253,55 @@ class _StudentLessonState extends State<StudentLearnBySubjectScreen2> {
                       isExpanded: true, //make true to make width 100%
                     ),
                   ),
+                  if (ChildSubjects.length > 0 && ChildSubjects != null)
+                    ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: ChildSubjects.length,
+                      itemBuilder: (context, i) {
+                        var childSubjectItem = ChildSubjects[i];
+                        return GestureDetector(
+                          onTap: () {
+                            navigateTo(
+                                context,
+                                StudentLearnBySubjectScreen2(
+                                  SubjectName: childSubjectItem.subjectName,
+                                  YearSubjectId: childSubjectItem.yearSubjectId,
+                                  dir: widget.dir,
+                                  studentId: widget.studentId,
+                                  ChildSubjects: [],
+                                ));
+                          },
+                          child: Card(
+                            elevation: 0,
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                        color: defaultColor.withOpacity(0.3)),
+                                    color: Colors.white),
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.only(bottom: 0),
+                                child: Center(
+                                  child: Text(childSubjectItem.subjectName,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: defaultColor,
+                                      )),
+                                )),
+                          ),
+                        );
+                      },
+                    ),
+                  if (ChildSubjects.length > 0 && ChildSubjects != null)
+                    SizedBox(
+                      height: 5,
+                    ),
                   Expanded(
                       child: StudentLessonsByYearSubjectIdCollection
-                                  .items.length ==
-                              0
+                                      .items.length ==
+                                  0 &&
+                              ChildSubjects.length == 0
                           ? EmptyCurriculum(widget.dir)
                           : ScrollablePositionedList.builder(
                               itemScrollController: _itemScrollController,

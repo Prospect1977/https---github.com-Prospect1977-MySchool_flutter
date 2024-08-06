@@ -83,7 +83,7 @@ class _VideoScreenState extends State<VideoScreen> {
   bool showSpeedOptions = false;
   bool showResOptions = false;
   String VideoUrl;
-
+  CancelToken _cancelToken;
   @override
   StudentVideoNotes VideoNotes;
 //----------------------------------------Native chat gpt
@@ -97,6 +97,7 @@ class _VideoScreenState extends State<VideoScreen> {
 //-----------------------------------------------------------
   Future<void> _downloadVideo() async {
     Dio dio = Dio();
+    _cancelToken = CancelToken();
     _controller.pause();
     double _downloadedCache = 0;
     try {
@@ -106,7 +107,7 @@ class _VideoScreenState extends State<VideoScreen> {
 
       var VideoFullUrl =
           '${widget.UrlSource == "web" || widget.UrlSource == "web" ? webUrl : baseUrl0}Sessions/Videos/$VideoUrlModified';
-      await dio.download(VideoFullUrl, _filePath,
+      await dio.download(VideoFullUrl, _filePath, cancelToken: _cancelToken,
           onReceiveProgress: (received, total) {
         if (total != -1) {
           setState(() {
@@ -180,6 +181,12 @@ class _VideoScreenState extends State<VideoScreen> {
     });
   }
 
+  void _cancelDownload() {
+    if (_cancelToken != null && !_cancelToken.isCancelled) {
+      _cancelToken.cancel();
+    }
+  }
+
   Future<void> _deleteVideo() async {
     try {
       final file = File(_filePath);
@@ -187,27 +194,7 @@ class _VideoScreenState extends State<VideoScreen> {
         await file.delete();
         setState(() {
           _isDownloaded = false;
-          showToast(
-              text: lang == "en"
-                  ? "The video has been deleted successfuly from device"
-                  : "تم حذف الفيديو من جهازك بنجاح",
-              state: ToastStates.SUCCESS);
-          Navigator.of(context).pop();
-          // var VideoFullUrl =
-          //     '${widget.UrlSource == "web" || widget.UrlSource == "web" ? webUrl : baseUrl0}Sessions/Videos/$VideoUrl';
-
-          // _controller = VideoPlayerController.network(VideoFullUrl)
-          //   ..addListener(() {
-          //     if (_controller != null && _controller.value.isInitialized) {
-          //       setState(() {});
-          //     }
-          //   })
-          //   ..setLooping(false)
-          //   ..setPlaybackSpeed(playbackSpeed)
-          //   ..initialize().then((_) {
-          //     _onInialize(goToSecond: false, second: secondsCounter);
-          //   })
-          //   ..play();
+          _isDownloading = false;
         });
       }
     } catch (e) {
@@ -252,6 +239,42 @@ class _VideoScreenState extends State<VideoScreen> {
           _onInialize(goToSecond: true);
         })
         ..play();
+    }
+  }
+
+  Future<bool> _onWillPop(BuildContext context) async {
+    if (!_isDownloading) {
+      Navigator.of(context).pop(true);
+    } else {
+      bool exitResult = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Exit Confirmation'),
+          content: Text(widget.dir == "ltr"
+              ? 'Downloading in progress, are you sure that you want to stop downloading?'
+              : 'جاري تنزيل الفيديو، هل انت متأكد من إلغاء التنزيل؟'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(widget.dir == "ltr" ? 'No' : 'لا'),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteVideo();
+                setState(() {
+                  _isDownloaded = false;
+                  _isDownloading = false;
+                });
+
+                Navigator.of(context).pop(true);
+              },
+              child: Text(widget.dir == "ltr" ? 'Yes' : 'نعم'),
+            ),
+          ],
+        ),
+      );
+
+      return exitResult ?? false;
     }
   }
 
@@ -625,720 +648,766 @@ class _VideoScreenState extends State<VideoScreen> {
                   TeacherName: widget.TeacherName)*/
               )
             : null,
-        body: SingleChildScrollView(
-          child: Column(children: [
-            !(_controller != null && _controller.value.isInitialized) &&
-                    _isLoading
-                ? Container(
-                    width: double.infinity,
-                    height:
-                        MediaQuery.of(context).size.width / widget.aspectRatio,
-                    child: Stack(children: [
-                      Image.network(
-                        widget.CoverUrl,
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.width /
-                            widget.aspectRatio,
-                        fit: BoxFit.cover,
-                      ),
-                      Center(
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.black26,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.black, //<-- SEE HERE
+        body: WillPopScope(
+          onWillPop: () => _onWillPop(context),
+          child: SingleChildScrollView(
+            child: Column(children: [
+              !(_controller != null && _controller.value.isInitialized) &&
+                      _isLoading
+                  ? Container(
+                      width: double.infinity,
+                      height: MediaQuery.of(context).size.width /
+                          widget.aspectRatio,
+                      child: Stack(children: [
+                        Image.network(
+                          widget.CoverUrl,
+                          width: double.infinity,
+                          height: MediaQuery.of(context).size.width /
+                              widget.aspectRatio,
+                          fit: BoxFit.cover,
+                        ),
+                        Center(
+                          child: CircularProgressIndicator(
+                            backgroundColor: Colors.black26,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.black, //<-- SEE HERE
+                            ),
                           ),
-                        ),
-                      )
-                    ]),
-                  )
-                : Container(
-                    color: Colors.black,
-                    width: MediaQuery.of(context).size.width -
-                        (MediaQuery.of(context).orientation ==
-                                Orientation.portrait
-                            ? 0
-                            : 0), //----------------------------the 48 is to be removed latter
-                    height: MediaQuery.of(context).orientation ==
-                            Orientation.portrait
-                        ? MediaQuery.of(context).size.width /
-                            _controller.value.aspectRatio
-                        : MediaQuery.of(context).size.height - 3,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        setState(() {
-                          showControls = !showControls;
-                          showSpeedOptions = false;
-                          showResOptions = false;
-                        });
-                      },
-                      child: Stack(alignment: Alignment.center, children: [
-                        Container(
-                          child: AspectRatio(
-                              aspectRatio: widget.aspectRatio,
-                              child: VideoPlayer(_controller)),
-                        ),
+                        )
+                      ]),
+                    )
+                  : Container(
+                      color: Colors.black,
+                      width: MediaQuery.of(context).size.width -
+                          (MediaQuery.of(context).orientation ==
+                                  Orientation.portrait
+                              ? 0
+                              : 0), //----------------------------the 48 is to be removed latter
+                      height: MediaQuery.of(context).orientation ==
+                              Orientation.portrait
+                          ? MediaQuery.of(context).size.width /
+                              _controller.value.aspectRatio
+                          : MediaQuery.of(context).size.height - 3,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          setState(() {
+                            showControls = !showControls;
+                            showSpeedOptions = false;
+                            showResOptions = false;
+                          });
+                        },
+                        child: Stack(alignment: Alignment.center, children: [
+                          Container(
+                            child: AspectRatio(
+                                aspectRatio: widget.aspectRatio,
+                                child: VideoPlayer(_controller)),
+                          ),
 
-                        //_controller.value.isPlaying
-                        showControls == false
-                            ? Container()
-                            : Stack(
-                                children: [
-                                  Container(
-                                    ////////---------------------------------------------controlles board
-                                    color: Colors.black26,
-                                    alignment: Alignment.center,
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                          child: Center(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                IconButton(
-                                                  //--------------------------backward Button
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      if (_controller != null &&
-                                                          _controller.value
-                                                              .isInitialized) {
-                                                        _controller.seekTo(Duration(
-                                                            seconds: (_controller
-                                                                    .value
-                                                                    .position
-                                                                    .inSeconds -
-                                                                5)));
-                                                      }
-                                                    });
-                                                  },
-                                                  icon: Icon(
-                                                    Icons.fast_rewind,
-                                                    color: Colors.white,
-                                                    size: 40,
-                                                  ),
-                                                ),
-                                                Container(
-                                                  height: 60,
-                                                  width: 60,
-                                                  child: IconButton(
-                                                    //--------------------------Play Button
+                          //_controller.value.isPlaying
+                          showControls == false
+                              ? Container()
+                              : Stack(
+                                  children: [
+                                    Container(
+                                      ////////---------------------------------------------controlles board
+                                      color: Colors.black26,
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  IconButton(
+                                                    //--------------------------backward Button
                                                     onPressed: () {
                                                       setState(() {
                                                         if (_controller !=
                                                                 null &&
                                                             _controller.value
                                                                 .isInitialized) {
-                                                          if (_controller.value
-                                                              .isPlaying) {
-                                                            _controller.pause();
-
-                                                            SaveProgress(
-                                                                secondsCounter);
-                                                          } else {
-                                                            _controller.play();
-                                                            showControls =
-                                                                false;
-                                                          }
-
-                                                          // _controller.seekTo(Duration(seconds: 500));
+                                                          _controller.seekTo(Duration(
+                                                              seconds: (_controller
+                                                                      .value
+                                                                      .position
+                                                                      .inSeconds -
+                                                                  5)));
                                                         }
                                                       });
                                                     },
                                                     icon: Icon(
-                                                      _controller
-                                                              .value.isPlaying
-                                                          ? Icons.pause
-                                                          : Icons.play_arrow,
+                                                      Icons.fast_rewind,
                                                       color: Colors.white,
-                                                      size: 60,
-                                                    ),
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  //--------------------------forward Button
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      if (_controller != null &&
-                                                          _controller.value
-                                                              .isInitialized) {
-                                                        _controller.seekTo(Duration(
-                                                            seconds: (_controller
-                                                                    .value
-                                                                    .position
-                                                                    .inSeconds +
-                                                                5)));
-                                                      }
-                                                    });
-                                                  },
-                                                  icon: Icon(
-                                                    Icons.fast_forward,
-                                                    color: Colors.white,
-                                                    size: 40,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 91,
-                                          child: Column(
-                                            //-----------------------------------Bottom Compound Column
-                                            children: [
-                                              Row(
-                                                //-------------------------------------------------Timeline row
-                                                children: [
-                                                  Container(
-                                                    padding: EdgeInsets.only(
-                                                        right: 4, left: 3),
-                                                    width: 43,
-                                                    child: FittedBox(
-                                                      child: Text(
-                                                        getPosition(),
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Container(
-                                                      height: 50,
-                                                      child: Stack(
-                                                          //----------------------------------video progress indicator Group
-                                                          alignment: Alignment
-                                                              .centerLeft,
-                                                          children: [
-                                                            VideoProgressIndicator(
-                                                              //----------------------------------video progress indicator
-                                                              _controller,
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(10),
-                                                              allowScrubbing:
-                                                                  true,
-                                                              colors:
-                                                                  VideoProgressColors(
-                                                                playedColor:
-                                                                    defaultColor,
-                                                              ),
-                                                            ),
-                                                            Positioned(
-                                                              left:
-                                                                  getIndicatorPosition(),
-                                                              top: 16,
-                                                              child:
-                                                                  IgnorePointer(
-                                                                child: Icon(
-                                                                  Icons.circle,
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          200,
-                                                                          200,
-                                                                          200),
-                                                                  size: 17,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ]),
+                                                      size: 40,
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.only(
-                                                        right: 3, left: 4),
-                                                    width: 43,
-                                                    child: FittedBox(
-                                                      child: Text(
-                                                        getVideoDuration(),
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
+                                                    height: 60,
+                                                    width: 60,
+                                                    child: IconButton(
+                                                      //--------------------------Play Button
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          if (_controller !=
+                                                                  null &&
+                                                              _controller.value
+                                                                  .isInitialized) {
+                                                            if (_controller
+                                                                .value
+                                                                .isPlaying) {
+                                                              _controller
+                                                                  .pause();
+
+                                                              SaveProgress(
+                                                                  secondsCounter);
+                                                            } else {
+                                                              _controller
+                                                                  .play();
+                                                              showControls =
+                                                                  false;
+                                                            }
+
+                                                            // _controller.seekTo(Duration(seconds: 500));
+                                                          }
+                                                        });
+                                                      },
+                                                      icon: Icon(
+                                                        _controller
+                                                                .value.isPlaying
+                                                            ? Icons.pause
+                                                            : Icons.play_arrow,
+                                                        color: Colors.white,
+                                                        size: 60,
                                                       ),
+                                                    ),
+                                                  ),
+                                                  IconButton(
+                                                    //--------------------------forward Button
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        if (_controller !=
+                                                                null &&
+                                                            _controller.value
+                                                                .isInitialized) {
+                                                          _controller.seekTo(Duration(
+                                                              seconds: (_controller
+                                                                      .value
+                                                                      .position
+                                                                      .inSeconds +
+                                                                  5)));
+                                                        }
+                                                      });
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.fast_forward,
+                                                      color: Colors.white,
+                                                      size: 40,
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                              Container(
-                                                height: 31,
-                                                padding:
-                                                    EdgeInsets.only(bottom: 5),
-                                                child: Row(
-                                                  //-------------------------------------------Add Note row
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 91,
+                                            child: Column(
+                                              //-----------------------------------Bottom Compound Column
+                                              children: [
+                                                Row(
+                                                  //-------------------------------------------------Timeline row
                                                   children: [
-                                                    GestureDetector(
-                                                      onTap: MediaQuery.of(
-                                                                      context)
-                                                                  .orientation ==
-                                                              Orientation
-                                                                  .landscape
-                                                          ? () async {
-                                                              SystemChrome
-                                                                  .setPreferredOrientations([
-                                                                DeviceOrientation
-                                                                    .portraitUp,
-                                                                DeviceOrientation
-                                                                    .portraitDown,
-                                                              ]);
-                                                              await Wakelock
-                                                                  .disable();
-
-                                                              _startAddComment(
-                                                                  ExistingComment:
-                                                                      "");
-                                                            }
-                                                          : () {
-                                                              _startAddComment(
-                                                                  ExistingComment:
-                                                                      "");
-                                                            },
-                                                      child: Container(
-                                                        margin: EdgeInsets.only(
-                                                            left: 15),
-                                                        width: 30,
-                                                        height: 30,
-                                                        child: Icon(
-                                                          Icons
-                                                              .note_alt_outlined,
-                                                          color: Colors.white,
-                                                          size: 28,
+                                                    Container(
+                                                      padding: EdgeInsets.only(
+                                                          right: 4, left: 3),
+                                                      width: 43,
+                                                      child: FittedBox(
+                                                        child: Text(
+                                                          getPosition(),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
                                                         ),
                                                       ),
                                                     ),
                                                     Expanded(
-                                                      //--------------------------------------------Playback Speed
                                                       child: Container(
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceAround,
-                                                          children: [
-                                                            GestureDetector(
-                                                                onTap: () {
-                                                                  setState(() {
-                                                                    showSpeedOptions =
-                                                                        true;
-                                                                  });
-                                                                },
-                                                                child: Row(
-                                                                  children: [
-                                                                    Icon(
-                                                                      Icons
-                                                                          .speed,
-                                                                      color: Colors
-                                                                          .white,
-                                                                    ),
-                                                                    SizedBox(
-                                                                      width: 4,
-                                                                    ),
-                                                                    Text(
-                                                                      '${playbackSpeed.toStringAsFixed(2)} X',
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              15,
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          color:
-                                                                              Colors.white),
-                                                                    ),
-                                                                  ],
-                                                                )),
-                                                            //-------------------------------------------------Resolution
-                                                            //Reference to handle the problem: https://stackoverflow.com/questions/59010614/flutter-video-player-change-video-source-dynamically
-                                                            // GestureDetector(
-                                                            //   child: Text(
-                                                            //     '${currentRes.toString()} PX',
-                                                            //     style: TextStyle(
-                                                            //         color: Colors
-                                                            //             .white,
-                                                            //         fontWeight:
-                                                            //             FontWeight
-                                                            //                 .bold,
-                                                            //         fontSize: 15),
-                                                            //   ),
-                                                            //   onTap: () {
-                                                            //     setState(() {
-                                                            //       showResOptions =
-                                                            //           true;
-                                                            //     });
-                                                            //   },
-                                                            // )
-                                                          ],
+                                                        height: 50,
+                                                        child: Stack(
+                                                            //----------------------------------video progress indicator Group
+                                                            alignment: Alignment
+                                                                .centerLeft,
+                                                            children: [
+                                                              VideoProgressIndicator(
+                                                                //----------------------------------video progress indicator
+                                                                _controller,
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            10),
+                                                                allowScrubbing:
+                                                                    true,
+                                                                colors:
+                                                                    VideoProgressColors(
+                                                                  playedColor:
+                                                                      defaultColor,
+                                                                ),
+                                                              ),
+                                                              Positioned(
+                                                                left:
+                                                                    getIndicatorPosition(),
+                                                                top: 16,
+                                                                child:
+                                                                    IgnorePointer(
+                                                                  child: Icon(
+                                                                    Icons
+                                                                        .circle,
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            200,
+                                                                            200,
+                                                                            200),
+                                                                    size: 17,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ]),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      padding: EdgeInsets.only(
+                                                          right: 3, left: 4),
+                                                      width: 43,
+                                                      child: FittedBox(
+                                                        child: Text(
+                                                          getVideoDuration(),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
                                                         ),
-                                                        height: 30,
-                                                        padding:
-                                                            EdgeInsets.all(0),
                                                       ),
                                                     ),
-                                                    GestureDetector(
-                                                      //----------------------------------- Full screen button
-                                                      child: Icon(
-                                                        MediaQuery.of(context)
-                                                                    .orientation ==
-                                                                Orientation
-                                                                    .portrait
-                                                            ? Icons.fullscreen
-                                                            : Icons
-                                                                .fullscreen_exit,
-                                                        color: Colors.white,
-                                                        size: 30,
-                                                      ),
-                                                      onTap: () async {
-                                                        if (MediaQuery.of(
-                                                                    context)
-                                                                .orientation ==
-                                                            Orientation
-                                                                .portrait) {
-                                                          SystemChrome
-                                                              .setPreferredOrientations([
-                                                            DeviceOrientation
-                                                                .landscapeRight,
-                                                            DeviceOrientation
-                                                                .landscapeLeft,
-                                                          ]);
-                                                          await Wakelock
-                                                              .enable();
-                                                          SystemChrome
-                                                              .setEnabledSystemUIMode(
-                                                                  SystemUiMode
-                                                                      .leanBack);
-                                                        } else {
-                                                          await Wakelock
-                                                              .disable();
-                                                          SystemChrome
-                                                              .setEnabledSystemUIMode(
-                                                                  SystemUiMode
-                                                                      .manual,
-                                                                  overlays:
-                                                                      SystemUiOverlay
-                                                                          .values);
-                                                          SystemChrome
-                                                              .setPreferredOrientations([
-                                                            DeviceOrientation
-                                                                .portraitDown,
-                                                            DeviceOrientation
-                                                                .portraitUp,
-                                                          ]);
-                                                          SystemChrome
-                                                              .setPreferredOrientations([
-                                                            DeviceOrientation
-                                                                .portraitDown,
-                                                            DeviceOrientation
-                                                                .portraitUp,
-                                                            DeviceOrientation
-                                                                .landscapeRight,
-                                                            DeviceOrientation
-                                                                .landscapeLeft,
-                                                          ]);
-                                                        }
-                                                      },
-                                                    ),
-                                                    SizedBox(
-                                                      width: 15,
-                                                    )
                                                   ],
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  ////////-----------------------------------speed and res overlay
-                                  showResOptions
-                                      ? ResController(
-                                          setRes: _setRes,
-                                          currentRes: currentRes)
-                                      : Container(),
-                                  showSpeedOptions == true
-                                      ? SpeedsController(
-                                          setSpeed: _setSpeed,
-                                          currentSpeed: playbackSpeed,
-                                        )
-                                      : Container(),
-                                ],
-                              )
-                      ]),
-                    ),
-                  ),
-            MediaQuery.of(context).orientation == Orientation.portrait
-                ? Directionality(
-                    textDirection: widget.dir == "ltr"
-                        ? TextDirection.ltr
-                        : TextDirection.rtl,
-                    child: Container(
-                      //---------------------------------------------------video title and ask
-                      padding: EdgeInsets.all(5),
-                      alignment: widget.dir == "ltr"
-                          ? Alignment.centerLeft
-                          : Alignment.centerRight,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.VideoName,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black45),
-                            ),
-                          ),
-                          Container(
-                            height: 35,
-                            child: _isDownloading
-                                ? CircularPercentIndicator(
-                                    radius: 15,
-                                    lineWidth: 3.0,
-                                    percent: _downloadedSoFar,
-                                    center: new Text(
-                                      '${(_downloadedSoFar * 100).toStringAsFixed(0)}',
-                                      style: TextStyle(
-                                          color: Colors.green.shade700),
-                                    ),
-                                    progressColor: Colors.green.shade700,
-                                  )
-                                : _isDownloaded
-                                    ? IconButton(
-                                        onPressed: () {
-                                          _deleteVideo();
-                                        },
-                                        icon: Icon(
-                                          Icons.delete,
-                                          color: Colors.black38,
-                                        ))
-                                    : IconButton(
-                                        icon: Icon(Icons.download,
-                                            color: Colors.black38),
-                                        onPressed: () {
-                                          _downloadVideo();
-                                        },
-                                      ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                : Container(),
-            VideoNotes != null &&
-                    MediaQuery.of(context).orientation == Orientation.portrait
-                ? Divider()
-                : Container(),
-            MediaQuery.of(context).orientation == Orientation.portrait
-                ? Directionality(
-                    textDirection: widget.dir == "ltr"
-                        ? TextDirection.ltr
-                        : TextDirection.rtl,
-                    child: VideoNotes != null
-                        ? ListView.separated(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            separatorBuilder: (context, index) =>
-                                Divider(thickness: 1),
-                            itemCount: VideoNotes.items.length,
-                            itemBuilder: (context, index) {
-                              var item = VideoNotes.items[index];
-                              return Directionality(
-                                textDirection: widget.dir == "ltr"
-                                    ? TextDirection.ltr
-                                    : TextDirection.rtl,
-                                child: InkWell(
-                                  onTap: () {
-                                    _controller
-                                        .seekTo(Duration(seconds: item.time));
-                                  },
-                                  child: Padding(
-                                    //--------------------------------Note
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                            child: Column(
-                                          //--------------------------Note left column
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              width: 45,
-                                              height: 25,
-                                              margin:
-                                                  EdgeInsets.only(bottom: 3),
-                                              decoration: BoxDecoration(
-                                                  color: defaultColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          40)),
-                                              child: Center(
-                                                //---------------------------Video Note time
-                                                child: Text(
-                                                    ConvertSecondsToTime(
-                                                        item.time),
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 12)),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 7,
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Icon(
-                                                  Icons.sticky_note_2_outlined,
-                                                  color: Colors.black26,
-                                                  size: 21,
-                                                ),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text(
-                                                  item.note,
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Colors.black54),
+                                                Container(
+                                                  height: 31,
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 5),
+                                                  child: Row(
+                                                    //-------------------------------------------Add Note row
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.end,
+                                                    children: [
+                                                      GestureDetector(
+                                                        onTap: MediaQuery.of(
+                                                                        context)
+                                                                    .orientation ==
+                                                                Orientation
+                                                                    .landscape
+                                                            ? () async {
+                                                                SystemChrome
+                                                                    .setPreferredOrientations([
+                                                                  DeviceOrientation
+                                                                      .portraitUp,
+                                                                  DeviceOrientation
+                                                                      .portraitDown,
+                                                                ]);
+                                                                await Wakelock
+                                                                    .disable();
+
+                                                                _startAddComment(
+                                                                    ExistingComment:
+                                                                        "");
+                                                              }
+                                                            : () {
+                                                                _startAddComment(
+                                                                    ExistingComment:
+                                                                        "");
+                                                              },
+                                                        child: Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 15),
+                                                          width: 30,
+                                                          height: 30,
+                                                          child: Icon(
+                                                            Icons
+                                                                .note_alt_outlined,
+                                                            color: Colors.white,
+                                                            size: 28,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        //--------------------------------------------Playback Speed
+                                                        child: Container(
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceAround,
+                                                            children: [
+                                                              GestureDetector(
+                                                                  onTap: () {
+                                                                    setState(
+                                                                        () {
+                                                                      showSpeedOptions =
+                                                                          true;
+                                                                    });
+                                                                  },
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                        Icons
+                                                                            .speed,
+                                                                        color: Colors
+                                                                            .white,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            4,
+                                                                      ),
+                                                                      Text(
+                                                                        '${playbackSpeed.toStringAsFixed(2)} X',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color: Colors.white),
+                                                                      ),
+                                                                    ],
+                                                                  )),
+                                                              //-------------------------------------------------Resolution
+                                                              //Reference to handle the problem: https://stackoverflow.com/questions/59010614/flutter-video-player-change-video-source-dynamically
+                                                              // GestureDetector(
+                                                              //   child: Text(
+                                                              //     '${currentRes.toString()} PX',
+                                                              //     style: TextStyle(
+                                                              //         color: Colors
+                                                              //             .white,
+                                                              //         fontWeight:
+                                                              //             FontWeight
+                                                              //                 .bold,
+                                                              //         fontSize: 15),
+                                                              //   ),
+                                                              //   onTap: () {
+                                                              //     setState(() {
+                                                              //       showResOptions =
+                                                              //           true;
+                                                              //     });
+                                                              //   },
+                                                              // )
+                                                            ],
+                                                          ),
+                                                          height: 30,
+                                                          padding:
+                                                              EdgeInsets.all(0),
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        //----------------------------------- Full screen button
+                                                        child: Icon(
+                                                          MediaQuery.of(context)
+                                                                      .orientation ==
+                                                                  Orientation
+                                                                      .portrait
+                                                              ? Icons.fullscreen
+                                                              : Icons
+                                                                  .fullscreen_exit,
+                                                          color: Colors.white,
+                                                          size: 30,
+                                                        ),
+                                                        onTap: () async {
+                                                          if (MediaQuery.of(
+                                                                      context)
+                                                                  .orientation ==
+                                                              Orientation
+                                                                  .portrait) {
+                                                            SystemChrome
+                                                                .setPreferredOrientations([
+                                                              DeviceOrientation
+                                                                  .landscapeRight,
+                                                              DeviceOrientation
+                                                                  .landscapeLeft,
+                                                            ]);
+                                                            await Wakelock
+                                                                .enable();
+                                                            SystemChrome
+                                                                .setEnabledSystemUIMode(
+                                                                    SystemUiMode
+                                                                        .leanBack);
+                                                          } else {
+                                                            await Wakelock
+                                                                .disable();
+                                                            SystemChrome.setEnabledSystemUIMode(
+                                                                SystemUiMode
+                                                                    .manual,
+                                                                overlays:
+                                                                    SystemUiOverlay
+                                                                        .values);
+                                                            SystemChrome
+                                                                .setPreferredOrientations([
+                                                              DeviceOrientation
+                                                                  .portraitDown,
+                                                              DeviceOrientation
+                                                                  .portraitUp,
+                                                            ]);
+                                                            SystemChrome
+                                                                .setPreferredOrientations([
+                                                              DeviceOrientation
+                                                                  .portraitDown,
+                                                              DeviceOrientation
+                                                                  .portraitUp,
+                                                              DeviceOrientation
+                                                                  .landscapeRight,
+                                                              DeviceOrientation
+                                                                  .landscapeLeft,
+                                                            ]);
+                                                          }
+                                                        },
+                                                      ),
+                                                      SizedBox(
+                                                        width: 15,
+                                                      )
+                                                    ],
+                                                  ),
                                                 )
                                               ],
-                                            )
-                                          ],
-                                        )),
-                                        PopupMenuButton(
-                                            icon: Icon(Icons.more_horiz,
-                                                color: Colors
-                                                    .black54), // add this line
-                                            itemBuilder: (_) =>
-                                                <PopupMenuItem<String>>[
-                                                  new PopupMenuItem<String>(
-                                                      child: Container(
-                                                          width: 100,
-                                                          // height: 30,
-                                                          child: Text(
-                                                            widget.dir == "ltr"
-                                                                ? "Edit"
-                                                                : "تعديل",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black54),
-                                                          )),
-                                                      value: 'edit'),
-                                                  new PopupMenuItem<String>(
-                                                      child: Container(
-                                                          width: 100,
-                                                          // height: 30,
-                                                          child: Text(
-                                                            widget.dir == "ltr"
-                                                                ? "Delete"
-                                                                : "حذف",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black54),
-                                                          )),
-                                                      value: 'delete'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    ////////-----------------------------------speed and res overlay
+                                    showResOptions
+                                        ? ResController(
+                                            setRes: _setRes,
+                                            currentRes: currentRes)
+                                        : Container(),
+                                    showSpeedOptions == true
+                                        ? SpeedsController(
+                                            setSpeed: _setSpeed,
+                                            currentSpeed: playbackSpeed,
+                                          )
+                                        : Container(),
+                                  ],
+                                )
+                        ]),
+                      ),
+                    ),
+              MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Directionality(
+                      textDirection: widget.dir == "ltr"
+                          ? TextDirection.ltr
+                          : TextDirection.rtl,
+                      child: Container(
+                        //---------------------------------------------------video title and ask
+                        padding: EdgeInsets.all(5),
+                        alignment: widget.dir == "ltr"
+                            ? Alignment.centerLeft
+                            : Alignment.centerRight,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.VideoName,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black45),
+                              ),
+                            ),
+                            Container(
+                              height: 35,
+                              child: _isDownloading
+                                  ? CircularPercentIndicator(
+                                      radius: 15,
+                                      lineWidth: 3.0,
+                                      percent: _downloadedSoFar,
+                                      center: new IconButton(
+                                        icon: Icon(
+                                          Icons.stop,
+                                          color: Colors.black54,
+                                        ),
+                                        iconSize: 15,
+                                        onPressed: () {
+                                          setState(() {
+                                            _isDownloading = false;
+                                            _isDownloaded = false;
+                                          });
+                                          _cancelDownload();
+
+                                          _deleteVideo();
+                                        },
+                                      ),
+                                      /*new Text(
+                                        '${(_downloadedSoFar * 100).toStringAsFixed(0)}',
+                                        style: TextStyle(
+                                            color: Colors.green.shade700),
+                                      )*/
+                                      progressColor: Colors.green.shade700,
+                                    )
+                                  : _isDownloaded
+                                      ? IconButton(
+                                          onPressed: () {
+                                            _deleteVideo();
+                                          },
+                                          icon: Icon(
+                                            Icons.delete,
+                                            color: Colors.black38,
+                                          ))
+                                      : Container(
+                                          width: 95,
+                                          child: IconButton(
+                                            icon: Row(
+                                              children: [
+                                                Text(
+                                                  "Download",
+                                                  style: TextStyle(
+                                                      color: Colors.black38,
+                                                      fontSize: 13),
+                                                ),
+                                                Icon(
+                                                  Icons.download,
+                                                  color: Colors.black38,
+                                                  size: 21,
+                                                ),
+                                              ],
+                                            ),
+                                            onPressed: () {
+                                              _downloadVideo();
+                                            },
+                                          ),
+                                        ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  : Container(),
+              VideoNotes != null &&
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Divider()
+                  : Container(),
+              MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Directionality(
+                      textDirection: widget.dir == "ltr"
+                          ? TextDirection.ltr
+                          : TextDirection.rtl,
+                      child: VideoNotes != null
+                          ? ListView.separated(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              separatorBuilder: (context, index) =>
+                                  Divider(thickness: 1),
+                              itemCount: VideoNotes.items.length,
+                              itemBuilder: (context, index) {
+                                var item = VideoNotes.items[index];
+                                return Directionality(
+                                  textDirection: widget.dir == "ltr"
+                                      ? TextDirection.ltr
+                                      : TextDirection.rtl,
+                                  child: InkWell(
+                                    onTap: () {
+                                      _controller
+                                          .seekTo(Duration(seconds: item.time));
+                                    },
+                                    child: Padding(
+                                      //--------------------------------Note
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              child: Column(
+                                            //--------------------------Note left column
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                width: 45,
+                                                height: 25,
+                                                margin:
+                                                    EdgeInsets.only(bottom: 3),
+                                                decoration: BoxDecoration(
+                                                    color: defaultColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            40)),
+                                                child: Center(
+                                                  //---------------------------Video Note time
+                                                  child: Text(
+                                                      ConvertSecondsToTime(
+                                                          item.time),
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 12)),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 7,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Icon(
+                                                    Icons
+                                                        .sticky_note_2_outlined,
+                                                    color: Colors.black26,
+                                                    size: 21,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    item.note,
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        color: Colors.black54),
+                                                  )
                                                 ],
-                                            onSelected: (index) async {
-                                              switch (index) {
-                                                case 'delete': //--------------------------------------remove note
-                                                  showDialog(
-                                                      context: context,
-                                                      builder:
-                                                          (ctx) =>
-                                                              Directionality(
-                                                                textDirection:
-                                                                    widget.dir ==
-                                                                            "ltr"
-                                                                        ? TextDirection
-                                                                            .ltr
-                                                                        : TextDirection
-                                                                            .rtl,
-                                                                child:
-                                                                    AlertDialog(
-                                                                  titleTextStyle: TextStyle(
-                                                                      color:
-                                                                          defaultColor,
-                                                                      fontSize:
-                                                                          16,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold),
-                                                                  title: Text(widget
+                                              )
+                                            ],
+                                          )),
+                                          PopupMenuButton(
+                                              icon: Icon(Icons.more_horiz,
+                                                  color: Colors
+                                                      .black54), // add this line
+                                              itemBuilder: (_) =>
+                                                  <PopupMenuItem<String>>[
+                                                    new PopupMenuItem<String>(
+                                                        child: Container(
+                                                            width: 100,
+                                                            // height: 30,
+                                                            child: Text(
+                                                              widget.dir ==
+                                                                      "ltr"
+                                                                  ? "Edit"
+                                                                  : "تعديل",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black54),
+                                                            )),
+                                                        value: 'edit'),
+                                                    new PopupMenuItem<String>(
+                                                        child: Container(
+                                                            width: 100,
+                                                            // height: 30,
+                                                            child: Text(
+                                                              widget.dir ==
+                                                                      "ltr"
+                                                                  ? "Delete"
+                                                                  : "حذف",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black54),
+                                                            )),
+                                                        value: 'delete'),
+                                                  ],
+                                              onSelected: (index) async {
+                                                switch (index) {
+                                                  case 'delete': //--------------------------------------remove note
+                                                    showDialog(
+                                                        context: context,
+                                                        builder:
+                                                            (ctx) =>
+                                                                Directionality(
+                                                                  textDirection: widget
                                                                               .dir ==
                                                                           "ltr"
-                                                                      ? 'Are you sure?'
-                                                                      : "هل انت متأكد؟"),
-                                                                  content: Text(
-                                                                    widget.dir ==
+                                                                      ? TextDirection
+                                                                          .ltr
+                                                                      : TextDirection
+                                                                          .rtl,
+                                                                  child:
+                                                                      AlertDialog(
+                                                                    titleTextStyle: TextStyle(
+                                                                        color:
+                                                                            defaultColor,
+                                                                        fontSize:
+                                                                            16,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                    title: Text(widget.dir ==
                                                                             "ltr"
-                                                                        ? 'Do you want to remove this note?'
-                                                                        : "هل تريد حذف هذا السجل؟",
+                                                                        ? 'Are you sure?'
+                                                                        : "هل انت متأكد؟"),
+                                                                    content:
+                                                                        Text(
+                                                                      widget.dir ==
+                                                                              "ltr"
+                                                                          ? 'Do you want to remove this note?'
+                                                                          : "هل تريد حذف هذا السجل؟",
+                                                                    ),
+                                                                    actions: <
+                                                                        Widget>[
+                                                                      TextButton(
+                                                                        child: Text(widget.dir ==
+                                                                                "ltr"
+                                                                            ? "No"
+                                                                            : "لا"),
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.of(ctx)
+                                                                              .pop();
+                                                                        },
+                                                                      ),
+                                                                      TextButton(
+                                                                        child: Text(widget.dir ==
+                                                                                "ltr"
+                                                                            ? 'Yes'
+                                                                            : "نعم"),
+                                                                        onPressed:
+                                                                            () {
+                                                                          DeleteVideoNote(
+                                                                              item.id);
+                                                                          Navigator.of(ctx)
+                                                                              .pop();
+                                                                        },
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                  actions: <
-                                                                      Widget>[
-                                                                    TextButton(
-                                                                      child: Text(widget.dir ==
-                                                                              "ltr"
-                                                                          ? "No"
-                                                                          : "لا"),
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator.of(ctx)
-                                                                            .pop();
-                                                                      },
-                                                                    ),
-                                                                    TextButton(
-                                                                      child: Text(widget.dir ==
-                                                                              "ltr"
-                                                                          ? 'Yes'
-                                                                          : "نعم"),
-                                                                      onPressed:
-                                                                          () {
-                                                                        DeleteVideoNote(
-                                                                            item.id);
-                                                                        Navigator.of(ctx)
-                                                                            .pop();
-                                                                      },
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ));
+                                                                ));
 
-                                                  break;
-                                                case 'edit':
-                                                  _startAddComment(
-                                                      ExistingComment:
-                                                          item.note);
-                                                  setState(() {
-                                                    commentMode = "update";
-                                                    editCommentId = item.id;
-                                                  });
-                                                //-------------------------------------Edit Note
-                                              }
-                                            })
-                                      ],
+                                                    break;
+                                                  case 'edit':
+                                                    _startAddComment(
+                                                        ExistingComment:
+                                                            item.note);
+                                                    setState(() {
+                                                      commentMode = "update";
+                                                      editCommentId = item.id;
+                                                    });
+                                                  //-------------------------------------Edit Note
+                                                }
+                                              })
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                          )
-                        : /*roles != 'Teacher'
-                            ? Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            :*/
-                        Container(),
-                  )
-                : Container()
-          ]),
+                                );
+                              },
+                            )
+                          : /*roles != 'Teacher'
+                              ? Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              :*/
+                          Container(),
+                    )
+                  : Container()
+            ]),
+          ),
         ));
   }
 }

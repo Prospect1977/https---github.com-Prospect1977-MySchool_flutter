@@ -43,6 +43,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       print(value.data["data"]);
       int StudentId = value.data["data"];
       print(StudentId);
+      CacheHelper.removeData(key: 'studentsList');
       navigateTo(
           context,
           StudentProfileScreen(

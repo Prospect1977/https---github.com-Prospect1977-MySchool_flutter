@@ -25,6 +25,7 @@ class StudentSessionDetailsScreen extends StatefulWidget {
   final String dir;
   final int StudentId;
   final String TeacherName;
+
   StudentSessionDetailsScreen(
       {@required this.SessionHeaderId,
       @required this.LessonName,
@@ -270,7 +271,7 @@ class _StudentSessionDetailsScreenState
                                             children: [
                                               Icon(Icons.star,
                                                   size: 25,
-                                                  color: Colors.black26),
+                                                  color: Colors.amber.shade600),
                                               Positioned(
                                                 top: 3,
                                                 left: 3,
@@ -486,12 +487,14 @@ class Item extends StatelessWidget {
   final String align;
   final AllData data;
   final roles;
+  TextEditingController _quizCodeController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (data.sessionHeader.isFree ||
               data.sessionHeader.isPurchaseCompleted ||
-              item.type == "Promo")
+              item.type == "Promo" ||
+              (item.type == "Quiz" && item.isQuizLimited))
           ? () async {
               if (item.type == "Video" || item.type == "Promo") {
                 navigateTo(
@@ -530,24 +533,64 @@ class Item extends StatelessWidget {
                   readOnly = true;
                   allowRetry = false;
                 }
-                navigateTo(
-                    context,
-                    QuizScreen(
-                      StudentId: widget.StudentId,
-                      QuizId: item.quizId,
-                      LessonName: widget.LessonName,
-                      dir: widget.dir,
-                    ));
+                if (item.isQuizLimited) {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) {
+                      return AlertDialog(
+                        content: TextField(
+                          controller: _quizCodeController,
+                          decoration: InputDecoration(
+                              hintText: widget.dir == "ltr"
+                                  ? "Please enter the code"
+                                  : "برجاء إدخال الكود"),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () {
+                              if (_quizCodeController.text ==
+                                  item.limitedQuizCode) {
+                                Navigator.of(ctx).pop();
+                                navigateTo(
+                                    context,
+                                    QuizScreen(
+                                      StudentId: widget.StudentId,
+                                      QuizId: item.quizId,
+                                      LessonName: widget.LessonName,
+                                      dir: widget.dir,
+                                    ));
+                              } else {
+                                showToast(
+                                    text: lang == "en"
+                                        ? "The provided code is not right!"
+                                        : "الكود الذي ادخلته خطأ!",
+                                    state: ToastStates.ERROR);
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  navigateTo(
+                      context,
+                      QuizScreen(
+                        StudentId: widget.StudentId,
+                        QuizId: item.quizId,
+                        LessonName: widget.LessonName,
+                        dir: widget.dir,
+                      ));
+                }
               }
               if (item.type == "Document") {
-                // navigateTo(
-                //     context,
-                //     DocumentScreen(
-                //         Url: item.urlSource == "web"
-                //             ? '${webUrl}Sessions/Documents/${item.documentUrl}'
-                //             : '${baseUrl0}Sessions/Documents/${item.documentUrl}',
-                //         Title: item.title));
-
                 await launchUrl(
                     Uri.parse(item.urlSource == "web" || item.urlSource == "Web"
                         ? '${webUrl}Sessions/Documents/${item.documentUrl}'
@@ -569,7 +612,8 @@ class Item extends StatelessWidget {
               border: Border.all(
                   color: (data.sessionHeader.isFree ||
                           data.sessionHeader.isPurchaseCompleted ||
-                          item.type == "Promo")
+                          item.type == "Promo" ||
+                          (item.type == "Quiz" && item.isQuizLimited))
                       ? defaultColor.withOpacity(0.5)
                       : Colors.black26),
               borderRadius: BorderRadius.circular(5)),
@@ -716,6 +760,21 @@ Widget getImage(SessionDetails sd, bool isFree, bool isPurchased, String align,
         fit: BoxFit.cover,
       );
       break;
+    case "Quiz":
+      if (isFree == true || isPurchased == true || sd.isQuizLimited) {
+        return Image.asset(
+          'assets/images/${sd.type}_$align.png',
+          width: width,
+          height: height,
+        );
+      } else {
+        return Image.asset(
+          'assets/images/${sd.type}_${align}_disabled.png',
+          width: width,
+          height: height,
+        );
+      }
+      break;
     default:
       if (isFree == true || isPurchased == true) {
         return Image.asset(
@@ -753,6 +812,39 @@ Widget getTitle(String dir, String LessonName, SessionDetails sd, bool isFree,
         return Text(title,
             style: TextStyle(fontSize: fontSize, color: Colors.black45));
       }
+      break;
+    case "Quiz":
+      var t = dir == "ltr" ? "Quiz" : "إختبار";
+      if (sd.isQuizLimited) {
+        // t += dir == "ltr" ? " (Exclusive)" : " (حصري)";
+      }
+      return Row(
+        children: [
+          Text(t,
+              style: TextStyle(
+                  fontSize: fontSize,
+                  color: sd.isQuizLimited || !sd.isDisabled
+                      ? defaultColor
+                      : Colors.black38)),
+          const SizedBox(
+            width: 10,
+          ),
+          if (sd.isQuizLimited)
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+              decoration: BoxDecoration(
+                  color: Colors.amber.shade600,
+                  border: Border.all(color: Colors.amber.shade800),
+                  borderRadius: BorderRadius.circular(5)),
+              child: Text(
+                dir == "ltr" ? "Exclusive" : "حصري",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            )
+        ],
+      );
+
       break;
     default:
       if (isFree == true || isPurchased == true) {

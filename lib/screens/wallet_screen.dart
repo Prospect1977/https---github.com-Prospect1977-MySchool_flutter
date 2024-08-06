@@ -9,6 +9,7 @@ import 'package:my_school/shared/components/functions.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/WalletProvider.dart';
+import 'charge_wallet_apple_screen.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({Key key}) : super(key: key);
@@ -98,9 +99,14 @@ class _WalletScreenState extends State<WalletScreen> {
                                             fontSize: lang == "ar" ? 22 : 18),
                                       ),
                                       onPressed: () {
-                                        setState(() {
-                                          showChargeForm = true;
-                                        });
+                                        if (CacheHelper.getData(key: 'isIOS')) {
+                                          navigateTo(context,
+                                              ChargeWalletAppleScreen());
+                                        } else {
+                                          setState(() {
+                                            showChargeForm = true;
+                                          });
+                                        }
                                       },
                                       color: Colors.green),
                                 if (showChargeForm)

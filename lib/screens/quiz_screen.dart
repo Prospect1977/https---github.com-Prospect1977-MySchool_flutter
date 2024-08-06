@@ -14,18 +14,22 @@ import 'package:my_school/shared/components/constants.dart';
 import 'package:my_school/shared/components/functions.dart';
 import 'package:my_school/shared/dio_helper.dart';
 import 'package:my_school/shared/styles/colors.dart';
+import 'package:my_school/shared/widgets/fraction_display_widget.dart';
 
 class QuizScreen extends StatefulWidget {
   int StudentId;
   int QuizId;
   String dir;
   String LessonName;
-
+  bool ReadOnly;
+  bool TeacherPreviewMode;
   QuizScreen(
       {this.StudentId,
       @required this.QuizId,
       @required this.dir,
       @required this.LessonName,
+      this.ReadOnly = false,
+      this.TeacherPreviewMode = false,
       Key key})
       : super(key: key);
 
@@ -117,7 +121,8 @@ class _QuizScreenState extends State<QuizScreen> {
             query: {
               "QuizId": widget.QuizId,
               "StudentId": widget.StudentId,
-              "DataDate": DateTime.now()
+              "DataDate": DateTime.now(),
+              "SaveQuiz": roles.contains("Parent") ? false : true
             },
             lang: dir == "ltr" ? "en" : "ar",
             data: jsonEncode(StudentAnswers(studentAnswers).toJson()),
@@ -145,12 +150,14 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
+  bool showRightAnswersAfterTest = true;
+  bool showFinalDegreeOnly = false;
   void getQuiz() {
     DioHelper.getData(
-            url: roles.contains("Teacher")
+            url: roles.contains("Teacher") && !widget.ReadOnly
                 ? "Quiz/getQuizDataForTeacher"
                 : "Quiz",
-            query: roles.contains("Teacher")
+            query: roles.contains("Teacher") && !widget.ReadOnly
                 ? {"QuizId": widget.QuizId}
                 : {"QuizId": widget.QuizId, "StudentId": widget.StudentId},
             lang: dir == "ltr" ? "en" : "ar",
@@ -166,12 +173,15 @@ class _QuizScreenState extends State<QuizScreen> {
           return;
         }
         setState(() {
+          showRightAnswersAfterTest =
+              value.data["data"]["showRightAnswersAfterTest"];
           print(
               '-----------------------------------${value.data["data"]["finishedQuizData"]["dataDate"]}');
           dynamic dataDate = value.data["data"]["finishedQuizData"]["dataDate"];
           if (dataDate != null) {
             readOnly = true;
             showReport = true;
+
             getQuizReport();
           } else {
             readOnly = false;
@@ -183,6 +193,12 @@ class _QuizScreenState extends State<QuizScreen> {
               textControllers.add(ctlr);
               selectedAnswerIds.add(0);
             }).toList();
+          }
+          if (((roles.contains('Student') || roles.contains('Parent')) &&
+                  showRightAnswersAfterTest == false) ||
+              (widget.TeacherPreviewMode &&
+                  showRightAnswersAfterTest == false)) {
+            showFinalDegreeOnly = true;
           }
         });
       },
@@ -420,187 +436,244 @@ class _QuizScreenState extends State<QuizScreen> {
                           child: CircularProgressIndicator(),
                         ),
                         builder: (context) => Expanded(
-                          child: SingleChildScrollView(
-                            child: Directionality(
-                              textDirection: widget.dir == "ltr"
-                                  ? TextDirection.ltr
-                                  : TextDirection.rtl,
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.all(0.0),
-                                    alignment: Alignment.center,
-                                    child: Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsets.all(5),
-                                      decoration: BoxDecoration(
-                                        color: quizResult < 0.5
-                                            ? Colors.red
-                                            : Colors.green,
-                                      ),
-                                      child: Text(
-                                          widget.dir == "ltr"
-                                              ? 'Quiz Result: ${quizResultAsFraction} (${quizResultAsPercentage} %)'
-                                              : "نتيجة الإختبار: ${quizResultAsFraction} (${quizResultAsPercentage} %)",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                                  ),
-                                  Divider(),
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 8),
-                                    child: ListView.builder(
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: MyQuiz.Questions.length,
-                                      itemBuilder: (context, index) {
-                                        var item = MyQuiz.Questions[index];
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              widget.dir == "ltr"
-                                                  ? '${index + 1}) ${item.title}'
-                                                  : '${index + 1}) ${item.title}',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
+                          child: showFinalDegreeOnly
+                              //------------------------------------------------Final Degree only
+                              ? Center(
+                                  child: Container(
+                                      child: FractionDisplay(
+                                  numerator: studentAnswers
+                                      .where((a) => a.IsAnswerRight == true)
+                                      .length
+                                      .toString(),
+                                  denominator:
+                                      MyQuiz.Questions.length.toString(),
+                                  color:
+                                      double.parse(quizResultAsPercentage) >= 50
+                                          ? Colors.green.shade700
+                                          : Colors.red.shade700,
+                                  fontSize: 35,
+                                  fontWeight: FontWeight.bold,
+                                )))
+                              //------------------------------------------------Detailed Report
+                              : SingleChildScrollView(
+                                  child: Directionality(
+                                    textDirection: widget.dir == "ltr"
+                                        ? TextDirection.ltr
+                                        : TextDirection.rtl,
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.all(0.0),
+                                          alignment: Alignment.center,
+                                          child: Container(
+                                            width: double.infinity,
+                                            padding: EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                              color: quizResult < 0.5
+                                                  ? Colors.red
+                                                  : Colors.green,
                                             ),
-                                            item.questionImageUrl != null
-                                                ? ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                    child: Image.network(
-                                                      '${item.urlSource == "web" || item.urlSource == "Web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}',
-                                                      width: double.infinity,
-                                                      fit: BoxFit.fill,
-                                                    ),
-                                                  )
-                                                : Container(),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Row(
+                                            child:
+                                                //${studentAnswers.where((a) => a.IsAnswerRight == true).length} / ${MyQuiz.Questions.length}
+                                                //${quizResultAsPercentage} %
+                                                Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
+                                                Text(
+                                                    widget.dir == "ltr"
+                                                        ? 'Quiz Result: '
+                                                        : "نتيجة الإختبار: ",
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
                                                 SizedBox(
-                                                  width: 10,
+                                                  width: 8,
                                                 ),
-                                                Expanded(
-                                                    child:
-                                                        item.questionType ==
-                                                                "Example"
-                                                            ? Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Text(
-                                                                      studentAnswers[
-                                                                              index]
-                                                                          .AnswerText,
-                                                                      style: TextStyle(
-                                                                          fontSize: studentAnswers[index].IsAnswerRight == true
-                                                                              ? 18
-                                                                              : 16,
-                                                                          color: studentAnswers[index].IsAnswerRight == true
-                                                                              ? Colors.green
-                                                                              : Colors.red)),
-                                                                  studentAnswers[index]
-                                                                              .IsAnswerRight ==
-                                                                          null
-                                                                      ? Row(
-                                                                          children: [
-                                                                            Expanded(
-                                                                              child: Text(item.answers[0].title, style: TextStyle(color: Colors.black45, fontStyle: FontStyle.italic)),
-                                                                            ),
-                                                                            Container(
-                                                                              width: 50,
-                                                                              child: Icon(
-                                                                                Icons.check_circle,
-                                                                                size: 18,
-                                                                                color: Colors.green,
-                                                                              ),
-                                                                            )
-                                                                          ],
-                                                                        )
-                                                                      : Container(),
-                                                                ],
-                                                              )
-                                                            : Container(
-                                                                child: ListView
-                                                                    .builder(
-                                                                  physics:
-                                                                      NeverScrollableScrollPhysics(),
-                                                                  shrinkWrap:
-                                                                      true,
-                                                                  itemCount: item
-                                                                      .answers
-                                                                      .length,
-                                                                  itemBuilder:
-                                                                      (context,
-                                                                          i) {
-                                                                    return Container(
-                                                                      margin: EdgeInsets.only(
-                                                                          bottom:
-                                                                              5),
-                                                                      child:
-                                                                          Row(
-                                                                        children: [
-                                                                          Icon(
-                                                                              Icons.circle,
-                                                                              size: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? 10 : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? 12 : 10) : (studentAnswers[index].AnswerId == item.answers[i].id ? 12 : 10)),
-                                                                              color: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? Colors.black54 : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? Colors.green : Colors.black54) : (studentAnswers[index].AnswerId == item.answers[i].id ? Colors.red : Colors.black54))),
-                                                                          SizedBox(
-                                                                            width:
-                                                                                5,
-                                                                          ),
-                                                                          Expanded(
-                                                                            child:
-                                                                                Text(
-                                                                              item.answers[i].title,
-                                                                              style: TextStyle(fontSize: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? 14 : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? 16 : 14) : (studentAnswers[index].AnswerId == item.answers[i].id ? 16 : 14)), color: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? Colors.black54 : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? Colors.green : Colors.black54) : (studentAnswers[index].AnswerId == item.answers[i].id ? Colors.red : Colors.black54)), fontWeight: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? FontWeight.normal : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? FontWeight.bold : FontWeight.normal) : (studentAnswers[index].AnswerId == item.answers[i].id ? FontWeight.bold : FontWeight.normal))),
-                                                                            ),
-                                                                          ), //-----------------------------------------display the right answer
-                                                                          item.answers[i].isRightAnswer == true
-                                                                              ? Container(
-                                                                                  width: 50,
-                                                                                  //padding: EdgeInsets.all(5),
-                                                                                  child: Icon(
-                                                                                    Icons.check_circle,
-                                                                                    size: 18,
-                                                                                    color: Colors.green,
-                                                                                  ),
-                                                                                )
-                                                                              : Container(
-                                                                                  width: 0.01,
-                                                                                )
-                                                                        ],
-                                                                      ),
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              )),
+                                                FractionDisplay(
+                                                  numerator: studentAnswers
+                                                      .where((a) =>
+                                                          a.IsAnswerRight ==
+                                                          true)
+                                                      .length
+                                                      .toString(),
+                                                  denominator: MyQuiz
+                                                      .Questions.length
+                                                      .toString(),
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  dividerWidth: 20,
+                                                ),
+                                                SizedBox(
+                                                  width: 8,
+                                                ),
+                                                Text(
+                                                    '($quizResultAsPercentage %)',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold))
                                               ],
                                             ),
-                                            Divider(),
-                                          ],
-                                        );
-                                      },
+                                          ),
+                                        ),
+                                        Divider(),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: ListView.builder(
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemCount: MyQuiz.Questions.length,
+                                            itemBuilder: (context, index) {
+                                              var item =
+                                                  MyQuiz.Questions[index];
+                                              return Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    widget.dir == "ltr"
+                                                        ? '${index + 1}) ${item.title}'
+                                                        : '${index + 1}) ${item.title}',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  item.questionImageUrl != null
+                                                      ? ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5),
+                                                          child: Image.network(
+                                                            '${item.urlSource == "web" || item.urlSource == "Web" ? webUrl : baseUrl0}Sessions/QuestionImages/${item.questionImageUrl}',
+                                                            width:
+                                                                double.infinity,
+                                                            fit: BoxFit.fill,
+                                                          ),
+                                                        )
+                                                      : Container(),
+                                                  SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      Expanded(
+                                                          child:
+                                                              item.questionType ==
+                                                                      "Example"
+                                                                  ? Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        if (studentAnswers[index].AnswerText ==
+                                                                            "")
+                                                                          Text(
+                                                                              widget.dir == "ltr" ? "skipped the question" : "لم يترك إجابة",
+                                                                              style: TextStyle(color: Colors.red, fontStyle: FontStyle.italic)),
+                                                                        Text(
+                                                                            studentAnswers[index]
+                                                                                .AnswerText,
+                                                                            style:
+                                                                                TextStyle(fontSize: studentAnswers[index].IsAnswerRight == true ? 18 : 16, color: studentAnswers[index].IsAnswerRight == true ? Colors.green : Colors.red)),
+                                                                        studentAnswers[index].IsAnswerRight ==
+                                                                                null
+                                                                            ? Row(
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: Text(item.answers[0].title, style: TextStyle(color: Colors.black45, fontStyle: FontStyle.italic)),
+                                                                                  ),
+                                                                                  Container(
+                                                                                    width: 50,
+                                                                                    child: Icon(
+                                                                                      Icons.check_circle,
+                                                                                      size: 18,
+                                                                                      color: Colors.green,
+                                                                                    ),
+                                                                                  )
+                                                                                ],
+                                                                              )
+                                                                            : Container(),
+                                                                      ],
+                                                                    )
+                                                                  : Container(
+                                                                      child: Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            if (studentAnswers[index].AnswerId ==
+                                                                                null)
+                                                                              Text(widget.dir == "ltr" ? "skipped the question" : "لم يترك إجابة", style: TextStyle(color: Colors.red, fontStyle: FontStyle.italic)),
+                                                                            if (studentAnswers[index].AnswerId ==
+                                                                                null)
+                                                                              SizedBox(
+                                                                                height: 8,
+                                                                              ),
+                                                                            ListView.builder(
+                                                                              physics: NeverScrollableScrollPhysics(),
+                                                                              shrinkWrap: true,
+                                                                              itemCount: item.answers.length,
+                                                                              itemBuilder: (context, i) {
+                                                                                return Container(
+                                                                                  margin: EdgeInsets.only(bottom: 5),
+                                                                                  child: Row(
+                                                                                    children: [
+                                                                                      Icon(Icons.circle, size: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? 10 : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? 12 : 10) : (studentAnswers[index].AnswerId == item.answers[i].id ? 12 : 10)), color: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? Colors.black54 : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? Colors.green : Colors.black54) : (studentAnswers[index].AnswerId == item.answers[i].id ? Colors.red : Colors.black54))),
+                                                                                      SizedBox(
+                                                                                        width: 5,
+                                                                                      ),
+                                                                                      Expanded(
+                                                                                        child: Text(
+                                                                                          item.answers[i].title,
+                                                                                          style: TextStyle(fontSize: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? 14 : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? 16 : 14) : (studentAnswers[index].AnswerId == item.answers[i].id ? 16 : 14)), color: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? Colors.black54 : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? Colors.green : Colors.black54) : (studentAnswers[index].AnswerId == item.answers[i].id ? Colors.red : Colors.black54)), fontWeight: studentAnswers[index].IsAnswerRight == null || studentAnswers[index].AnswerId == 0 ? FontWeight.normal : (studentAnswers[index].IsAnswerRight == true ? (studentAnswers[index].AnswerId == item.answers[i].id ? FontWeight.bold : FontWeight.normal) : (studentAnswers[index].AnswerId == item.answers[i].id ? FontWeight.bold : FontWeight.normal))),
+                                                                                        ),
+                                                                                      ), //-----------------------------------------display the right answer
+                                                                                      item.answers[i].isRightAnswer == true
+                                                                                          ? Container(
+                                                                                              width: 50,
+                                                                                              //padding: EdgeInsets.all(5),
+                                                                                              child: Icon(
+                                                                                                Icons.check_circle,
+                                                                                                size: 18,
+                                                                                                color: Colors.green,
+                                                                                              ),
+                                                                                            )
+                                                                                          : Container(
+                                                                                              width: 0.01,
+                                                                                            )
+                                                                                    ],
+                                                                                  ),
+                                                                                );
+                                                                              },
+                                                                            ),
+                                                                          ]),
+                                                                    )),
+                                                    ],
+                                                  ),
+                                                  Divider(),
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
+                                ),
                         ),
                       ),
             showReport == false && readOnly == false

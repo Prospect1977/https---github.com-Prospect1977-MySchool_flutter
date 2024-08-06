@@ -43,7 +43,7 @@ class PaymobOptionsScreen extends StatefulWidget {
 
 class _PaymobOptionsScreenState extends State<PaymobOptionsScreen> {
   var lang = CacheHelper.getData(key: "lang");
-
+  bool _isIOS = CacheHelper.getData(key: 'isIOS');
   bool isProcessing = false; //for wallet payment option:
   @override
   Widget build(BuildContext context) {
@@ -58,56 +58,60 @@ class _PaymobOptionsScreenState extends State<PaymobOptionsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                option(
-                  widget: widget,
-                  title: lang == "en"
-                      ? "Pay with Bank Card"
-                      : "الدفع ببطاقة البنك",
-                  image: "assets/images/credit_cards.png",
-                  lang: lang,
-                  on_Tap: () {
-                    Navigator.of(context).pop();
-                    navigateTo(
-                        context,
-                        PaymobCreditCardScreen(
-                          ChargeWalletMode: false,
-                          StudentId: widget.StudentId,
-                          Payment: widget.Payment,
-                          SessionHeaderId: widget.SessionHeaderId,
-                          LessonDescription: widget.LessonDescription,
-                          LessonName: widget.LessonName,
-                          TeacherName: widget.TeacherName,
-                          dir: widget.dir,
-                        ));
-                  },
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                option(
-                  widget: widget,
-                  title: lang == "en" ? "Pay on Stores" : "الدفع في المتاجر",
-                  image: "assets/images/Store.png",
-                  lang: lang,
-                  on_Tap: () {
-                    Navigator.of(context).pop();
-                    navigateTo(
-                        context,
-                        PaymobKioskScreen(
-                          ChargeWalletMode: false,
-                          StudentId: widget.StudentId,
-                          Payment: widget.Payment,
-                          SessionHeaderId: widget.SessionHeaderId,
-                          LessonDescription: widget.LessonDescription,
-                          LessonName: widget.LessonName,
-                          TeacherName: widget.TeacherName,
-                          dir: widget.dir,
-                        ));
-                  },
-                ),
-                SizedBox(
-                  height: 20,
-                ),
+                if (!_isIOS)
+                  option(
+                    widget: widget,
+                    title: lang == "en"
+                        ? "Pay with Bank Card"
+                        : "الدفع ببطاقة البنك",
+                    image: "assets/images/credit_cards.png",
+                    lang: lang,
+                    on_Tap: () {
+                      Navigator.of(context).pop();
+                      navigateTo(
+                          context,
+                          PaymobCreditCardScreen(
+                            ChargeWalletMode: false,
+                            StudentId: widget.StudentId,
+                            Payment: widget.Payment,
+                            SessionHeaderId: widget.SessionHeaderId,
+                            LessonDescription: widget.LessonDescription,
+                            LessonName: widget.LessonName,
+                            TeacherName: widget.TeacherName,
+                            dir: widget.dir,
+                          ));
+                    },
+                  ),
+                if (!_isIOS)
+                  SizedBox(
+                    height: 20,
+                  ),
+                if (!_isIOS)
+                  option(
+                    widget: widget,
+                    title: lang == "en" ? "Pay on Stores" : "الدفع في المتاجر",
+                    image: "assets/images/Store.png",
+                    lang: lang,
+                    on_Tap: () {
+                      Navigator.of(context).pop();
+                      navigateTo(
+                          context,
+                          PaymobKioskScreen(
+                            ChargeWalletMode: false,
+                            StudentId: widget.StudentId,
+                            Payment: widget.Payment,
+                            SessionHeaderId: widget.SessionHeaderId,
+                            LessonDescription: widget.LessonDescription,
+                            LessonName: widget.LessonName,
+                            TeacherName: widget.TeacherName,
+                            dir: widget.dir,
+                          ));
+                    },
+                  ),
+                if (!_isIOS)
+                  SizedBox(
+                    height: 20,
+                  ),
                 FutureBuilder(
                     future: Provider.of<WalletProvider>(context, listen: false)
                         .getData(context),

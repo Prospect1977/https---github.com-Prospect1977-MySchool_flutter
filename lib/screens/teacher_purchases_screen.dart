@@ -18,6 +18,8 @@ import 'package:my_school/shared/widgets/teacher_purchases_navigation_bar.dart';
 import 'package:my_school/shared/widgets/teacher_views_navigation_bar.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'admin_pay_to_teacher_screen.dart';
+
 class TeacherPurchasesScreen extends StatefulWidget {
   const TeacherPurchasesScreen({Key key}) : super(key: key);
 
@@ -37,6 +39,7 @@ class _TeacherPurchasesScreenState extends State<TeacherPurchasesScreen> {
   dynamic netMaxPurchasesAmount = 1.0;
   DateTime fromDate = DateTime.now();
   TeacherPurchasesTotals modelTotal;
+  var latestTransaction;
   // of to be removed
   //DateTime fromDate = DateTime.now().subtract(Duration(days: 365));
   //End of to be removed
@@ -117,6 +120,7 @@ class _TeacherPurchasesScreenState extends State<TeacherPurchasesScreen> {
             'maxPurchasesCount=-----------------------------------$maxPurchasesCount');
         print(
             'maxPurchasesAmount=-----------------------------------$maxPurchasesAmount');
+        latestTransaction = value.data["additionalData"]["lastTransaction"];
 
         //print(maxCount);
       });
@@ -152,10 +156,23 @@ class _TeacherPurchasesScreenState extends State<TeacherPurchasesScreen> {
     GetData();
   }
 
+  String roles = CacheHelper.getData(key: 'roles');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarComponent(context, "Views"),
+      floatingActionButton: roles.contains("Admin")
+          ? FloatingActionButton(
+              backgroundColor: Colors.green,
+              child: Icon(
+                Icons.monetization_on_outlined,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                navigateTo(context, AdminPayToTeacherScreen(teacherId));
+              },
+            )
+          : null,
       bottomNavigationBar: TeacherPurchasesNavigationBar(PageIndex: 0),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -250,34 +267,67 @@ class _TeacherPurchasesScreenState extends State<TeacherPurchasesScreen> {
                         child: SingleChildScrollView(
                           child: Column(children: [
                             Container(
-                              child: Column(children: [
-                                SummaryRow(
-                                    label: lang == "en"
-                                        ? "Total Transactions:"
-                                        : "إجمالي عدد العمليات:",
-                                    value: modelTotal.totalPurchasesCount
-                                        .toString()),
-                                Divider(
-                                    height: 0,
-                                    thickness: 0.1,
-                                    color: defaultColor.withOpacity(0.2)),
-                                SummaryRow(
-                                    label: lang == "en"
-                                        ? "Total Revenue:"
-                                        : "إجمالي الدخل:",
-                                    value: modelTotal.totalPurchasesAmount
-                                        .toStringAsFixed(2)),
-                                SummaryRow(
-                                    label: lang == "en"
-                                        ? "Net Revenue:"
-                                        : "صافي الدخل:",
-                                    value: modelTotal.netTotalPurchasesAmount
-                                        .toStringAsFixed(2)),
-                                Divider(
-                                    height: 0,
-                                    thickness: 1,
-                                    color: defaultColor.withOpacity(0.2)),
-                              ]),
+                              child: Column(
+                                children: [
+                                  SummaryRow(
+                                      label: lang == "en"
+                                          ? "Total Transactions:"
+                                          : "إجمالي عدد العمليات:",
+                                      value: modelTotal.totalPurchasesCount
+                                          .toString()),
+                                  Divider(
+                                      height: 0,
+                                      thickness: 0.1,
+                                      color: defaultColor.withOpacity(0.2)),
+                                  SummaryRow(
+                                      label: lang == "en"
+                                          ? "Total Revenue:"
+                                          : "إجمالي الدخل:",
+                                      value: modelTotal.totalPurchasesAmount
+                                          .toStringAsFixed(2)),
+                                  SummaryRow(
+                                      label: lang == "en"
+                                          ? "Net Revenue:"
+                                          : "صافي الدخل:",
+                                      value: modelTotal.netTotalPurchasesAmount
+                                          .toStringAsFixed(2)),
+                                  Divider(
+                                      height: 0,
+                                      thickness: 1,
+                                      color: defaultColor.withOpacity(0.2)),
+                                  if (latestTransaction != null)
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 3, vertical: 2),
+                                      child: Text(
+                                        lang == "ar"
+                                            ? 'آخر عملية تحويل إلى حسابك تمت بتاريخ ${formatDate(DateTime.parse(latestTransaction['dataDate']), lang)} بمبلغ: ${latestTransaction['totalAmount']} ج.م'
+                                            : 'Last transaction to your account happened on ${formatDate(DateTime.parse(latestTransaction['dataDate']), lang)} with total of: ${latestTransaction['totalAmount']} EGP',
+                                        style: TextStyle(
+                                            color:
+                                                Colors.black.withOpacity(0.6),
+                                            fontStyle: FontStyle.italic),
+                                      ),
+                                    ),
+                                  // if (latestTransaction != null)
+                                  //   Container(
+                                  //     padding: EdgeInsets.symmetric(
+                                  //       horizontal: 3,
+                                  //     ),
+                                  //     child: Text(
+                                  //       lang == "ar"
+                                  //           ? 'ملاحظة: التحويلات لا تتم قبل انقضاء ${ConvertNumberToHindi('7')} ايام عمل على موعد الشراء'
+                                  //           : 'Notice: transactions only processed after at least 7 working days from purchasement',
+                                  //       style: TextStyle(
+                                  //           color:
+                                  //               Colors.black.withOpacity(0.6),
+                                  //           fontStyle: FontStyle.italic),
+                                  //       textAlign: TextAlign.start,
+                                  //     ),
+                                  //   )
+                                ],
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                              ),
                             ),
                             Container(
                               padding: EdgeInsets.only(top: 8),
@@ -604,9 +654,17 @@ class BuildItem extends StatelessWidget {
                             width: 8,
                           ),
                           Expanded(
-                            child: Text('${rec.netAmount.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                    fontSize: 16, color: defaultColor)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text('${rec.netAmount.toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                        fontSize: 16, color: defaultColor)),
+                                rec.source == "apple"
+                                    ? Icon(Icons.apple, color: Colors.black38)
+                                    : Container()
+                              ],
+                            ),
                           ),
                         ],
                       ),

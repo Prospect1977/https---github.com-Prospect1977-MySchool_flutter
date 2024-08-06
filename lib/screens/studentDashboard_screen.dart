@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_school/cubits/StudentDashboard_cubit.dart';
 import 'package:my_school/cubits/StudentDashboard_states.dart';
+import 'package:my_school/models/student_model.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/require_update_screen.dart';
 import 'package:my_school/screens/studentDailySchedule_screen.dart';
@@ -59,27 +62,51 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     var q = {'UserId': CacheHelper.getData(key: 'userId')};
     print(q);
-    isLoading = true;
-    DioHelper.getData(
-      query: q,
-      // token: token,
-      url: "StudentMainDataByUserId",
-    ).then((value) {
-      if (value.data["status"] == false &&
-          value.data["message"] == "SessionExpired") {
-        handleSessionExpired(context);
-      }
+    isLoading = false;
+    if (CacheHelper.getData(key: 'studentData') != null &&
+        roles.contains("Student")) {
       setState(() {
-        widget.Id = value.data["studentId"];
-        widget.FullName = value.data["fullName"];
-        widget.Gender = value.data["gender"];
-        widget.YearOfStudyId = value.data["yearOfStudyId"];
-        widget.SchoolTypeId = value.data["schoolTypeId"];
-        isLoading = false;
+        print(CacheHelper.getData(key: 'studentData'));
+
+        var stData = StudentModel.fromJson(
+            jsonDecode(CacheHelper.getData(key: 'studentData')));
+
+        widget.Id = stData.studentId;
+        widget.FullName = stData.fullName;
+        widget.Gender = stData.gender;
+        widget.YearOfStudyId = stData.yearOfStudyId;
+        widget.SchoolTypeId = stData.schoolTypeId;
+        isStudentHasParent = stData.isStudentHasParent;
+        //  isLoading = false;
       });
-    }).catchError((error) {
-      showToast(text: error.toString(), state: ToastStates.ERROR);
-    });
+    } else {
+      DioHelper.getData(
+        query: q,
+        // token: token,
+        url: "StudentMainDataByUserId",
+      ).then((value) {
+        if (value.data["status"] == false &&
+            value.data["message"] == "SessionExpired") {
+          handleSessionExpired(context);
+        }
+        print(value.data["data"]);
+        var stData = StudentModel.fromJson(value.data["data"]);
+        CacheHelper.saveData(
+            key: 'studentData', value: jsonEncode(value.data["data"]));
+
+        setState(() {
+          widget.Id = stData.studentId;
+          widget.FullName = stData.fullName;
+          widget.Gender = stData.gender;
+          widget.YearOfStudyId = stData.yearOfStudyId;
+          widget.SchoolTypeId = stData.schoolTypeId;
+          isStudentHasParent = stData.isStudentHasParent;
+          //  isLoading = false;
+        });
+      }).catchError((error) {
+        showToast(text: error.toString(), state: ToastStates.ERROR);
+      });
+    }
   }
 
   @override

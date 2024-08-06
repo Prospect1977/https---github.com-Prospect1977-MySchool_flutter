@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' show Platform;
 
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +70,13 @@ class _LoginScreenState extends State<LoginScreen> {
       CacheHelper.saveData(key: "token", value: userData.token);
       CacheHelper.saveData(key: "roles", value: userData.roles);
       CacheHelper.saveData(key: "email", value: userData.email);
+      CacheHelper.removeData(key: 'studentData');
+      CacheHelper.removeData(key: 'studentsList');
+      if (Platform.isIOS) {
+        CacheHelper.saveData(key: "isIOS", value: true);
+      } else {
+        CacheHelper.saveData(key: "isIOS", value: false);
+      }
       if (userData.roles.toLowerCase().contains('student')) {
         CacheHelper.putBoolean(
             key: "isStudentHasParent",

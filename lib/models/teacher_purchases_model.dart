@@ -40,6 +40,7 @@ class Items {
   int count;
   dynamic amount;
   dynamic netAmount;
+  String source;
   Items.fromJson(Map<String, dynamic> json) {
     yearOfStudy = json['yearOfStudy'];
     subjectName = json['subjectName'];
@@ -51,6 +52,7 @@ class Items {
     count = json['count'];
     amount = json['amount'];
     netAmount = json['netAmount'];
+    source = json['source'];
   }
 }
 

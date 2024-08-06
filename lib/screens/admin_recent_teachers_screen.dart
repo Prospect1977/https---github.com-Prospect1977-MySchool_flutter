@@ -36,7 +36,7 @@ class _AdminRecentTeachersScreenState extends State<AdminRecentTeachersScreen> {
 
   int lastMonth;
   int lastMonthYear;
-
+  TextEditingController searchController = TextEditingController();
   String _filterBy = "thisDay";
   void _onFilterButtonClick(DateTime FromDate, DateTime ToDate, String Filter) {
     setState(() {
@@ -64,8 +64,13 @@ class _AdminRecentTeachersScreenState extends State<AdminRecentTeachersScreen> {
 
   Future<void> getData() async {
     await DioHelper.getData(
-        url: 'Admin/RecentTeachers',
-        query: {'StartDate': fromDate, 'EndDate': toDate}).then((value) {
+            url: 'Admin/RecentTeachers',
+            query: _filterBy == "all"
+                ? {'ShowAll': true}
+                : searchController.text == ""
+                    ? {'StartDate': fromDate, 'EndDate': toDate}
+                    : {'SearchString': searchController.text})
+        .then((value) {
       if (value.data['status'] == false) {
         showToast(text: value.data["message"], state: ToastStates.ERROR);
         return;
@@ -112,6 +117,36 @@ class _AdminRecentTeachersScreenState extends State<AdminRecentTeachersScreen> {
                 SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(children: [
+                      _filterBy == "all"
+                          ? ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _filterBy = "all";
+                                  searchController.text = "";
+                                });
+                                getData();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 1),
+                                  textStyle: TextStyle(fontSize: 12)),
+                              child: Text("الكل"),
+                            )
+                          : TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _filterBy = "all";
+                                  searchController.text = "";
+                                });
+                                getData();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  textStyle: TextStyle(fontSize: 12),
+                                  foregroundColor:
+                                      Color.fromARGB(255, 94, 94, 94)),
+                              child: Text("الكل"),
+                            ),
                       DateFilterButton(
                         caption: "الأمس",
                         active: _filterBy == 'lastDay',
@@ -169,11 +204,31 @@ class _AdminRecentTeachersScreenState extends State<AdminRecentTeachersScreen> {
                         filterBy: 'thisYear',
                       ),
                     ])),
-                Divider(
-                  height: 3,
-                  color: defaultColor.withOpacity(0.2),
-                  thickness: 1,
-                ),
+                myDivider(),
+                Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      child: defaultFormField(
+                          controller: searchController,
+                          type: TextInputType.name,
+                          label: "بحث",
+                          suffix: Icons.cancel_outlined,
+                          suffixPressed: () {
+                            setState(() {
+                              searchController.text = "";
+
+                              getData();
+                            });
+                          },
+                          onChange: ((value) {
+                            if (value.length > 2) {
+                              _filterBy = "";
+                              getData();
+                            }
+                          })),
+                    )),
+                myDivider(),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

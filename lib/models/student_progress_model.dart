@@ -6,6 +6,7 @@ class StudentProgressRecord {
   dynamic watchedDuration;
   String watchedDurationFormatted;
   int quizzesDone;
+  List<dynamic> quizzesIds;
   dynamic averageQuizzesDegree;
 
   StudentProgressRecord.fromJson(Map<String, dynamic> json) {
@@ -16,6 +17,7 @@ class StudentProgressRecord {
     watchedDuration = json['watchedDuration'];
     watchedDurationFormatted = json['watchedDurationFormatted'];
     quizzesDone = json['quizzesDone'];
+    quizzesIds = json['quizzesIds'];
     averageQuizzesDegree = json['averageQuizzesDegree'];
   }
 }

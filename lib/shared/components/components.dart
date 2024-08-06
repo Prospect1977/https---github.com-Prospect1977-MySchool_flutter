@@ -464,3 +464,58 @@ class dropDownTransferAccountType extends StatelessWidget {
     );
   }
 }
+
+class frame extends StatelessWidget {
+  frame(
+      {@required this.textDirection,
+      @required this.title,
+      @required this.child,
+      this.textColor,
+      this.borderColor,
+      this.titleFontSize,
+      key});
+  final TextDirection textDirection;
+  final String title;
+  final Widget child;
+  Color textColor;
+  Color borderColor;
+  double titleFontSize;
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: textDirection,
+      child: Container(
+        margin: EdgeInsets.only(top: 5),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: double.infinity,
+              child: child,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color:
+                          borderColor == null ? Colors.black45 : borderColor),
+                  borderRadius: BorderRadius.circular(5)),
+            ),
+            Positioned(
+                right: textDirection == TextDirection.rtl ? 8 : null,
+                left: textDirection == TextDirection.ltr ? 8 : null,
+                top: -15,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  color: Colors.white,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                        color: textColor == null ? Colors.black87 : textColor,
+                        fontSize: titleFontSize == null ? null : titleFontSize,
+                        backgroundColor: Colors.white),
+                  ),
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+}

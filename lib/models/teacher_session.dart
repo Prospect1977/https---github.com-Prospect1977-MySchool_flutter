@@ -13,6 +13,7 @@ class TeacherSessionDetail {
   String urlSource;
   String coverUrlSource;
   int duration;
+  bool isQuizLimited;
   TeacherSessionDetail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
@@ -33,6 +34,7 @@ class TeacherSessionDetail {
     urlSource = json['urlSource'];
     coverUrlSource = json['coverUrlSource'];
     duration = json['duration'];
+    isQuizLimited = json['isQuizLimited'];
   }
 }
 

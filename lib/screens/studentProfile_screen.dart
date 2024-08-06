@@ -146,6 +146,8 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
         handleSessionExpired(context);
         return;
       }
+      CacheHelper.removeData(key: 'studentData');
+      CacheHelper.removeData(key: 'studentsList');
       if (value.data["status"] == true) {
         showToast(
             text:

@@ -88,6 +88,7 @@ class _StudentDailyScheduleScreenState
         DailySchedule = tempDailySchedule;
         dKeys = DailySchedule.items.map((e) => GlobalKey()).toList();
         sKeys = DailySchedule.items.map((e) => GlobalKey()).toList();
+        widget.SelectedDateIndex = TodaysDateIndex;
       });
     }).catchError((error) {
       showToast(text: error.toString(), state: ToastStates.ERROR);
@@ -433,7 +434,8 @@ class _StudentDailyScheduleScreenState
                                 child: Row(
                                   children: [
                                     Container(
-                                      width: 25,
+                                      width:
+                                          l.studentCompleted >= 100 ? 34 : 25,
                                       child: Text(
                                         l.studentCompleted > 100
                                             ? "100"

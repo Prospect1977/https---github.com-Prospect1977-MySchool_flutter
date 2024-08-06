@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/models/student_progress_model.dart';
 import 'package:my_school/screens/login_screen.dart';
 import 'package:my_school/screens/require_update_screen.dart';
+import 'package:my_school/screens/student_finished_quizzes_screen.dart';
 import 'package:my_school/shared/cache_helper.dart';
 import 'package:my_school/shared/components/components.dart';
 import 'package:my_school/shared/components/functions.dart';
@@ -255,6 +258,7 @@ class _StudentFollowupListScreenState extends State<StudentFollowupListScreen> {
                               lang: lang,
                               MaxCount: MaxCount,
                               maxProgressVideos: maxProgressVideos,
+                              studentId: widget.StudentId,
                             );
                           },
                         ),
@@ -281,6 +285,7 @@ class BuildItem extends StatelessWidget {
     @required this.lang,
     @required this.MaxCount,
     @required this.maxProgressVideos,
+    @required this.studentId,
   }) : super(key: key);
 
   final StudentProgressRecord item;
@@ -288,7 +293,7 @@ class BuildItem extends StatelessWidget {
   final dynamic maxProgressVideos;
 
   final int MaxCount;
-
+  final int studentId;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -353,10 +358,10 @@ class BuildItem extends StatelessWidget {
                           widthFactor: MaxCount == 0
                               ? 0.0
                               : item.watchedVideosCount / MaxCount,
-                          caption: lang == "en"
+                          caption: Text(lang == "en"
                               ? "Watched Videos:"
-                              : "عدد المشاهدات:",
-                          value: item.watchedVideosCount.toString(),
+                              : "عدد المشاهدات:"),
+                          value: Text(item.watchedVideosCount.toString()),
                         ),
                         Divider(),
                         DataRow(
@@ -366,10 +371,10 @@ class BuildItem extends StatelessWidget {
                           widthFactor: maxProgressVideos == 0
                               ? 0.0
                               : item.watchedDuration / maxProgressVideos,
-                          caption: lang == "en"
+                          caption: Text(lang == "en"
                               ? "Total watched duration:"
-                              : "إجمالي زمن المشاهدات:",
-                          value: item.watchedDurationFormatted,
+                              : "إجمالي زمن المشاهدات:"),
+                          value: Text(item.watchedDurationFormatted),
                         ),
                         Divider(),
                         DataRow(
@@ -378,10 +383,48 @@ class BuildItem extends StatelessWidget {
                           MaxCount: MaxCount,
                           widthFactor:
                               MaxCount == 0 ? 0.0 : item.quizzesDone / MaxCount,
-                          caption: lang == "en"
-                              ? "Quizzes Count:"
-                              : "عدد الاختبارات:",
-                          value: item.quizzesDone.toString(),
+                          caption: GestureDetector(
+                            onTap: () {
+                              if (item.quizzesDone > 0) {
+                                navigateTo(
+                                    context,
+                                    StudentFinishedQuizzesScreen(
+                                        dir: item.dir,
+                                        studentId: studentId,
+                                        finishedQuizzesIds:
+                                            item.quizzesIds.cast<int>()));
+                              }
+                            },
+                            child: Text(
+                              lang == "en"
+                                  ? "Quizzes Count:"
+                                  : "عدد الاختبارات:",
+                              style: TextStyle(
+                                  color: item.quizzesDone > 0
+                                      ? Colors.blue.shade800
+                                      : Colors.black87),
+                            ),
+                          ),
+                          value: GestureDetector(
+                            onTap: () {
+                              if (item.quizzesDone > 0) {
+                                navigateTo(
+                                    context,
+                                    StudentFinishedQuizzesScreen(
+                                        dir: item.dir,
+                                        studentId: studentId,
+                                        finishedQuizzesIds:
+                                            item.quizzesIds.cast<int>()));
+                              }
+                            },
+                            child: Text(
+                              item.quizzesDone.toString(),
+                              style: TextStyle(
+                                  color: item.quizzesDone > 0
+                                      ? Colors.blue.shade800
+                                      : Colors.black87),
+                            ),
+                          ),
                         ),
                         Divider(),
                         DataRow(
@@ -389,11 +432,11 @@ class BuildItem extends StatelessWidget {
                           item: item,
                           MaxCount: MaxCount,
                           widthFactor: item.averageQuizzesDegree / 100,
-                          caption: lang == "en"
+                          caption: Text(lang == "en"
                               ? "Average Degree:"
-                              : "متوسط الدرجات:",
-                          value:
-                              '${item.averageQuizzesDegree.toStringAsFixed(1)}%',
+                              : "متوسط الدرجات:"),
+                          value: Text(
+                              '${item.averageQuizzesDegree.toStringAsFixed(1)}%'),
                         ),
                       ]),
                 ),
@@ -416,8 +459,8 @@ class DataRow extends StatelessWidget {
 
   final String lang;
   final StudentProgressRecord item;
-  final String caption;
-  final String value;
+  final Widget caption;
+  final Widget value;
   final int MaxCount;
   dynamic widthFactor = 0;
 
@@ -428,7 +471,7 @@ class DataRow extends StatelessWidget {
         children: [
           Container(
             width: 125,
-            child: Text(caption),
+            child: caption,
           ),
           Expanded(
             child: Container(
@@ -456,7 +499,7 @@ class DataRow extends StatelessWidget {
             alignment:
                 lang == "en" ? Alignment.centerRight : Alignment.centerLeft,
             width: 60,
-            child: FittedBox(child: Text(value)),
+            child: FittedBox(child: value),
           ),
         ],
       ),

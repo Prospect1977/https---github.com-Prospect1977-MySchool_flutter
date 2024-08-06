@@ -45,3 +45,13 @@ class TeacherSubjects {
     });
   }
 }
+
+class ChildSubject {
+  int yearSubjectId;
+  String subjectName;
+
+  ChildSubject.fromJson(Map<String, dynamic> js) {
+    yearSubjectId = js['yearSubjectId'];
+    subjectName = js['subjectName'];
+  }
+}

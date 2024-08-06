@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:my_school/screens/admin_recent_parents_screen.dart';
 import 'package:my_school/screens/admin_recent_teachers_screen.dart';
 import 'package:my_school/screens/admin_teacher_privilages_screen.dart';
+import 'package:my_school/screens/admin_tickets_screen.dart';
 
 import '../shared/components/components.dart';
 import '../shared/widgets/dashboard_button.dart';
@@ -72,15 +73,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     "إدارة دروس المنهج",
                     false,
                   ),
-                  // dashboardButton(
-                  //   context,
-                  //   () {
-                  //     navigateTo(context, AdminTeacherPrivilagesScreen());
-                  //   },
-                  //   'onboard_2.png',
-                  //   "صلاحيات المُعلم",
-                  //   false,
-                  // ),
+                  dashboardButton(
+                    context,
+                    () {
+                      navigateTo(context, AdminTicketsScreen());
+                    },
+                    'Chat.png',
+                    "الشكاوى",
+                    false,
+                  ),
                 ],
               ),
             ),

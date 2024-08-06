@@ -118,6 +118,17 @@ class _SubjectsListState extends State<SubjectsList> {
                                       value: item.SubjectName);
                                   CacheHelper.saveData(
                                       key: "dir", value: item.dir);
+                                  List<int> childSubjects = [];
+                                  if (item.ParentId == null) {
+                                    var chSubjects = StudentSubjectsList.where(
+                                        (m) =>
+                                            m.ParentId == item.SubjectId &&
+                                            item.Checked).toList();
+                                    for (var obj in chSubjects) {
+                                      childSubjects.add(obj.YearSubjectId);
+                                    }
+                                    print(childSubjects);
+                                  }
                                   navigateTo(
                                       context,
                                       StudentLearnBySubjectScreen2(
@@ -125,6 +136,7 @@ class _SubjectsListState extends State<SubjectsList> {
                                         dir: item.dir,
                                         studentId: widget.Id,
                                         SubjectName: item.SubjectName,
+                                        ChildSubjects: childSubjects,
                                       ));
                                 },
                                 child: Container(

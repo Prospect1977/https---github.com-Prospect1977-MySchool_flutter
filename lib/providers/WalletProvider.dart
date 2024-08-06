@@ -40,25 +40,37 @@ class WalletProvider with ChangeNotifier {
     walletBalance = double.parse(value["data"].toStringAsFixed(2));
     isLoading = false;
     notifyListeners();
+  }
 
-    // await DioHelper.getData(
-    //         url: "Wallet/GetUserBalance", query: {}, token: token, lang: lang)
-    //     .then((value) {
-    //   print(value.data);
-    //   if (value.data["status"] == false &&
-    //       value.data["message"] == "SessionExpired") {
-    //     handleSessionExpired(context);
-    //     return;
-    //   } else if (value.data["status"] == false) {
-    //     showToast(text: value.data["message"], state: ToastStates.ERROR);
-    //     return;
-    //   }
-    //   walletBalance = double.parse(value.data["data"].toStringAsFixed(2));
-    //   isLoading = false;
-    //   notifyListeners();
-    // }).catchError((error) {
-    //   print(error.toString());
-    //   showToast(text: error.toString(), state: ToastStates.ERROR);
-    // });
+  Future<void> ChargeWalletApple(int Amount, context) async {
+    isLoading = true;
+    notifyListeners();
+    var userId = CacheHelper.getData(key: 'userId');
+
+    final url = Uri.parse(
+      '${baseUrl}StudentPurchaseSession/ChargeWalletApple?Amount=$Amount&UserId=$userId&DataDate=${DateTime.now()}',
+    );
+    final response = await http.post(url, headers: {
+      "lang": lang,
+      'Authorization': 'Bearer $token',
+    });
+    final value = json.decode(response.body);
+    if (value["status"] == false && value["message"] == "SessionExpired") {
+      showToast(
+          text: lang == "ar"
+              ? "من فضلك قم بتسجيل الدخول مجدداً"
+              : 'Session Expired, please login again',
+          state: ToastStates.ERROR);
+      return;
+    } else if (value["status"] == false) {
+      showToast(text: value["message"], state: ToastStates.ERROR);
+      return;
+    } else {
+      showToast(text: value["message"], state: ToastStates.SUCCESS);
+      Navigator.of(context).pop();
+    }
+    walletBalance = double.parse(value["data"].toStringAsFixed(2));
+    isLoading = false;
+    notifyListeners();
   }
 }

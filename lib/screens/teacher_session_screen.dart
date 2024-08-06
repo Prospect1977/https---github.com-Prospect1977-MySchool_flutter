@@ -1493,6 +1493,37 @@ Widget getTitle(
               color: sd.active ? defaultColor : Colors.black38));
 
       break;
+    case "Quiz":
+      var t = dir == "ltr" ? "Quiz" : "إختبار";
+      if (sd.isQuizLimited) {
+        // t += dir == "ltr" ? " (Exclusive)" : " (حصري)";
+      }
+      return Row(
+        children: [
+          Text(t,
+              style: TextStyle(
+                  fontSize: fontSize,
+                  color: sd.active ? defaultColor : Colors.black38)),
+          const SizedBox(
+            width: 10,
+          ),
+          if (sd.isQuizLimited)
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+              decoration: BoxDecoration(
+                  color: Colors.amber.shade600,
+                  border: Border.all(color: Colors.amber.shade800),
+                  borderRadius: BorderRadius.circular(5)),
+              child: Text(
+                dir == "ltr" ? "Exclusive" : "حصري",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            )
+        ],
+      );
+
+      break;
     default:
       return Text(sd.title,
           style: TextStyle(

@@ -1,3 +1,26 @@
+class QuizHeader {
+  bool isLimited;
+  String isLimitedCode;
+  bool showRightAnswersAfterTest;
+
+  QuizHeader(
+      {this.isLimited, this.isLimitedCode, this.showRightAnswersAfterTest});
+
+  QuizHeader.fromJson(Map<String, dynamic> json) {
+    isLimited = json['isLimited'];
+    isLimitedCode = json['isLimitedCode'];
+    showRightAnswersAfterTest = json['showRightAnswersAfterTest'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['isLimited'] = this.isLimited;
+    data['isLimitedCode'] = this.isLimitedCode;
+    data['showRightAnswersAfterTest'] = this.showRightAnswersAfterTest;
+    return data;
+  }
+}
+
 class QuizModel {
   List<Question> Questions = [];
   QuizModel.fromJson(List<Object> js) {
