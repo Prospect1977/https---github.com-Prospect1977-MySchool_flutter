@@ -32,17 +32,17 @@ import 'package:my_school/shared/styles/themes.dart';
 import 'package:provider/provider.dart';
 
 import 'shared/components/functions.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+// import 'package:purchases_flutter/purchases_flutter.dart';
 
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
   // بيتأكد ان كل حاجه هنا في الميثود خلصت و بعدين يتفح الابلكيشن
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isIOS) {
-    await Purchases.configure(
-        PurchasesConfiguration("YOUR_REVENUECAT_API_KEY"));
+    // await Purchases.configure(
+    //     PurchasesConfiguration("YOUR_REVENUECAT_API_KEY"));
   }
-  //Bloc.observer = MyBlocObserver();
+
   DioHelper.init();
   await CacheHelper.init();
 

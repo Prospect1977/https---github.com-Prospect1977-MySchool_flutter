@@ -100,8 +100,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                       ),
                                       onPressed: () {
                                         if (CacheHelper.getData(key: 'isIOS')) {
-                                          navigateTo(context,
-                                              ChargeWalletAppleScreen());
+                                          // navigateTo(context,
+                                          //     ChargeWalletAppleScreen());
                                         } else {
                                           setState(() {
                                             showChargeForm = true;

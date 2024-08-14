@@ -68,7 +68,7 @@ dependencies:
   flutter_phone_direct_caller: ^2.1.1
   permission_handler: ^11.0.1
   percent_indicator: ^4.2.3
-  purchases_flutter: ^6.30.2
+  # purchases_flutter: ^6.30.2
 
   # connectivity_plus: ^5.0.2
 
